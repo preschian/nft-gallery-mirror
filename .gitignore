@@ -1,6 +1,5 @@
 dist
 functions/
-yarn.lock
 data_ksmcc2/
 
 package-lock.json
