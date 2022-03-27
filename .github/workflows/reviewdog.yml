@@ -11,15 +11,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: bahmutov/npm-install@v1
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: Install Dependencies
-        run: yarn install
+        uses: bahmutov/npm-install@v1
 
       - name: Run eslint with reviewdog
         uses: reviewdog/action-eslint@v1.16.0
