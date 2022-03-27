@@ -22,7 +22,7 @@ jobs:
         run: yarn lint:quiet
 
       - name: Run Build
-        run: yarn build
+        run: yarn generate
 
       - name: Run Test
         run: yarn test
