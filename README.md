@@ -1,1 +1,1 @@
-# pnpm testing
+# pnpm test
