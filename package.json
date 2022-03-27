@@ -24,7 +24,7 @@
     "dev-experimental": "nuxi dev --hostname localhost --port 9090",
     "build": "nuxi build",
     "start": "nuxi preview",
-    "generate:pnpm": "npx pnpm i --store=node_modules/.pnpm-store && npx pnpm generate",
+    "generate:yarn": "npx yarn && npx yarn generate",
     "generate": "nuxi generate",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.vue .",
     "lint:quiet": "eslint --quiet --ignore-path .gitignore --ext .js,.ts,.vue .",
