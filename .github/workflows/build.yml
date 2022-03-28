@@ -32,7 +32,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm i -g netlify-cli && pnpm install
+        run: pnpm install
 
       - name: Run Code Lint
         run: pnpm lint:quiet
@@ -47,4 +47,4 @@ jobs:
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: netlify deploy --dir=dist --message "${{ github.event.head_commit.message }}"
+        run: netlify deploy --dir=dist --message '${{ github.event.head_commit.message }}'
