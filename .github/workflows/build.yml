@@ -39,7 +39,6 @@ jobs:
         with:
           name: modules-artifacts
           path: |
-            ~/.pnpm-store
             node_modules
 
   lint:
