@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,7 +15,7 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            **/node_modules
+            node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-
@@ -34,9 +34,44 @@ jobs:
       - name: Install Dependencies
         run: pnpm i -g netlify-cli && pnpm install
 
+      - name: Save Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: modules-artifacts
+          path: |
+            ~/.pnpm-store
+            node_modules
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/upload-artifact@v3
+        with:
+          name: modules-artifacts
       - name: Run Code Lint
         run: pnpm lint:quiet
 
+  test:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/upload-artifact@v3
+        with:
+          name: modules-artifacts
+      - uses: actions/checkout@v2
+      - run: pnpm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/upload-artifact@v3
+        with:
+          name: modules-artifacts
       - name: Run Generate
         run: pnpm generate
 
@@ -45,6 +80,3 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: netlify deploy --dir=dist
-
-      - name: Run Test
-        run: pnpm test
