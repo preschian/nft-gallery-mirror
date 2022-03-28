@@ -51,4 +51,4 @@ jobs:
 
       - name: Logging
         run: |
-          echo "${{toJSON(github.event.head_commit)}}"
+          echo "${{toJSON(github.event)}}"
