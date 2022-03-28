@@ -37,11 +37,14 @@ jobs:
       - name: Run Code Lint
         run: pnpm lint:quiet
 
+      - name: Run Generate
+        run: pnpm generate
+
       - name: Deploy Site
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: netlify deploy --build --dir=dist --context deploy-preview
+        run: netlify deploy --dir=dist
 
       - name: Run Test
         run: pnpm test
