@@ -1,4 +1,4 @@
-We are using a `pnpm` workspace, as installing things via npm **will result in broken dependencies.**
+We are using a `pnpm`, as installing things via npm **will result in broken dependencies.**
 
 > If you want to know how KodaDot works, go to the [DOCS](https://docs.kodadot.xyz/).
 

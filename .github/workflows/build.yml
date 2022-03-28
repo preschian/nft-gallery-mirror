@@ -48,3 +48,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: netlify deploy --dir=dist --message '${{ github.event.head_commit.message }}'
+
+      - name: Logging
+        run: |
+          echo "${{toJSON(github.event.head_commit)}}"
