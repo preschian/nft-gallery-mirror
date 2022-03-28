@@ -15,10 +15,10 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            node_modules
+            **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-
+            ${{ runner.os }}-pnpm-
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2.2.1
@@ -34,43 +34,12 @@ jobs:
       - name: Install Dependencies
         run: pnpm i -g netlify-cli && pnpm install
 
-      - name: Save Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: modules-artifacts
-          path: |
-            node_modules
-
-  lint:
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/upload-artifact@v3
-        with:
-          name: modules-artifacts
       - name: Run Code Lint
         run: pnpm lint:quiet
 
-  test:
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/upload-artifact@v3
-        with:
-          name: modules-artifacts
-      - uses: actions/checkout@v2
+      - name: Run Test
       - run: pnpm test
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/upload-artifact@v3
-        with:
-          name: modules-artifacts
       - name: Run Generate
         run: pnpm generate
 
