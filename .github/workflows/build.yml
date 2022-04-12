@@ -35,8 +35,10 @@ jobs:
       - name: Run Code Lint
         run: pnpm lint:quiet
 
-      - name: Run Build
-        run: pnpm build
+      - name: Run Generate
+        run: |
+          pnpm build
+          pnpm dlx path-exists-cli dist && echo "exists" && exit || echo "doesn't exist" && exit
 
       - name: Run Test
         run: pnpm test
