@@ -38,7 +38,7 @@ jobs:
       - name: Run Generate
         run: |
           pnpm build
-          pnpm dlx path-exists-cli dist && echo "exists" && exit || echo "doesn't exist" && exit
+          npx path-exists-cli dist && echo "exists" && exit 1 || echo "doesn't exist" && exit 1
 
       - name: Run Test
         run: pnpm test
