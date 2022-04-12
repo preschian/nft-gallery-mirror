@@ -40,7 +40,7 @@ jobs:
           pnpm build
           pnpm install --global path-exists-cli
           ls -l dist
-          path-exists-cli dist && echo "exists" || echo "doesn't exist" && exit
+          path-exists dist && echo "exists" || echo "doesn't exist" && exit
 
       - name: Run Test
         run: pnpm test
