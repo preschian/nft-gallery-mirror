@@ -36,9 +36,7 @@ jobs:
         run: pnpm lint:quiet
 
       - name: Run Generate
-        run: |
-          pnpm build
-          npx path-exists-cli dist && echo "exists" && exit 1 || echo "doesn't exist" && exit 1
+        run: pnpm build && npx path-exists-cli dist && echo "exists" || echo "doesn't exist" && exit
 
       - name: Run Test
         run: pnpm test
