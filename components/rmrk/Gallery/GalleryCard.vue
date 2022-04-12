@@ -41,7 +41,8 @@
 
       <div class="card-content">
         <span
-          class="title mb-0 is-4 has-text-centered has-text-primary"
+          class="has-text-centered has-text-primary"
+          :class="{ 'title is-4': largeDisplay }"
           :title="name">
           <div class="has-text-overflow-ellipsis">
             {{ nftName }}
@@ -73,8 +74,10 @@ const components = {
 
 @Component({ components })
 export default class GalleryCard extends mixins(AuthMixin) {
-  @Prop({ type: String, default: '/rmrk/gallery' }) public route!: string
-  @Prop({ type: String, default: 'rmrk/gallery' }) public link!: string
+  @Prop({ type: String, default: '/rmrk/explore?tab=GALLERY' })
+  public route!: string
+  @Prop({ type: String, default: '/rmrk/explore?tab=GALLERY' })
+  public link!: string
   @Prop(String) public id!: string
   @Prop(String) public name!: string
   @Prop([String, Number]) public emoteCount!: string | number
@@ -110,6 +113,13 @@ export default class GalleryCard extends mixins(AuthMixin) {
 
   get accountIsCurrentOwner(): boolean {
     return this.accountId === this.currentOwner
+  }
+
+  get largeDisplay(): boolean {
+    return (
+      this.$store.getters['preferences/getLayoutClass'] ===
+      'is-half-desktop is-half-tablet'
+    )
   }
 }
 </script>
@@ -167,6 +177,10 @@ export default class GalleryCard extends mixins(AuthMixin) {
 
   .card-image__emotes__count {
     vertical-align: text-bottom;
+  }
+
+  .card-content {
+    border-radius: 0;
   }
 
   @media screen and (min-width: 1024px) {

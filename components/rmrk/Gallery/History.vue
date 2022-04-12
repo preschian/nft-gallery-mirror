@@ -152,7 +152,7 @@ type ChartData = {
 @Component({ components })
 export default class History extends mixins(ChainMixin, KeyboardEventsMixin) {
   @Prop({ type: Array }) public events!: Interaction[]
-  @Prop({ type: Boolean, default: false })
+  @Prop({ type: Boolean, default: true })
   private readonly openOnDefault!: boolean
   @Prop({ type: Boolean, default: false }) hideCollapse!: boolean
 
@@ -162,7 +162,7 @@ export default class History extends mixins(ChainMixin, KeyboardEventsMixin) {
 
   protected data: TableRow[] = []
   protected copyTableData: TableRow[] = []
-  public isOpen = this.openOnDefault || false
+  public isOpen = false
   public shortAddress = shortAddress
 
   public async created() {
@@ -175,6 +175,7 @@ export default class History extends mixins(ChainMixin, KeyboardEventsMixin) {
     exist(this.$route.query.event, (val) => {
       this.event = val ? decodeURIComponent(val) : 'all'
     })
+    this.isOpen = this.openOnDefault
   }
 
   private bindExpandEvents(event) {
@@ -227,7 +228,7 @@ export default class History extends mixins(ChainMixin, KeyboardEventsMixin) {
         path: String(this.$route.path),
         query: { ...this.$route.query, [key]: encodeURIComponent(value) },
       })
-      .catch(console.warn /*Navigation Duplicate err fix later */)
+      .catch(this.$consola.warn /*Navigation Duplicate err fix later */)
   }
 
   protected createTable(): void {
@@ -244,7 +245,7 @@ export default class History extends mixins(ChainMixin, KeyboardEventsMixin) {
     for (const newEvent of this.events) {
       const event: any = {}
 
-      const nftId = newEvent['nft']?.id
+      const nftId = (newEvent['nft'] as any)?.id
       // Type
       if (newEvent['interaction'] === 'MINTNFT') {
         event['Type'] = this.$t('nft.event.MINTNFT')

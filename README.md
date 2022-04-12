@@ -7,12 +7,6 @@
 
 ![Darling in the Franxx](https://media.giphy.com/media/10YWqUivkQPeeJWD3u/giphy.gif)
 
-## Coordination for development
-
-[![KodaDot NFT Discord](https://flat.badgen.net/discord/members/35hzy2dXXh)](https://discord.gg/35hzy2dXXh)
-[![KodaDot NFT Discord](https://flat.badgen.net/discord/online-members/35hzy2dXXh)](https://discord.gg/35hzy2dXXh)
-[![@KodaDot](https://flat.badgen.net/twitter/follow/KodaDot)](https://twitter.com/kodadot)
-
 # Repository Statistics
 
 ### Contributors over time to KodaDot
@@ -28,6 +22,13 @@
 
 Our thanks go to [contributors-img](https://contrib.rocks).
 
+## Coordination for development
+
+[![KodaDot NFT Discord](https://flat.badgen.net/discord/members/35hzy2dXXh)](https://discord.gg/35hzy2dXXh)
+[![KodaDot NFT Discord](https://flat.badgen.net/discord/online-members/35hzy2dXXh)](https://discord.gg/35hzy2dXXh)
+[![@KodaDot](https://flat.badgen.net/twitter/follow/KodaDot)](https://twitter.com/kodadot)
+
+
 ### Amount of Rewards inside
 
 [![Rewards](https://flat.badgen.net/github/label-issues/kodadot/nft-gallery/$/open?scale=2)](https://github.com/kodadot/nft-gallery/issues?q=is%3Aopen+is%3Aissue+label%3A%24)
@@ -37,6 +38,15 @@ Our thanks go to [contributors-img](https://contrib.rocks).
 [![Rewards](https://flat.badgen.net/github/label-issues/kodadot/nft-gallery/$$$$$/open?scale=2)](https://github.com/kodadot/nft-gallery/issues?q=is%3Aopen+is%3Aissue+label%3A%24%24%24%24%24+)
 
 ### Hard facts about KodaDot development
+
+#### Repography
+
+## [![Repography logo](https://images.repography.com/logo.svg)](https://repography.com) / Recent activity [![Time period](https://images.repography.com/23713223/kodadot/nft-gallery/recent-activity/5055a1ed1ce7a7a56f6a3871f5869bda_badge.svg)](https://repography.com)
+[![Issue status graph](https://images.repography.com/23713223/kodadot/nft-gallery/recent-activity/5055a1ed1ce7a7a56f6a3871f5869bda_issues.svg)](https://github.com/kodadot/nft-gallery/issues)
+[![Timeline graph](https://images.repography.com/23713223/kodadot/nft-gallery/recent-activity/5055a1ed1ce7a7a56f6a3871f5869bda_timeline.svg)](https://github.com/kodadot/nft-gallery/commits)
+[![Pull request status graph](https://images.repography.com/23713223/kodadot/nft-gallery/recent-activity/5055a1ed1ce7a7a56f6a3871f5869bda_prs.svg)](https://github.com/kodadot/nft-gallery/pulls)
+[![Top contributors](https://images.repography.com/23713223/kodadot/nft-gallery/recent-activity/5055a1ed1ce7a7a56f6a3871f5869bda_users.svg)](https://github.com/kodadot/nft-gallery/graphs/contributors)
+
 
 [![GitHub contributors](https://flat.badgen.net/github/contributors/kodadot/nft-gallery)](https://GitHub.com/kodadot/nft-gallery/graphs/contributors/)
 [![GitHub forks](https://flat.badgen.net/github/forks/kodadot/nft-gallery)](https://GitHub.com/kodadot/nft-gallery/network/)
@@ -54,9 +64,10 @@ Our thanks go to [contributors-img](https://contrib.rocks).
 
 [![GitHub release](https://flat.badgen.net/github/release/kodadot/nft-gallery)](https://github.com/kodadot/nft-gallery/releases)
 [![GitHub license](https://flat.badgen.net/github/license/kodadot/nft-gallery)](https://github.com/kodadot/nft-gallery/blob/master/LICENSE)
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/kodadot/nft-gallery)
 
 [![Github last commit](https://flat.badgen.net/github/last-commit/kodadot/nft-gallery/main?color=blue)](https://github.com/kodadot/nft-gallery/tree/main)
+
+[Open in Visual Studio Code](https://open.vscode.dev/kodadot/nft-gallery)
 
 ### Static code analysis
 
@@ -66,15 +77,6 @@ Our thanks go to [contributors-img](https://contrib.rocks).
 
 [![DeepSource](https://deepsource.io/gh/kodadot/nft-gallery.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/kodadot/nft-gallery/?ref=repository-badge)
 [![DeepSource](https://deepsource.io/gh/kodadot/nft-gallery.svg/?label=resolved+issues&show_trend=true&token=MyayTJdwd-Fr4mnmUdMUxHik)](https://deepsource.io/gh/kodadot/nft-gallery/?ref=repository-badge)
-
-### Brief code structure
-
-![Visualization of this repo](.github/diagram.svg)
-[Interactive visualization](https://octo-repo-visualization.vercel.app/?repo=kodadot%2Fnft-gallery)
-
-<!-- ### Is it maintained? -- I guess if it's not under 10d not worth showing off
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/kodadot/nft-gallery.svg)](http://isitmaintained.com/project/kodadot/nft-gallery "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/kodadot/nft-gallery.svg)](http://isitmaintained.com/project/kodadot/nft-gallery "Percentage of issues still open") -->
 
 ## Culture-🧫 - where you can read our recent updates
 
@@ -98,19 +100,20 @@ Our thanks go to [contributors-img](https://contrib.rocks).
 - [XR - KodaVerse](https://github.com/orgs/kodadot/projects/2/views/1)
 - [Meta Mobile](https://github.com/orgs/kodadot/projects/3/views/1)
 
-## Development 🏗
-
-- [Contribution is welcome!](CONTRIBUTING.md) and well rewarded in $KSM!
-- [How to setup environment for first time and how to run the project.](FIRST_TIME.md)
-
 ## I want to contribute- 🙋‍
 
 Your **contribution** is more than welcome.
-Please follow our [code of conduct](CODE_OF_CONDUCT.md) and **[contribution guidelines](CONTRIBUTING.md)**
+- Please follow our [code of conduct](CODE_OF_CONDUCT.md) and **[contribution guidelines](CONTRIBUTING.md)**
+- [How to setup environment for first time and how to run the project.](FIRST_TIME.md)
+- [We reward your contribution](REWARDS.md)
+- [We are always hiring](HIRING.md)
+- [Contribute with your best code quality](STYLE_GUIDE.md)
 
 ## Support the project ⭐
 
-If you feel awesome and want to support us in a small way, please consider starring and sharing the repo! This helps us to get known and grow the community. 🙏 We will really appreciate that!
+- If you feel awesome and want to support us in a small way, please consider **starring and sharing the repository**!
+- This helps us to get known and grow the builders community.
+- 🙏 We will really appreciate that!
 
 ## Patronage 💸
 
@@ -130,3 +133,14 @@ We have list of frequent participants in our codebase.
 - Want to be on this list? Become frequent participant by contributing more, [come with us](https://open.spotify.com/track/5kTBiVnjq9xKmZL9dNs8zL?si=9fc60b8b87764969)!
 - [You can learn about our Contributors base](https://github.com/kodadot/nft-gallery/graphs/contributors)
 - [KodaDot Documentation](https://docs.kodadot.xyz)
+
+
+### Brief code structure
+
+![Visualization of this repo](.github/diagram.svg)
+[Interactive visualization](https://octo-repo-visualization.vercel.app/?repo=kodadot%2Fnft-gallery)
+
+<!-- ### Is it maintained? -- I guess if it's not under 10d not worth showing off
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/kodadot/nft-gallery.svg)](http://isitmaintained.com/project/kodadot/nft-gallery "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/kodadot/nft-gallery.svg)](http://isitmaintained.com/project/kodadot/nft-gallery "Percentage of issues still open") -->
+
