@@ -11,7 +11,7 @@ specifiers:
   '@fortawesome/fontawesome-svg-core': 1.2.36
   '@fortawesome/free-brands-svg-icons': ^5.15.4
   '@fortawesome/free-regular-svg-icons': ^5.15.4
-  '@fortawesome/free-solid-svg-icons': ^5.15.4
+  '@fortawesome/free-solid-svg-icons': 5.15.4
   '@fortawesome/vue-fontawesome': ^2.0.8
   '@google/model-viewer': ^1.12.0
   '@keeex/qrcodejs-kx': ^1.0.2
@@ -2854,7 +2854,7 @@ packages:
       '@netlify/functions': 1.0.0
       '@nuxt/devalue': 2.0.0
       '@nuxt/kit': /@nuxt/kit-edge/3.0.0-27470397.9ebea90_34lyoy2px4mwvanejqhdojvpg4
-      '@nuxt/ui-templates': /@nuxt/ui-templates-edge/0.2.1-27638810.adb0eb6
+      '@nuxt/ui-templates': /@nuxt/ui-templates-edge/0.2.1-27639787.fbab1cb
       '@rollup/plugin-alias': 3.1.9_rollup@2.77.0
       '@rollup/plugin-commonjs': 21.1.0_rollup@2.77.0
       '@rollup/plugin-inject': 4.0.4_rollup@2.77.0
@@ -3079,8 +3079,8 @@ packages:
       - webpack
     dev: true
 
-  /@nuxt/ui-templates-edge/0.2.1-27638810.adb0eb6:
-    resolution: {integrity: sha512-6wZrmHNI247d7LxT2F2Rrt6ykU0DRomhQ+ZcVHVVcl7PGJ8wA4ADiYSzRWP1AtZeDEwRhmVRd5J3Al04lQ62dA==}
+  /@nuxt/ui-templates-edge/0.2.1-27639787.fbab1cb:
+    resolution: {integrity: sha512-PUB0QY9mwe/bGCJu/mQnhOvXz1w7SM1+6kCKG6q0gjf1pzD8zQTJeUVs8bgTbD8OKU0VBd+6yeoHvpcoKUIE8A==}
     dev: true
 
   /@nuxt/utils-edge/2.16.0-27358576.777a4b7f:
