@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 overrides:
-  '@substrate/smoldot-light': 0.6.27
+  '@substrate/smoldot-light': ^0.6.27
 
 specifiers:
   '@babel/core': ^7.18.9
