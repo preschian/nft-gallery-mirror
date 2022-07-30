@@ -33,7 +33,7 @@ jobs:
         run: pnpm install
 
       - name: Run Code Lint
-        run: pnpm lint
+        run: pnpm lint:quiet
 
       - name: Run Test
         run: pnpm test
