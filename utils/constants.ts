@@ -37,7 +37,7 @@ export const URLS = {
     rubick: 'https://squid.subsquid.io/rubick/v/007/graphql',
     snek: 'https://squid.subsquid.io/snekk/v/005/graphql',
     snekRococo: 'https://squid.subsquid.io/snekk/v/004/graphql',
-    click: 'https://squid.subsquid.io/click/v/002-rc0/graphql',
+    click: 'https://squid.subsquid.io/click/v/002/graphql',
     antick: 'https://squid.subsquid.io/antick/v/001-rc0/graphql',
   },
   providers: {
@@ -58,11 +58,26 @@ export const NFT_SQUID_SORT_CONDITION_LIST: string[] = [
   'sn_ASC',
 ]
 
+export const NFT_SQUID_SORT_CONDITION_LIST_FOR_MOONRIVER: string[] = [
+  'blockNumber_DESC',
+  'blockNumber_ASC',
+  'updatedAt_DESC',
+  'updatedAt_ASC',
+  'sn_ASC',
+]
+
 export const disableChainListOnProductionEnv = [
   'westend',
   'westmint',
   'movr',
   'glmr',
+  'snek',
 ]
 
 export const chainTestList = ['westend', 'westmint']
+
+export const getChainTestList = () => {
+  return window.location.hostname === 'kodadot.xyz'
+    ? disableChainListOnProductionEnv
+    : chainTestList
+}
