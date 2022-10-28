@@ -59,7 +59,7 @@ jobs:
 
       - name: Build App
         # if: steps.cache-dist.outputs.cache-hit != 'true'
-        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        if: steps.changed-files.outputs.any_changed == 'true'
         run: pnpm generate
 
       - name: Cypress run
