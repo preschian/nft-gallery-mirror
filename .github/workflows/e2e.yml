@@ -51,7 +51,9 @@ jobs:
           key: ${{ github.event.pull_request.number }}-dist
 
       - name: echo github commit sha
-        run: echo ${{ github.sha }}
+        run: |
+          echo ${{ github.sha }}
+          git rev-parse HEAD
 
       - name: Get changed files
         id: changed-files
