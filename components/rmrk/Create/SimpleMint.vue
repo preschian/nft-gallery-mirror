@@ -162,7 +162,7 @@
     <b-field>
       <b-icon icon="calculator" />
       <span class="pr-2">{{ $t('mint.estimated') }}</span>
-      <Money :value="estimated" inline data-cy="fee" />
+      <Money :value="estimated" inline />
       <span class="pl-2"> ({{ getUsdFromKsm().toFixed(2) }} USD) </span>
     </b-field>
   </section>
