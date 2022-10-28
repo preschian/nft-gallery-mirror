@@ -50,11 +50,13 @@ jobs:
           path: dist
           key: ${{ github.event.pull_request.number }}-dist
 
+      - name: echo github commit sha
+        run: echo ${{ github.sha }}
+
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v34
         with:
-          max_fetch_depth: 0
           files: |
             components/**
 
