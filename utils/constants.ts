@@ -25,21 +25,23 @@ export const SHOW_SCROLL_TOP_BUTTON_HEIGHT = 350
 
 export const DETAIL_TIMEOUT = 3000
 
+export const MAX_UPLOADED_FILE_SIZE = 30
+
 export const URLS = {
   koda: {
     cloudflare: 'https://durable-jpeg.kodadot.workers.dev/',
-    pinata: 'https://kodadot.mypinata.cloud/ipfs/',
+    pinata: 'https://cdn.preschian-cdn.workers.dev/ipfs/',
     directUpload: 'https://direct-upload.kodadot.workers.dev/',
     estuary: 'https://pinning.kodadot.workers.dev/',
     nftStorage: 'https://nft-storage.kodadot.workers.dev/',
     netlify: 'https://beta.kodadot.xyz/.netlify/functions/',
     seoCard: 'https://og-image-green-seven.vercel.app/',
     rubick: 'https://squid.subsquid.io/rubick/v/007/graphql',
-    snek: 'https://squid.subsquid.io/test-snek/v/055/graphql',
-    snekRococo:
-      'https://squid.subsquid.io/test-snek/v/basilisk-rococo-001/graphql',
+    snek: 'https://squid.subsquid.io/snekk/v/005/graphql',
+    snekRococo: 'https://squid.subsquid.io/snekk/v/004/graphql',
     click: 'https://squid.subsquid.io/click/v/002/graphql',
     antick: 'https://squid.subsquid.io/antick/v/001-rc0/graphql',
+    replicate: 'https://replicate.kodadot.workers.dev/',
   },
   providers: {
     coingecko: 'https://api.coingecko.com/api/v3',
