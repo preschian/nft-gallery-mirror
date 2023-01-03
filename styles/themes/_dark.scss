@@ -6,7 +6,10 @@ html.dark-mode {
     margin: 0;
     width: 100%;
     height: 100%;
-    background-color: $background-dark;
+    background-color: $dark-accent;
+  }
+  main {
+    background-color: unset;
   }
 
   .title,
@@ -19,28 +22,57 @@ html.dark-mode {
     color: #fff !important;
 
     &:hover {
-      color: $k-accentlight !important;
+      color: $shade !important;
     }
   }
 
   .navbar {
     border-color: $white;
+    background-color: $background-dark !important;
+
+    .navbar-item:hover {
+      color: inherit;
+      background-color: inherit;
+    }
+
     .dropdown-content .dropdown-item .menu-item {
       color: $white !important;
     }
-    .navbar-dropdown,
+
     .dropdown-content {
       box-shadow: 4px 4px 0px $white !important;
       border-color: $white !important;
     }
-    .dropdown .dropdown-menu .has-link a,
-    .navbar-dropdown a.navbar-item {
+    .dropdown .dropdown-menu .has-link a {
       &:hover,
       &:focus {
-        background-color: $primary !important;
+        background-color: $k-accent !important;
         color: $black;
       }
     }
+    .navbar-dropdown a.navbar-item {
+      border-bottom: 1px solid $white;
+      &:hover,
+      &:focus {
+        background-color: $k-accent !important;
+        color: $k-hovergrey;
+      }
+    }
+
+    .dropdown .dropdown-menu .has-link.is-active a {
+      &:hover,
+      &:focus {
+        background-color: $white !important;
+      }
+    }
+
+    .navbar-link {
+      &:hover {
+        background-color: transparent;
+        color: $white !important;
+      }
+    }
+
     .dropdown-content {
       .dropdown-item.is-active,
       .is-active > a {
@@ -50,51 +82,77 @@ html.dark-mode {
     }
 
     .navbar__sign-out-button {
-      border-color: $white;
+      border-color: $white !important;
       box-shadow: 4px 4px 0px $white !important;
+      background: $dark-accent !important;
+      color: $white;
       &:hover {
         background-color: $primary !important;
       }
     }
 
     .mobile-nav-search-btn {
-      background: $black;
-      border: 1px solid $white;
-      box-shadow: 4px 4px 0px $white;
+      color: $white;
     }
 
     .navbar-burger {
       color: $white;
+      background-color: $background-dark;
     }
 
     .navbar-menu {
       border-color: $white !important;
 
       .button:hover {
-        background-color: $primary;
+        background-color: $k-accent !important;
+        color: $black !important;
       }
     }
 
     #NavProfile {
       .button.is-primary {
+        color: $black;
         border: 1px solid $white !important;
+        &:hover {
+          background-color: $dark-accent!important;
+          color: $white!important;
+        }
+      }
+      .dropdown .dropdown-menu .has-link {
+        border-top: 1px solid $white;
       }
     }
 
     .navbar-explore .menu-item {
-      &:hover,
+      &:hover {
+        color: $shade !important;
+      }
       &.is-active {
         color: $white !important;
+      }
+    }
+
+    .navbar-chain {
+      .dropdown-item {
+        border-bottom: 1px solid $white;
+        &:hover {
+          background-color: $k-accent;
+          color: $black;
+        }
+      }
+    }
+
+    .navbar-explore {
+      a {
+        &:hover {
+          color: $white !important;
+        }
       }
     }
   }
 
   .instance {
     border-color: $white;
-    &-accent,
-    &-blue {
-      background-color: $dark-accent;
-    }
   }
 
   .landing-search {
@@ -125,7 +183,7 @@ html.dark-mode {
     .search-history {
       .times-icon {
         &:hover {
-          color: $white;
+          color: $shade;
         }
       }
 
@@ -145,7 +203,7 @@ html.dark-mode {
 
   .footer-container {
     background-color: $dark-accent;
-    // border-top: 1px solid $white;
+    color: $white;
 
     &-socials {
       &-list {
@@ -162,6 +220,19 @@ html.dark-mode {
                   color: $black !important;
                 }
               }
+            }
+          }
+        }
+      }
+    }
+
+    &-info {
+      &-list {
+        &-item {
+          a {
+            color: $white !important;
+            &:hover {
+              color: $shade !important;
             }
           }
         }
@@ -187,6 +258,13 @@ html.dark-mode {
     }
   }
 
+  .chain-option {
+    &:hover {
+      color: $shade !important;
+
+    }
+  }
+
   .modal-card-container {
     border: 1px solid white;
     .wallet .buttons {
@@ -198,6 +276,11 @@ html.dark-mode {
         background: $k-dark !important;
         border: 1px solid $white;
         border-radius: unset;
+
+        &:hover {
+          background-color: $k-accentlight2dark !important;
+          color: $white;
+        }
       }
     }
     .modal-card-bg {
@@ -219,6 +302,11 @@ html.dark-mode {
       background: $white !important;
       .is-white {
         color: $background-dark !important;
+      }
+    }
+    .dropdown-content .dropdown-item {
+      &:hover {
+        background-color: $k-accentlight2dark !important;
       }
     }
   }
@@ -246,5 +334,47 @@ html.dark-mode {
         color: $white !important;
       }
     }
+  }
+
+  .scroll-top-button {
+    border-color: $white !important;
+    box-shadow: 4px 4px 0px $white;
+    &:hover {
+      background: $k-accent !important;
+      path {
+        color: $black;
+      }
+    }
+  }
+
+  .gallery-item-media {
+    border: 1px solid #fff;
+    box-shadow: 4px 4px 0px #fff;
+  }
+
+  .loading-container {
+    background: $k-dark;
+    box-shadow: $primary-shadow-dark;
+    border: 1px solid $white;
+
+    .loading-icon {
+      border-bottom: 1px solid $k-grey;
+    }
+
+    .funfact-heading {
+      color: $white;
+    }
+  }
+
+  .popover-content-container {
+    border: 1px solid $white;
+  }
+
+  .ms-dos-shadow {
+    box-shadow: $primary-shadow-dark;
+  }
+
+  .profile-dropdown-divider {
+    background-color: #CCCCCC;
   }
 }

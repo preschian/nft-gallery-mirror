@@ -7,6 +7,8 @@ import { emptyObject } from '@/utils/empty'
 import { identityStore } from '@/utils/idbStore'
 import shortAddress from '@/utils/shortAddress'
 
+import type { NFT } from '@/components/rmrk/service/scheme'
+
 type Address = string | GenericAccountId | undefined
 type IdentityFields = Record<string, string>
 
@@ -75,10 +77,10 @@ export default function useIdentity({ address, customNameOption }) {
   const { apiUrl } = useApi()
   const identity = ref<IdentityFields>({})
   const isFetchingIdentity = ref(false)
+  const shortenedAddress = computed(() => shortAddress(address))
   const twitter = computed(() => identity?.value?.twitter)
   const discord = computed(() => identity?.value?.discord)
   const display = computed(() => identity?.value?.display)
-  const shortenedAddress = computed(() => shortAddress(address))
   const name = computed(() =>
     displayName({ customNameOption, identity, shortenedAddress })
   )
@@ -99,8 +101,7 @@ export default function useIdentity({ address, customNameOption }) {
       })
     }
   }
-
-  onMounted(whichIdentity)
+  whichIdentity()
 
   return {
     identity,
@@ -111,4 +112,32 @@ export default function useIdentity({ address, customNameOption }) {
     display,
     name,
   }
+}
+
+interface NFTListSold {
+  nftEntities?: NFT[]
+  nftEntitiesConnection: {
+    totalCount: number
+  }
+}
+
+export function useIdentitySoldData({ address }) {
+  const nftEntities = ref<NFT[]>([])
+
+  const { data } = useGraphql({
+    queryName: 'nftListSold',
+    variables: {
+      account: address,
+      limit: 3,
+      orderBy: 'price_DESC',
+    },
+  })
+
+  watch(data as unknown as NFTListSold, (list) => {
+    if (list.nftEntities?.length) {
+      nftEntities.value = list.nftEntities
+    }
+  })
+
+  return { nftEntities }
 }

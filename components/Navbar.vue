@@ -1,197 +1,218 @@
 <template>
   <b-navbar
-    fixed-top
-    spaced
-    wrapper-class="container"
-    close-on-click
-    mobile-burger
     :active.sync="isBurgerMenuOpened"
-    :class="{ 'navbar-shrink': !showTopNavbar }">
+    :class="{ 'navbar-shrink': !showTopNavbar }"
+    close-on-click
+    fixed-top
+    mobile-burger
+    spaced
+    wrapper-class="container">
     <template #brand>
-      <b-navbar-item tag="nuxt-link" :to="{ path: '/' }" class="logo">
+      <b-navbar-item :to="{ path: '/' }" class="logo" tag="nuxt-link">
         <img
           :src="logoSrc"
           alt="First NFT market explorer on Kusama and Polkadot"
-          width="166"
-          height="34" />
+          width="143"
+          height="42" />
       </b-navbar-item>
       <div
         class="is-hidden-desktop is-flex is-flex-grow-1 is-align-items-center is-justify-content-flex-end"
         @click="closeBurgerMenu">
         <!-- <HistoryBrowser class="navbar-item" /> -->
-        <b-button
+        <img
           v-if="showSearchOnNavbar"
-          icon-left="search"
-          class="mr-2 mobile-nav-search-btn is-flex"
-          @click="showMobileSearchBar">
-        </b-button>
-        <Search
-          ref="mobilSearchRef"
-          hide-filter
-          class="mt-5 search-navbar-container-mobile" />
+          class="mobile-nav-search-btn mr-2"
+          :src="
+            isDarkMode
+              ? '/search-mobile-navbar-dark.svg'
+              : '/search-mobile-navbar.svg'
+          "
+          @click="showMobileSearchBar" />
+
+        <div v-show="openMobileSearchBar">
+          <div
+            class="fixed-stack is-flex is-align-items-center is-justify-content-space-between p-2">
+            <Search
+              ref="mobilSearchRef"
+              hide-filter
+              class="is-flex-grow-1 mt-3" />
+            <b-button class="cancel-btn" @click="hideMobileSearchBar">
+              {{ $t('cancel') }}
+            </b-button>
+          </div>
+        </div>
       </div>
     </template>
     <template #start>
       <div v-if="showSearchOnNavbar" class="navbar-item is-expanded">
         <Search
-          hide-filter
           class="search-navbar is-flex-grow-1 pb-0 is-hidden-touch"
+          hide-filter
           search-column-class="is-flex-grow-1" />
       </div>
     </template>
-    <template v-if="showTopNavbar || isBurgerMenuOpened" #end>
-      <!-- <LazyHistoryBrowser
-        id="NavHistoryBrowser"
-        class="custom-navbar-item navbar-link-background is-hidden-touch" /> -->
-
-      <NavbarExplore />
-
-      <b-navbar-dropdown
+    <template #end>
+      <ExploreDropdown
+        v-if="!isMobile"
+        class="navbar-explore custom-navbar-item"
+        data-cy="explore" />
+      <MobileExpandableSection v-if="isMobile" :title="$t('explore')">
+        <NavbarExploreOptions />
+      </MobileExpandableSection>
+      <CreateDropdown
         v-show="isCreateVisible"
-        id="NavCreate"
-        hoverable
-        arrowless
-        collapsible
-        data-cy="create-dropdown">
-        <template #label>
-          <span>{{ $t('create') }}</span>
-        </template>
-        <b-tooltip
-          label="Start by creating your collection and add NFTs to it"
-          position="is-right">
+        class="navbar-create custom-navbar-item"
+        data-cy="create"
+        :chain="chain" />
+      <StatsDropdown
+        class="navbar-stats custom-navbar-item"
+        data-cy="stats"
+        :chain="chain" />
+      <ChainSelectDropdown
+        v-if="!isMobile"
+        id="NavChainSelect"
+        class="navbar-chain custom-navbar-item"
+        data-cy="chain-select" />
+      <template v-if="isMobile">
+        <MobileLanguageOption v-if="!account" />
+        <MobileExpandableSection
+          v-if="account"
+          :no-padding="true"
+          :title="$t('account')"
+          icon="user-circle"
+          icon-family="fa">
           <b-navbar-item
-            tag="nuxt-link"
-            :to="`/${urlPrefix}/create`"
-            data-cy="classic">
-            {{ $t('classic') }}
+            :to="`/${urlPrefix}/u/${account}`"
+            data-cy="hot"
+            tag="nuxt-link">
+            {{ $t('profile.page') }}
           </b-navbar-item>
-        </b-tooltip>
-        <template v-if="isRmrk">
-          <b-tooltip
-            label="Simplified process to create your NFT in a single step"
-            position="is-right"
-            style="display: block">
-            <b-navbar-item
-              tag="nuxt-link"
-              :to="`/${urlPrefix}/mint`"
-              data-cy="simple">
-              {{ $t('simple') }}
-            </b-navbar-item>
-          </b-tooltip>
-          <b-tooltip
-            label="AI powered process to create your NFT"
-            position="is-right"
-            append-to-body>
-            <b-navbar-item
-              tag="nuxt-link"
-              :to="`/${urlPrefix}/creative`"
-              data-cy="creative">
-              {{ $t('creative') }}
-            </b-navbar-item>
-          </b-tooltip>
-        </template>
-      </b-navbar-dropdown>
+          <b-navbar-item
+            :to="{ name: 'identity' }"
+            data-cy="hot"
+            tag="nuxt-link">
+            {{ $t('identity.page') }}
+          </b-navbar-item>
+          <b-navbar-item data-cy="hot" tag="nuxt-link" to="/settings">
+            {{ $t('settings') }}
+          </b-navbar-item>
+          <MobileLanguageOption />
+          <MobileNavbarProfile id="NavProfile" />
+        </MobileExpandableSection>
+        <MobileExpandableSection
+          v-if="account"
+          :no-padding="true"
+          :title="$t('wallet')"
+          icon="wallet">
+          <b-navbar-item class="navbar-item--noBorder">
+            <div class="has-text-grey is-size-7 mt-2">
+              {{ $t('profileMenu.wallet') }}
+            </div>
+            <Identity
+              :address="account"
+              class="navbar__address is-size-6"
+              hide-identity-popover />
 
-      <b-navbar-dropdown
-        v-if="isBsx || isSnek"
-        id="NavStats"
-        arrowless
-        collapsible
-        data-cy="stats">
-        <template #label>
-          <span>{{ $t('stats') }}</span>
-        </template>
-        <b-navbar-item
-          tag="nuxt-link"
-          :to="`${
-            accountId
-              ? `/${urlPrefix}/offers?target=${accountId}`
-              : `/${urlPrefix}/offers`
-          }`"
-          data-cy="global-offers">
-          {{ $t('navbar.globalOffers') }}
-        </b-navbar-item>
-        <b-navbar-item
-          tag="nuxt-link"
-          :to="`/${urlPrefix}/stats`"
-          data-cy="offers-stats">
-          <span> {{ $t('navbar.offerStats') }}</span>
-        </b-navbar-item>
-      </b-navbar-dropdown>
-      <b-navbar-dropdown
-        v-if="isRmrk"
-        id="NavStats"
-        arrowless
-        collapsible
-        data-cy="stats">
-        <template #label>
-          <span>{{ $t('stats') }}</span>
-        </template>
-        <template>
-          <b-navbar-item tag="nuxt-link" to="/spotlight" data-cy="spotlight">
-            {{ $t('spotlight.page') }}
+            <hr aria-role="menuitem" class="dropdown-divider mx-4" />
+
+            <div v-if="isSnek">
+              <div class="has-text-left has-text-grey is-size-7">
+                {{ $t('general.balance') }}
+              </div>
+              <SimpleAccountBalance
+                v-for="token in tokens"
+                :key="token"
+                :token-id="token"
+                class="is-size-6" />
+            </div>
+            <AccountBalance v-else class="is-size-7" />
+
+            <hr aria-role="menuitem" class="dropdown-divider mx-4" />
+
+            <div
+              aria-role="menuitem"
+              class="is-flex is-justify-content-center"
+              custom
+              paddingless>
+              <b-button
+                class="navbar__sign-out-button menu-item mb-4 is-size-7"
+                @click="disconnect()">
+                {{ $t('profileMenu.disconnect') }}
+              </b-button>
+            </div>
           </b-navbar-item>
-          <b-navbar-item
-            tag="nuxt-link"
-            to="/series-insight"
-            data-cy="series-insight">
-            Series
-          </b-navbar-item>
-          <b-navbar-item tag="nuxt-link" to="/sales" data-cy="sales">
-            Sales
-          </b-navbar-item>
-          <b-navbar-item tag="nuxt-link" to="/hot" data-cy="hot">
-            Hot
-          </b-navbar-item>
-        </template>
-      </b-navbar-dropdown>
-      <NavbarProfileDropdown
+        </MobileExpandableSection>
+        <ColorModeButton />
+
+        <div v-if="!account" id="NavProfile">
+          <ConnectWalletButton
+            class="button-connect-wallet"
+            @closeBurgerMenu="closeBurgerMenu" />
+        </div>
+      </template>
+      <ProfileDropdown
+        v-if="!isMobile"
         id="NavProfile"
-        class="ml-2"
-        :is-rmrk="isRmrk"
-        :show-incomming-offers="isBsx || isSnek"
-        :is-snek="isSnek"
+        :chain="chain"
         data-cy="profileDropdown"
         @closeBurgerMenu="closeBurgerMenu" />
     </template>
-    <template v-else #end>
+    <!-- <template v-else #end>
       <div class="image is-32x32 mr-2">
         <BasicImage
           v-show="inCollectionPage && currentCollection.image"
-          :src="currentCollection.image"
           :alt="navBarTitle"
+          :src="currentCollection.image"
           rounded />
       </div>
       <div class="title is-4">{{ navBarTitle }}</div>
-    </template>
+    </template> -->
   </b-navbar>
 </template>
 
 <script lang="ts">
-import { Component, Ref, mixins } from 'nuxt-property-decorator'
-import { get } from 'idb-keyval'
-
+import { Component, Ref, Watch, mixins } from 'nuxt-property-decorator'
 import BasicImage from '@/components/shared/view/BasicImage.vue'
+import MobileExpandableSection from '@/components/navbar/MobileExpandableSection.vue'
+import NavbarExploreOptions from '@/components/navbar/NavbarExploreOptions.vue'
 import Identity from '@/components/identity/IdentityIndex.vue'
-import NavbarProfileDropdown from '@/components/rmrk/Profile/NavbarProfileDropdown.vue'
+import ProfileDropdown from '~/components/navbar/ProfileDropdown.vue'
 import Search from '@/components/search/Search.vue'
-import NavbarExplore from '@/components/navbar/NavbarExplore.vue'
+import ExploreDropdown from '~/components/navbar/ExploreDropdown.vue'
+import CreateDropdown from '~/components/navbar/CreateDropdown.vue'
 import KodaBetaDark from '@/assets/Koda_Beta_dark.svg'
 import KodaBeta from '@/assets/Koda_Beta.svg'
 import PrefixMixin from '@/utils/mixins/prefixMixin'
-
+import ColorModeButton from '~/components/common/ColorModeButton.vue'
+import MobileLanguageOption from '~/components/navbar/MobileLanguageOption.vue'
 import { createVisible } from '@/utils/config/permision.config'
+import { isMobileDevice } from '@/utils/extension'
 import { identityStore } from '@/utils/idbStore'
-import AuthMixin from '~~/utils/mixins/authMixin'
-import ExperimentMixin from '~~/utils/mixins/experimentMixin'
+import AuthMixin from '@/utils/mixins/authMixin'
+import ExperimentMixin from '@/utils/mixins/experimentMixin'
+import ChainSelectDropdown from '~/components/navbar/ChainSelectDropdown.vue'
+import StatsDropdown from '~/components/navbar/StatsDropdown.vue'
+import MobileNavbarProfile from '~/components/navbar/MobileNavbarProfile.vue'
+import ConnectWalletButton from '~/components/shared/ConnectWalletButton.vue'
+import { getKusamaAssetId } from '~/utils/api/bsx/query'
+import { clearSession } from '~/utils/cachingStrategy'
 
 @Component({
   components: {
-    NavbarProfileDropdown,
     Search,
     Identity,
     BasicImage,
-    NavbarExplore,
+    MobileExpandableSection,
+    ProfileDropdown,
+    ExploreDropdown,
+    CreateDropdown,
+    ChainSelectDropdown,
+    StatsDropdown,
+    MobileNavbarProfile,
+    NavbarExploreOptions,
+    ConnectWalletButton,
+    ColorModeButton,
+    MobileLanguageOption,
   },
 })
 export default class NavbarMenu extends mixins(
@@ -199,38 +220,46 @@ export default class NavbarMenu extends mixins(
   AuthMixin,
   ExperimentMixin
 ) {
-  protected showTopNavbar = true
-  private isGallery: boolean = this.$route.path.includes('tab=GALLERY')
-  private fixedTitleNavAppearDistance = 200
+  public showTopNavbar = true
+  public openMobileSearchBar = false
+  private fixedTitleNavAppearDistance = 85
   private lastScrollPosition = 0
   private artistName = ''
-  private isBurgerMenuOpened = false
+  public isBurgerMenuOpened = false
+  private isMobile = window.innerWidth < 1024 ? true : isMobileDevice
+
   @Ref('mobilSearchRef') readonly mobilSearchRef
 
-  get isRmrk(): boolean {
-    return this.urlPrefix === 'rmrk' || this.urlPrefix === 'westend'
+  get account() {
+    return this.$store.getters.getAuthAddress
   }
 
-  get isBsx(): boolean {
-    return this.urlPrefix === 'bsx'
+  get chain(): string {
+    return this.urlPrefix
   }
 
-  get isSnek(): boolean {
-    return this.urlPrefix === 'snek' || this.urlPrefix === 'bsx'
+  get tokens() {
+    return ['', getKusamaAssetId(this.urlPrefix)]
   }
 
   get inCollectionPage(): boolean {
     return this.$route.name === 'rmrk-collection-id'
   }
+
   get inGalleryDetailPage(): boolean {
     return this.$route.name === 'rmrk-gallery-id'
   }
+
   get inUserProfilePage(): boolean {
     return this.$route.name === 'rmrk-u-id'
   }
 
   get isCreateVisible(): boolean {
     return createVisible(this.urlPrefix)
+  }
+
+  get isSnek(): boolean {
+    return this.urlPrefix === 'snek'
   }
 
   get isTargetPage(): boolean {
@@ -241,9 +270,11 @@ export default class NavbarMenu extends mixins(
       this.inUserProfilePage
     )
   }
+
   get currentCollection() {
     return this.$store.getters['history/getCurrentlyViewedCollection'] || {}
   }
+
   get currentGalleryItemName() {
     return this.$store.getters['history/getCurrentlyViewedItem']?.name || ''
   }
@@ -252,12 +283,19 @@ export default class NavbarMenu extends mixins(
     return this.$route.name === 'index'
   }
 
+  get isDarkMode() {
+    return (
+      this.$colorMode.preference === 'dark' ||
+      document.documentElement.className.includes('dark-mode')
+    )
+  }
+
   get logoSrc() {
-    return this.$colorMode.preference === 'dark' ? KodaBetaDark : KodaBeta
+    return this.isDarkMode ? KodaBetaDark : KodaBeta
   }
 
   get showSearchOnNavbar(): boolean {
-    return !this.isLandingPage || !this.showTopNavbar
+    return !this.isLandingPage || !this.showTopNavbar || this.isBurgerMenuOpened
   }
 
   get navBarTitle(): string {
@@ -276,6 +314,16 @@ export default class NavbarMenu extends mixins(
     return title
   }
 
+  public disconnect() {
+    this.$store.dispatch('setAuth', { address: '' }) // null not working
+    clearSession()
+  }
+
+  @Watch('isBurgerMenuOpened')
+  onBurgerMenuOpenedChanged() {
+    this.setBodyScroll(!this.isBurgerMenuOpened)
+  }
+
   async fetchArtistIdentity(address) {
     const identity = await get(address, identityStore)
     if (identity && identity.display) {
@@ -285,6 +333,9 @@ export default class NavbarMenu extends mixins(
 
   onScroll() {
     const currentScrollPosition = document.documentElement.scrollTop
+    const searchBarPosition = document
+      .getElementById('networkList')
+      ?.getBoundingClientRect()?.top
     if (currentScrollPosition <= 0) {
       this.showTopNavbar = true
       return
@@ -292,27 +343,54 @@ export default class NavbarMenu extends mixins(
     if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 30) {
       return
     }
-    this.showTopNavbar =
-      currentScrollPosition < this.fixedTitleNavAppearDistance
+    if (this.isLandingPage && searchBarPosition) {
+      this.showTopNavbar = searchBarPosition > this.fixedTitleNavAppearDistance
+    } else {
+      this.showTopNavbar =
+        currentScrollPosition < this.fixedTitleNavAppearDistance
+    }
     this.lastScrollPosition = currentScrollPosition
+  }
+  setBodyScroll(allowScroll: boolean) {
+    this.$nextTick(() => {
+      const body = document.querySelector('body') as HTMLBodyElement
+      if (allowScroll) {
+        body.classList.remove('is-clipped')
+      } else {
+        body.classList.add('is-clipped')
+      }
+    })
   }
 
   showMobileSearchBar() {
-    this.mobilSearchRef?.focusInput()
+    this.openMobileSearchBar = true
+    this.$nextTick(() => {
+      this.mobilSearchRef?.focusInput()
+    })
+    this.setBodyScroll(false)
+  }
+
+  hideMobileSearchBar() {
+    this.openMobileSearchBar = false
+    this.setBodyScroll(true)
   }
 
   closeBurgerMenu() {
-    if (this.isBurgerMenuOpened) {
-      this.isBurgerMenuOpened = false
-    }
+    this.isBurgerMenuOpened = false
   }
 
   mounted() {
     window.addEventListener('scroll', this.onScroll)
+    document.body.style.overflowY = 'initial'
+    window.addEventListener('resize', () => {
+      this.isMobile = window.innerWidth < 1024 ? true : isMobileDevice
+    })
   }
 
   beforeDestroy() {
     window.removeEventListener('scroll', this.onScroll)
+    this.setBodyScroll(true)
+    document.documentElement.classList.remove('is-clipped-touch')
   }
 }
 </script>

@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="card nft-card"
-    :class="{ 'is-current-owner': accountIsCurrentOwner }">
+  <div class="card nft-card">
     <LinkResolver
       class="nft-card__skeleton"
       :route="route"
@@ -26,11 +24,11 @@
         <span
           v-if="parseInt(price) > 0 && showPriceValue"
           class="card-image__price">
-          <Money :value="price" inline />
+          <CommonTokenMoney :value="price" inline />
         </span>
       </div>
 
-      <div class="card-content">
+      <div v-if="!hideName" class="card-content">
         <span
           class="has-text-centered has-text-primary"
           :class="{ 'title is-4': largeDisplay }"
@@ -59,7 +57,7 @@ import { NFTMetadata } from '@/components/rmrk/service/scheme'
 
 const components = {
   LinkResolver: () => import('@/components/shared/LinkResolver.vue'),
-  Money: () => import('@/components/shared/format/Money.vue'),
+  CommonTokenMoney: () => import('@/components/shared/CommonTokenMoney.vue'),
   BasicImage: () => import('@/components/shared/view/BasicImage.vue'),
   PreviewMediaResolver: () =>
     import('@/components/media/PreviewMediaResolver.vue'),
@@ -79,6 +77,7 @@ export default class GalleryCard extends mixins(AuthMixin) {
   @Prop(String) public metadata!: string
   @Prop(String) public currentOwner!: string
   @Prop(Boolean) public listed!: boolean
+  @Prop(Boolean) public hideName!: boolean
   public image = ''
   public title = ''
   public animatedUrl = ''
@@ -111,10 +110,6 @@ export default class GalleryCard extends mixins(AuthMixin) {
     return this.name || this.title
   }
 
-  get accountIsCurrentOwner(): boolean {
-    return this.accountId === this.currentOwner
-  }
-
   get largeDisplay(): boolean {
     return (
       this.$store.getters['preferences/getLayoutClass'] ===
@@ -131,10 +126,6 @@ export default class GalleryCard extends mixins(AuthMixin) {
   position: relative;
   overflow: hidden;
   border-radius: 0px !important;
-
-  &.is-current-owner {
-    box-shadow: 0px 2px 5px 0.5px #41b883;
-  }
 
   .has-text-overflow-ellipsis {
     overflow: hidden;

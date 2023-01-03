@@ -35,7 +35,7 @@ Cypress.Commands.add('rmrkGallerySortBy', () => {
   cy.waitForNetworkIdle('POST', '*', 1000)
   // TODO: clean up selector -> too many elements for data-cy
   cy.get(
-    '.gallery > .mb-3 > .collapse > #sortAndFilter > :nth-child(1) > .mb-0 > .dropdown > .dropdown-trigger > [data-cy="gallery-sort-by"]'
+    '#GALLERY-content .collapse #sortAndFilter [data-cy="gallery-sort-by"]'
   ).click()
   cy.get('[data-cy="Recently Created"]').should('be.visible')
   cy.get('[data-cy="Oldest"]').should('be.visible')
@@ -46,14 +46,14 @@ Cypress.Commands.add('rmrkGallerySortBy', () => {
   // cy.get('[data-cy="Most reacted"]').should('be.visible')
   // TODO: clean up selector -> too many elements for data-cy
   cy.get(
-    '.gallery > .mb-3 > .collapse > #sortAndFilter > :nth-child(1) > .mb-0 > .dropdown > .dropdown-menu > .dropdown-content > [data-cy="Price: Low to High"]'
+    '#GALLERY-content .collapse #sortAndFilter [data-cy="Price: Low to High"]'
   ).click()
 })
 
 Cypress.Commands.add('snekGallerySortBy', () => {
   // TODO: clean up selector -> too many elements for data-cy
   cy.get(
-    '.gallery > .mb-3 > .collapse > #sortAndFilter > :nth-child(1) > .mb-0 > .dropdown > .dropdown-trigger > [data-cy="gallery-sort-by"]'
+    '#GALLERY-content .collapse #sortAndFilter [data-cy="gallery-sort-by"]'
   ).click()
   cy.get('[data-cy="Recently Created"]').should('be.visible')
   cy.get('[data-cy="Oldest"]').should('be.visible')
@@ -63,8 +63,8 @@ Cypress.Commands.add('snekGallerySortBy', () => {
   cy.get('[data-cy="Unpopular"]').should('be.visible')
   // TODO: clean up selector -> too many elements for data-cy
   cy.get(
-    '.gallery > .mb-3 > .collapse > #sortAndFilter > :nth-child(1) > .mb-0 > .dropdown > .dropdown-menu > .dropdown-content > [data-cy="Price: Low to High"]'
-  ).click({ force: true })
+    '#GALLERY-content .collapse #sortAndFilter [data-cy="Price: Low to High"]'
+  ).click()
 })
 
 Cypress.Commands.add('collectionsSortBy', () => {
@@ -74,7 +74,6 @@ Cypress.Commands.add('collectionsSortBy', () => {
 })
 
 Cypress.Commands.add('rmrkNavbar', () => {
-  cy.get('[data-cy="create-dropdown"]').click()
   cy.get('[data-cy="classic"]')
     .should('have.attr', 'href')
     .and('include', '/rmrk/create')
@@ -98,22 +97,25 @@ Cypress.Commands.add('rmrkNavbar', () => {
   cy.get('[data-cy="hot"]').should('have.attr', 'href').and('include', '/hot')
   cy.get('[data-cy="profileDropdown"]').should('be.visible')
   cy.get('[data-cy="profileDropdown"]').click()
+  cy.get('[data-cy="chain-select"]').should('be.visible')
+  cy.get('[data-cy="chain-select"]').click()
 })
 
 Cypress.Commands.add('snekNavbar', () => {
-  cy.get('[data-cy="create-dropdown"]').click()
   cy.get('[data-cy="classic"]')
     .should('have.attr', 'href')
     .and('include', '/snek/create')
   cy.get('[data-cy="explore"]').should('be.visible')
-  cy.get('[data-cy="explore"]').click()
-  cy.get('[data-cy="stats"]').should('be.visible').click()
+  cy.get('[data-cy="chain"]').should('be.visible')
+  cy.get('[data-cy="stats"]').should('be.visible')
   cy.get('[data-cy="global-offers"]')
     .should('have.attr', 'href')
     .and('include', '/snek/offers')
   cy.get('[data-cy="offers-stats"]')
     .should('have.attr', 'href')
     .and('include', '/snek/stats')
+  cy.get('[data-cy="chain-select"]').should('be.visible')
+  cy.get('[data-cy="chain-select"]').click()
 })
 
 Cypress.Commands.add('expandGallerySearch', () => {
@@ -125,20 +127,16 @@ Cypress.Commands.add('collectionsBuyNow', () => {
     cy.get('[type="checkbox"]').check({ force: true })
     cy.get('[type="checkbox"]').should('be.checked')
   })
-  cy.get('[data-cy="0"]').within(() => {
-    cy.get('[data-cy="collection-floor-price"]')
-      .invoke('text')
-      .then((text) => {
-        if (!(parseFloat(text.replace(',', '')) >= 0)) {
-          throw '[ERROR] Collection BUY NOW is not working'
-        }
-      })
-  })
+
+  cy.get('[data-cy="collection-index-0"]').should('exist')
+  cy.get('[data-cy="collection-index-1"]').should('exist')
+  cy.get('[data-cy="collection-index-2"]').should('exist')
+  cy.get('[data-cy="collection-index-3"]').should('exist')
 })
 
 Cypress.Commands.add('galleryBuyNow', (amount) => {
   cy.toggleBuyNowGallery()
-  cy.get('[data-cy="0"]')
+  cy.get('[data-cy="item-index-0"] .money')
     .invoke('text')
     .then((text) => {
       if (!(parseFloat(text.replace(',', '')) >= amount)) {

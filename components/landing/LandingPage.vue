@@ -1,11 +1,11 @@
 <template>
   <div>
-    <section class="section instance">
+    <section class="section instance section-search">
       <LazySearchLanding />
     </section>
 
     <!-- spotlight -->
-    <section v-if="showCarousel" class="section instance instance-blue">
+    <section v-if="showCarousel" class="section instance">
       <div class="container">
         <LazyCarouselTypeSpotlight />
       </div>
@@ -13,8 +13,8 @@
 
     <!-- top collections -->
     <section
-      v-if="urlPrefix === 'rmrk' || urlPrefix === 'snek'"
-      class="section instance instance-accent">
+      v-if="urlPrefix === 'rmrk' || urlPrefix === 'snek' || urlPrefix === 'bsx'"
+      class="section instance">
       <div class="container">
         <LazyTopCollections class="my-5" />
       </div>
@@ -31,7 +31,9 @@
     </section>
 
     <section class="section instance instance-accent">
-      <div class="container"><LazyFeaturedArticles /></div>
+      <div class="container footer-landing-container">
+        <LazyFeaturedArticles />
+      </div>
     </section>
   </div>
 </template>

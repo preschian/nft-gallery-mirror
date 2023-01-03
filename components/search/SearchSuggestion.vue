@@ -5,6 +5,7 @@
       v-model="activeSearchTab"
       destroy-on-hide
       expanded
+      class="touch-mt-20"
       @input="resetSelectedIndex">
       <b-tab-item label="Collections" value="Collections">
         <div v-if="isCollectionResultLoading">
@@ -39,7 +40,18 @@
           }"
           @click.native="$emit('close')">
           <div :class="loadMoreItemClassName">
-            {{ $t('search.seeAll') }} <span class="info-arrow">--></span>
+            {{ $t('search.seeAll') }}
+            <svg
+              class="ml-1"
+              width="28"
+              height="8"
+              viewBox="0 0 28 8"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M27.3536 4.35355C27.5488 4.15829 27.5488 3.84171 27.3536 3.64645L24.1716 0.464466C23.9763 0.269204 23.6597 0.269204 23.4645 0.464466C23.2692 0.659728 23.2692 0.976311 23.4645 1.17157L26.2929 4L23.4645 6.82843C23.2692 7.02369 23.2692 7.34027 23.4645 7.53553C23.6597 7.7308 23.9763 7.7308 24.1716 7.53553L27.3536 4.35355ZM0 4.5H27V3.5H0V4.5Z"
+                fill="currentColor" />
+            </svg>
           </div>
         </nuxt-link>
       </b-tab-item>
@@ -107,8 +119,19 @@
           <b-icon icon="history" size="is-small" />
           <div class="ml-3 history-label">{{ item.name }}</div>
         </div>
-        <div class="" @click.stop.prevent="removeSearchHistory(item.name)">
-          <b-icon icon="times" size="is-small" class="times-icon" />
+        <div
+          class="remove-search-history is-flex is-align-items-center"
+          @click.stop.prevent="removeSearchHistory(item.name)">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 8 9"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M6.66644 8.0672L3.75229 5.14842L0.838143 8.0672L0.1875 7.41654L3.10623 4.50235L0.1875 1.58815L0.838143 0.9375L3.75229 3.85628L6.66644 0.942082L7.3125 1.58815L4.39835 4.50235L7.3125 7.41654L6.66644 8.0672Z"
+              fill="currentColor" />
+          </svg>
         </div>
       </div>
     </div>
@@ -141,7 +164,18 @@
           :to="{ name: 'series-insight' }"
           @click.native="$emit('close')">
           <div :class="loadMoreItemClassName">
-            {{ $t('search.rankings') }} <span class="info-arrow">--></span>
+            {{ $t('search.rankings') }}
+            <svg
+              class="ml-1"
+              width="28"
+              height="8"
+              viewBox="0 0 28 8"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M27.3536 4.35355C27.5488 4.15829 27.5488 3.84171 27.3536 3.64645L24.1716 0.464466C23.9763 0.269204 23.6597 0.269204 23.4645 0.464466C23.2692 0.659728 23.2692 0.976311 23.4645 1.17157L26.2929 4L23.4645 6.82843C23.2692 7.02369 23.2692 7.34027 23.4645 7.53553C23.6597 7.7308 23.9763 7.7308 24.1716 7.53553L27.3536 4.35355ZM0 4.5H27V3.5H0V4.5Z"
+                fill="currentColor" />
+            </svg>
           </div>
         </nuxt-link>
       </b-tab-item>
@@ -430,6 +464,9 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
     }
 
     return this.searched.filter((option) => {
+      if (!option.name.trim()) {
+        return false
+      }
       return (
         option.name
           .toString()
@@ -465,6 +502,7 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
       const nfts = this.$apollo.query({
         query: queryNft.default,
         client: this.client,
+
         variables: this.queryVariables,
       })
 

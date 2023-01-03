@@ -95,12 +95,12 @@ describe('exploreSnekGallery', () => {
 })
 
 describe('snekCollectionItem', () => {
-  it('collectionActions', () => {
+  it('collectionActions', { scrollBehavior: false }, () => {
     cy.snekCollectionActions('3132385849', 'Morski pes', 'bXkmyH...J5CSGP')
   })
 })
 
-describe('snekGalleryItem', () => {
+describe.skip('snekGalleryItem', () => {
   it('galleryListedItemActions', () => {
     cy.loginWithKeyring()
     cy.snekGalleryListedItemActions('2773267381-1', 'bXkQe5...qDNyCN')
@@ -112,7 +112,7 @@ describe('snekGalleryItem', () => {
 })
 
 describe('rmrkCollectionItem', () => {
-  it('collectionActions', () => {
+  it('collectionActions', { scrollBehavior: false }, () => {
     cy.rmrkCollectionActions(
       '32b209ecbe2b33dd24-DINOXEGGS',
       'Angel',

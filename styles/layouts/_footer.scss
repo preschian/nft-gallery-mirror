@@ -55,20 +55,22 @@
 }
 
 .footer-container {
-  font-family: 'Work Sans';
-  background-color: $k-blue;
-  color: $white;
+  position: relative;
+  border-top: 1px solid;
+  background: $white;
 
   .subtitle {
     font-weight: 700;
   }
 
   .container {
+    z-index: 1;
     @include mobile {
       flex-direction: column;
       gap: 50px;
       align-items: center !important;
     }
+    gap: 30px;
   }
 
   &-subs {
@@ -111,10 +113,8 @@
 
       &-item {
         a {
-          color: $white !important;
           &:hover {
-            color: $k-accentlight !important;
-            font-weight: 700;
+            color: $k-hovergrey !important;
           }
         }
 
@@ -146,7 +146,7 @@
         }
         &:hover {
           a {
-            color: $k-accentlight !important;
+            color: $shade !important;
           }
         }
       }
@@ -163,7 +163,6 @@
       font-weight: 400;
       border-radius: 0 !important;
       font-size: 16px !important;
-      font-family: 'Work Sans';
       padding-left: 24px !important;
       &::placeholder {
         color: $placeholder-color !important;
@@ -171,7 +170,6 @@
     }
     button {
       font-size: 16px !important;
-      font-family: 'Work Sans';
       font-weight: 400 !important;
       padding: 0 28px !important;
       border-left: 1px solid $black !important;
@@ -180,6 +178,12 @@
       }
 
     }
+  }
+
+  .left-blurred-image {
+    position: absolute;
+    left: -20rem;
+    top: -30rem;
   }
 }
 

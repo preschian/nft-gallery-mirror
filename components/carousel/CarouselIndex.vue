@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <div v-if="nfts.length">
-      <h2 class="title is-2 has-text-dark">{{ title }}</h2>
+  <div v-if="nfts.length">
+    <h2 class="title is-2">
+      {{ title }}
+    </h2>
 
-      <CarouselList v-if="showCarousel" :nfts="nfts" />
-    </div>
+    <CarouselList v-if="showCarousel" :nfts="nfts" />
   </div>
 </template>
 

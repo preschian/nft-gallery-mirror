@@ -4,7 +4,7 @@
       {{ $t('general.searchResultsText') }}
       <span class="text__stroked is-size-3">{{ $route.query.search }}</span>
     </div>
-    <b-tabs v-model="selectedTab" data-cy="tabs">
+    <b-tabs v-model="selectedTab" data-cy="tabs" :animated="false">
       <b-tab-item :label="$t('collections')" value="COLLECTION">
         <template v-if="selectedTab === 'COLLECTION'">
           <CollectionList />
@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Component, mixins } from 'nuxt-property-decorator'
-import CollectionList from '@/components/rmrk/Collection/List/CollectionList.vue'
+import CollectionList from '@/components/collection/CollectionList.vue'
 import PrefixMixin from '~/utils/mixins/prefixMixin'
 
 const components = {

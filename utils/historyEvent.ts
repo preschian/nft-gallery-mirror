@@ -1,4 +1,4 @@
-import formatBalance from '@/utils/formatBalance'
+import formatBalance from '@/utils/format/balance'
 import { Interaction } from '@kodadot1/minimark'
 
 enum SpecialHistoryEventType {
@@ -42,10 +42,6 @@ export const parseDate = (date: Date): string => {
   })
 }
 
-export const parseAmount = (
-  amount: string,
-  decimals: number,
-  unit: string
-): string => {
-  return parseInt(amount) ? formatBalance(amount, decimals, unit) : '-'
+export const parseChartAmount = (amount: string, decimals: number): number => {
+  return parseFloat(formatBalance(amount, decimals))
 }

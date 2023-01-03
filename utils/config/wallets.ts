@@ -78,9 +78,9 @@ export const WalletConfigMap: IWalletConfigMap = {
   [SupportWalletExtension.Clover]: buildWalletConfig(
     SupportWalletExtension.Clover,
     logoClover,
-    'Clover',
-    'https://clover.finance/',
-    'https://docs.clover.finance/quick-start/about-clover',
+    'CLV Wallet',
+    'https://chrome.google.com/webstore/detail/clv-wallet/nhnkbkgjikgcigadomkphalanndcapjk',
+    'https://docs.clv.org/use-clv-wallet/clv-extension-wallet',
     true
   ),
   [SupportWalletExtension.Ledger]: buildWalletConfig(
@@ -114,6 +114,7 @@ export const WalletConfigMap: IWalletConfigMap = {
     'SubWallet',
     'https://chrome.google.com/webstore/detail/subwallet/onhogfjeacnfoofkfgppdlbmlmnplgbn?hl=en&authuser=0',
     'https://connect.subwallet.app/#/welcome',
+    true,
     true
   ),
   [SupportWalletExtension.Talisman]: buildWalletConfig(
@@ -147,12 +148,14 @@ export const SubstrateWallets = [
 const MobileWalletExtensionList = [
   SupportWalletExtension.Math,
   SupportWalletExtension.Nova,
+  SupportWalletExtension.SubWallet,
 ]
 const PCWalletExtensionList = [
   SupportWalletExtension.Enkrypt,
   SupportWalletExtension.Talisman,
   SupportWalletExtension.PolkadotJs,
   SupportWalletExtension.SubWallet,
+  SupportWalletExtension.Clover,
 ]
 
 const createWalletInstance = (
@@ -176,7 +179,12 @@ export const SupportedWallets = () => {
   }
   const allWallets = createWalletInstanceList(PCWalletExtensionList)
   const wallets = allWallets.filter((wallet) => wallet.installed)
-  return wallets.length > 0 ? wallets : allWallets
+  const sourceIds = new Set(wallets.map((d) => d.source))
+  const allWalletsUpdates = [
+    ...wallets,
+    ...allWallets.filter((d) => !sourceIds.has(d.source)),
+  ]
+  return allWalletsUpdates
 }
 
 export function getWalletBySource(

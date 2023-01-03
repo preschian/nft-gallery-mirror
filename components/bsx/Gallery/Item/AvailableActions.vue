@@ -81,7 +81,6 @@ export default class AvailableActions extends mixins(
   private selectedAction: ShoppingActions | '' = ''
   private meta: string | number = ''
   public minimumOfferAmount = 0
-  public isMakeOffersDisabled = true
   public isBalanceInputValid = false
   public selectedDay = 14
   public dayList = [1, 3, 7, 14, 30]
@@ -92,6 +91,10 @@ export default class AvailableActions extends mixins(
 
   get actions() {
     return getActionList('bsx', this.isOwner, this.isAvailableToBuy)
+  }
+
+  get isMakeOffersDisabled(): boolean {
+    return !this.isMakeOffersAllowed || this.minimumOfferAmount > this.balance
   }
 
   get dynamicProps(): object {
@@ -155,16 +158,6 @@ export default class AvailableActions extends mixins(
     return getKusamaAssetId(this.urlPrefix)
   }
 
-  public async created(): Promise<void> {
-    onApiConnect(this.apiUrl, (api) => {
-      this.minimumOfferAmount = formatBsxBalanceToNumber(
-        api?.consts?.marketplace?.minimumOfferAmount?.toString()
-      )
-      this.isMakeOffersDisabled =
-        !this.isMakeOffersAllowed || this.minimumOfferAmount > this.balance
-    })
-  }
-
   get toolTips(): ShoppingActionToolTips {
     const toolTips = {}
     if (!this.isMakeOffersAllowed) {
@@ -210,6 +203,14 @@ export default class AvailableActions extends mixins(
     return this.selectedAction === ShoppingActions.CONSUME
   }
 
+  get isOffer() {
+    return this.selectedAction === ShoppingActions.MAKE_OFFER
+  }
+
+  get isSend() {
+    return this.selectedAction === ShoppingActions.SEND
+  }
+
   unlistNft() {
     this.selectedAction = ShoppingActions.LIST
     this.meta = 0
@@ -235,6 +236,7 @@ export default class AvailableActions extends mixins(
 
   protected async submit() {
     const api = await this.useApi()
+    let expiration: number | undefined = undefined
     this.initTransactionLoader()
 
     try {
@@ -244,13 +246,23 @@ export default class AvailableActions extends mixins(
       }
 
       showNotification(`[${this.selectedAction}] NFT: ${this.nftId}`)
-      let cb = getApiCall(api, this.urlPrefix, this.selectedAction)
-      let expiration: number | undefined = undefined
-      if (this.selectedAction === ShoppingActions.MAKE_OFFER) {
+      const cb = this.isSend
+        ? api.tx.utility.batchAll
+        : getApiCall(api, this.urlPrefix, this.selectedAction)
+
+      if (this.isOffer) {
         const currentBlock = await api.query.system.number()
         expiration = this.getExpiration(currentBlock.toNumber())
       }
-      let arg: any[] = this.getArgs(expiration)
+
+      const arg: any[] = this.isSend
+        ? [
+            [
+              api.tx.marketplace.setPrice(this.collectionId, this.nftId, 0),
+              api.tx.nft.transfer(this.collectionId, this.nftId, this.meta),
+            ],
+          ]
+        : this.getArgs(expiration)
 
       this.howAboutToExecute(
         this.accountId,

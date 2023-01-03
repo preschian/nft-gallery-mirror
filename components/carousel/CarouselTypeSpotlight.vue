@@ -1,5 +1,6 @@
 <template>
   <CarouselIndex
+    :key="spotlight.length && spotlight[0].id"
     :title="`${$t('spotlight.page')}`"
     :nfts="spotlight"
     action-type="pagination"
