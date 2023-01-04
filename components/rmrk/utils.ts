@@ -26,11 +26,11 @@ export type IPFSProviders =
 export type PriceDataType = [date: Date, value: number]
 
 export const ipfsProviders: Record<IPFSProviders, string> = {
-  pinata: 'https://cdn.preschian-cdn.workers.dev/',
+  pinata: 'https://image.preschian.xyz/',
   cloudflare: 'https://cloudflare-ipfs.com/',
   ipfs: DEFAULT_IPFS_PROVIDER,
   dweb: 'https://dweb.link/',
-  kodadot: 'https://cdn.preschian-cdn.workers.dev/',
+  kodadot: 'https://image.preschian.xyz/',
 }
 
 export const arweaveProviders: Record<ArweaveProviders, string> = {
