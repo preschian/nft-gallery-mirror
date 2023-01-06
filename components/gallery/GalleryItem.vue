@@ -35,12 +35,13 @@
             <div class="is-flex is-flex-direction-row is-flex-wrap-wrap py-4">
               <IdentityItem
                 v-if="nft?.issuer"
-                class="mb-1"
+                class="mb-1 gallery-avatar"
                 label="Creator"
                 :prefix="urlPrefix"
                 :account="nft?.issuer" />
               <IdentityItem
                 v-if="nft?.currentOwner !== nft?.issuer"
+                class="gallery-avatar"
                 label="Owner"
                 :prefix="urlPrefix"
                 :account="nft?.currentOwner || ''" />
@@ -98,6 +99,10 @@ const CarouselTypeVisited = defineAsyncComponent(
 </script>
 
 <style lang="scss" scoped>
+.title {
+  font-size: 2.4375em;
+}
+
 .mobile-top-margin {
   margin-top: unset;
 }
