@@ -81,6 +81,9 @@ jobs:
             ./dist
           key: ${{ github.sha }}
 
+      - name: check directory
+        run: ls -la
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
