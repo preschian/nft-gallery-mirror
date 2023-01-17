@@ -8,23 +8,24 @@ on:
     branches: [main]
 
 jobs:
-  e2e:
+  e2e-prepare:
     runs-on: ubuntu-latest
     container:
       image: cypress/included:10.10.0
       options: --user 1001
     env:
       CYPRESS_CACHE_FOLDER: '${GITHUB_WORKSPACE}/.cypress-cache'
-    strategy:
-      matrix:
-        index: [1, 2, 3, 4, 5] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
     steps:
       - uses: actions/checkout@v3
 
       - name: Cache pnpm modules
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
+          path: |
+            ~/.pnpm-store
+            .nuxt
+            .output
+            dist
           key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-
@@ -45,6 +46,19 @@ jobs:
 
       - name: Build App
         run: pnpm generate
+
+  e2e:
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:10.10.0
+      options: --user 1001
+    env:
+      CYPRESS_CACHE_FOLDER: '${GITHUB_WORKSPACE}/.cypress-cache'
+    strategy:
+      matrix:
+        index: [1, 2, 3, 4, 5] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Cypress run
         run: pnpm start:static & pnpm wait-on http://localhost:9090 && MATRIX=${{ matrix.index }} node tests/cypress/e2e-run-tests.js
