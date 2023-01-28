@@ -1,5 +1,5 @@
 diff --git a/dist/webpack.js b/dist/webpack.js
-index ebe49a8ca15f09b4fb82af6ac0a8294fc117a02c..620e4a676899ca746dbe57693f3893d674e54bb6 100644
+index ebe49a8ca15f09b4fb82af6ac0a8294fc117a02c..fde951c7e1cdefa96be90fae78df0ce478763921 100644
 --- a/dist/webpack.js
 +++ b/dist/webpack.js
 @@ -41,6 +41,7 @@ const createResolver = require('postcss-import-resolver');
@@ -10,13 +10,17 @@ index ebe49a8ca15f09b4fb82af6ac0a8294fc117a02c..620e4a676899ca746dbe57693f3893d6
  
  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
  
-@@ -1992,7 +1993,8 @@ class WebpackBundler {
+@@ -1992,7 +1993,12 @@ class WebpackBundler {
          }
        )
      );
 -    await this.buildContext.nuxt.callHook("server:devMiddleware", this.middleware);
-+    // await this.buildContext.nuxt.callHook("server:devMiddleware", this.middleware);
-+    await this.buildContext.nuxt.callHook("server:devHandler", h3.fromNodeMiddleware(this.middleware));
++
++    if (process.env.NODE_ENV === "development") {
++      await this.buildContext.nuxt.callHook("server:devHandler", h3.fromNodeMiddleware(this.middleware));
++    } else {
++      await this.buildContext.nuxt.callHook("server:devMiddleware", this.middleware);
++    }
    }
    async middleware(req, res, next) {
      const name = utilsEdge.isModernRequest(req, this.buildContext.options.modern) ? "modern" : "client";
