@@ -129,7 +129,7 @@
     "@babel/plugin-transform-runtime": "^7.19.6",
     "@babel/preset-env": "^7.20.2",
     "@kevinmarrec/nuxt-pwa": "0.15.0",
-    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27889410.9247608",
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27909973.a4c5d19",
     "@nuxt/test-utils": "^0.2.2",
     "@nuxt/types": "^2.15.8",
     "@nuxtjs/color-mode": "^3.2.0",
