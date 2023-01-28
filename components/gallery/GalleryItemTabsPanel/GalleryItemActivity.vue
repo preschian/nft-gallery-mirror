@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="events p-5">
-      <div class="events-filter is-flex">
+  <div class="gallery-activity-events-wrapper is-flex is-flex-direction-column">
+    <div class="events p-5 is-flex is-flex-direction-column">
+      <div class="events-filter is-flex is-flex-wrap-wrap">
         <div class="events-checkbox" @click="checkAll">
           {{ $t('tabs.tabActivity.all') }}
         </div>
@@ -36,13 +36,21 @@ defineProps<{
   nftId: string
 }>()
 
-const defaultInteractions = ['MINTNFT', 'BUY', 'LIST', 'SEND']
+const defaultInteractions = [
+  'MINTNFT',
+  'BUY',
+  'LIST',
+  'SEND',
+  'CONSUME',
+  'UNLIST',
+]
 const interactions = ref(['BUY']) // default to sales
 const filters = {
   mints: 'MINTNFT',
   sales: 'BUY',
   listings: 'LIST',
   transfers: 'SEND',
+  burns: 'CONSUME',
 }
 
 const checkAll = () => {
@@ -61,11 +69,20 @@ const cssActive = (value) => {
 <style lang="scss" scoped>
 @import '@/styles/abstracts/variables.scss';
 
+.dark-mode .events {
+  border-bottom: 1px solid white;
+}
+.gallery-activity-events-wrapper {
+  height: 100%;
+}
 .events {
   border-bottom: 1px solid black;
 
   &-filter {
-    gap: 2rem;
+    column-gap: 2rem;
+    @include mobile {
+      column-gap: 1rem;
+    }
   }
 
   &-checkbox {
@@ -77,7 +94,7 @@ const cssActive = (value) => {
     }
 
     &:hover {
-      color: $k-hovergrey;
+      color: $shade;
     }
 
     &-active {

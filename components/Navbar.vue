@@ -59,15 +59,19 @@
       <MobileExpandableSection v-if="isMobile" :title="$t('explore')">
         <NavbarExploreOptions />
       </MobileExpandableSection>
+
       <CreateDropdown
         v-show="isCreateVisible"
-        class="navbar-create custom-navbar-item"
+        class="navbar-create custom-navbar-item ml-0"
         data-cy="create"
+        :is-mobile="isMobile"
         :chain="chain" />
       <StatsDropdown
         class="navbar-stats custom-navbar-item"
         data-cy="stats"
+        :is-mobile="isMobile"
         :chain="chain" />
+
       <ChainSelectDropdown
         v-if="!isMobile"
         id="NavChainSelect"
@@ -97,7 +101,9 @@
             {{ $t('settings') }}
           </b-navbar-item>
           <MobileLanguageOption />
-          <MobileNavbarProfile id="NavProfile" />
+          <MobileNavbarProfile
+            id="NavProfile"
+            @closeBurgerMenu="closeBurgerMenu" />
         </MobileExpandableSection>
         <MobileExpandableSection
           v-if="account"
@@ -113,7 +119,7 @@
               class="navbar__address is-size-6"
               hide-identity-popover />
 
-            <hr aria-role="menuitem" class="dropdown-divider mx-4" />
+            <hr aria-role="menuitem" class="dropdown-divider" />
 
             <div v-if="isSnek">
               <div class="has-text-left has-text-grey is-size-7">
@@ -127,26 +133,32 @@
             </div>
             <AccountBalance v-else class="is-size-7" />
 
-            <hr aria-role="menuitem" class="dropdown-divider mx-4" />
+            <hr aria-role="menuitem" class="dropdown-divider" />
 
             <div
               aria-role="menuitem"
-              class="is-flex is-justify-content-center"
+              class="is-flex is-justify-content-space-between"
               custom
               paddingless>
-              <b-button
-                class="navbar__sign-out-button menu-item mb-4 is-size-7"
-                @click="disconnect()">
-                {{ $t('profileMenu.disconnect') }}
-              </b-button>
+              <ConnectWalletButton
+                label="general.change_account"
+                variant="connect-dropdown"
+                class="menu-item is-size-7 mr-3 w-100"
+                @closeBurgerMenu="closeBurgerMenu" />
+              <NeoButton
+                class="button is-size-7 is-capitalized w-100"
+                :label="$t('profileMenu.disconnect')"
+                variant="connect-dropdown"
+                @click.native="disconnect()" />
             </div>
           </b-navbar-item>
         </MobileExpandableSection>
-        <ColorModeButton />
+        <ColorModeButton class="navbar-item" />
 
         <div v-if="!account" id="NavProfile">
           <ConnectWalletButton
             class="button-connect-wallet"
+            variant="connect"
             @closeBurgerMenu="closeBurgerMenu" />
         </div>
       </template>
@@ -157,16 +169,6 @@
         data-cy="profileDropdown"
         @closeBurgerMenu="closeBurgerMenu" />
     </template>
-    <!-- <template v-else #end>
-      <div class="image is-32x32 mr-2">
-        <BasicImage
-          v-show="inCollectionPage && currentCollection.image"
-          :alt="navBarTitle"
-          :src="currentCollection.image"
-          rounded />
-      </div>
-      <div class="title is-4">{{ navBarTitle }}</div>
-    </template> -->
   </b-navbar>
 </template>
 
@@ -186,7 +188,6 @@ import PrefixMixin from '@/utils/mixins/prefixMixin'
 import ColorModeButton from '~/components/common/ColorModeButton.vue'
 import MobileLanguageOption from '~/components/navbar/MobileLanguageOption.vue'
 import { createVisible } from '@/utils/config/permision.config'
-import { isMobileDevice } from '@/utils/extension'
 import { identityStore } from '@/utils/idbStore'
 import AuthMixin from '@/utils/mixins/authMixin'
 import ExperimentMixin from '@/utils/mixins/experimentMixin'
@@ -196,9 +197,11 @@ import MobileNavbarProfile from '~/components/navbar/MobileNavbarProfile.vue'
 import ConnectWalletButton from '~/components/shared/ConnectWalletButton.vue'
 import { getKusamaAssetId } from '~/utils/api/bsx/query'
 import { clearSession } from '~/utils/cachingStrategy'
+import { NeoButton } from '@kodadot1/brick'
 
 @Component({
   components: {
+    NeoButton,
     Search,
     Identity,
     BasicImage,
@@ -226,7 +229,7 @@ export default class NavbarMenu extends mixins(
   private lastScrollPosition = 0
   private artistName = ''
   public isBurgerMenuOpened = false
-  private isMobile = window.innerWidth < 1024 ? true : isMobileDevice
+  private isMobile = window.innerWidth < 1024
 
   @Ref('mobilSearchRef') readonly mobilSearchRef
 
@@ -379,18 +382,21 @@ export default class NavbarMenu extends mixins(
     this.isBurgerMenuOpened = false
   }
 
+  handleResize() {
+    this.isMobile = window.innerWidth < 1024
+  }
+
   mounted() {
     window.addEventListener('scroll', this.onScroll)
     document.body.style.overflowY = 'initial'
-    window.addEventListener('resize', () => {
-      this.isMobile = window.innerWidth < 1024 ? true : isMobileDevice
-    })
+    window.addEventListener('resize', this.handleResize)
   }
 
   beforeDestroy() {
     window.removeEventListener('scroll', this.onScroll)
     this.setBodyScroll(true)
     document.documentElement.classList.remove('is-clipped-touch')
+    window.removeEventListener('resize', this.handleResize)
   }
 }
 </script>

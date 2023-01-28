@@ -17,7 +17,7 @@ jobs:
       CYPRESS_CACHE_FOLDER: '${GITHUB_WORKSPACE}/.cypress-cache'
     strategy:
       matrix:
-        index: [1, 2, 3, 4] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
+        index: [1, 2, 3, 4, 5] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
     steps:
       - uses: actions/checkout@v3
 
@@ -47,7 +47,11 @@ jobs:
         run: pnpm generate
 
       - name: Cypress run
-        run: pnpm start:static & pnpm wait-on http://localhost:9090 && MATRIX=${{ matrix.index }} node tests/cypress/e2e-run-tests.js
+        timeout-minutes: 10
+        uses: Wandalen/wretry.action@master
+        with:
+          command: pnpm start:static & pnpm wait-on http://localhost:9090 && MATRIX=${{ matrix.index }} node tests/cypress/e2e-run-tests.js
+          attempt_limit: 3
 
       - name: Upload Screenshots
         uses: actions/upload-artifact@v3

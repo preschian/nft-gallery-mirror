@@ -1,6 +1,5 @@
 <template>
   <div class="collections">
-    <Loader :value="isLoading" />
     <Search
       v-bind.sync="searchQuery"
       hide-search
@@ -47,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, mixins } from 'nuxt-property-decorator'
+import { Component, Watch, mixins } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
 import {
   Collection,
@@ -55,19 +54,13 @@ import {
   Metadata,
   NFTMetadata,
 } from '@/components/rmrk/service/scheme'
-import { getSanitizer } from '@/components/rmrk/utils'
 import { SearchQuery } from '@/components/rmrk/Gallery/search/types'
 import 'lazysizes'
 import collectionListWithSearch from '@/queries/subsquid/general/collectionListWithSearch.graphql'
 import PrefixMixin from '~/utils/mixins/prefixMixin'
 import InfiniteScrollMixin from '~/utils/mixins/infiniteScrollMixin'
 import { mapOnlyMetadata } from '~/utils/mappers'
-import {
-  getCloudflareImageLinks,
-  processMetadata,
-} from '~/utils/cachingStrategy'
-import { CollectionMetadata } from '~/components/rmrk/types'
-import { fastExtract } from '~/utils/ipfs'
+import { processMetadata } from '~/utils/cachingStrategy'
 import { getDenyList } from '~/utils/prefix'
 
 interface Image extends HTMLImageElement {
@@ -202,18 +195,6 @@ export default class CollectionList extends mixins(
       this.collections = this.collections.concat(newCollections)
     }
 
-    const metadataList: string[] = this.collections.map(mapOnlyMetadata)
-    const imageLinks = await getCloudflareImageLinks(metadataList)
-    processMetadata<CollectionMetadata>(metadataList, (meta, i) => {
-      Vue.set(this.collections, i, {
-        ...this.collections[i],
-        ...meta,
-        image:
-          imageLinks[fastExtract(this.collections[i]?.metadata)] ||
-          getSanitizer(meta.image || '')(meta.image || ''),
-      })
-    })
-
     this.isLoading = false
     this.prefetchPage(this.offset + this.first, this.offset + 3 * this.first)
   }
@@ -228,11 +209,9 @@ export default class CollectionList extends mixins(
           offset,
         },
       })
-
       const {
         data: { collectionEntities: collectionList },
       } = await collections
-
       const metadataList: string[] = collectionList.map(mapOnlyMetadata)
       processMetadata<NFTMetadata>(metadataList)
     } catch (e: any) {

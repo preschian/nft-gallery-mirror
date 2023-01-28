@@ -1,0 +1,141 @@
+@import '@oruga-ui/oruga/src/scss/oruga-full.scss';
+@import '../../scss/variable.scss';
+
+.is-neo {
+  border-radius: 0;
+  color: $black;
+  background: $white;
+  border: 1px solid $black;
+  -webkit-box-shadow: 4px 4px $black;
+  box-shadow: 4px 4px $black;
+  font-family: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+
+  &:hover {
+    background: $k-accentlight;
+  }
+
+  &.active {
+    background-color: black;
+    color: white;
+  }
+}
+
+.o-btn {
+  &--k-accent {
+    background-color: $k-accent;
+
+    &:hover {
+      background: $white;
+    }
+    &.o-btn--disabled {
+      opacity: unset;
+      background-color: $shade;
+      color: $k-grey;
+      border-color: $k-grey;
+    }
+  }
+
+  &--k-blue {
+    background-color: $k-blue;
+
+    &:hover {
+      background: $white;
+    }
+    &.o-btn--disabled {
+      opacity: unset;
+      background-color: $shade;
+      color: $k-grey;
+      border-color: $k-grey;
+    }
+  }
+
+  &--connect-dropdown {
+    width: 120px;
+    height: 40px;
+    background: $white;
+
+    &:hover {
+      border: 1px solid $black;
+      background: $k-accentlight !important;
+      color: $black !important;
+    }
+  }
+
+  &.no-shadow {
+    box-shadow: none;
+  }
+}
+
+.dark-mode {
+  .is-neo {
+    color: $white;
+    background: $k-dark;
+    border: 1px solid $white;
+    -webkit-box-shadow: $primary-shadow-dark;
+    box-shadow: $primary-shadow-dark;
+
+    &:hover {
+      background: $k-accent;
+      color: $black;
+    }
+    &.active {
+      background-color: white;
+      color: black;
+    }
+  }
+
+  .o-btn {
+    &--k-accent {
+      background: $k-accent;
+      color: $black;
+
+      &:hover {
+        background: $k-dark;
+        color: $white;
+      }
+
+      &.o-btn--disabled {
+        opacity: unset;
+        background-color: $k-grey;
+        color: $shade;
+        border-color: $shade;
+      }
+    }
+
+    &--k-blue {
+      background-color: $k-blue;
+      color: $black;
+
+      &:hover {
+        background: $k-dark;
+        color: $white;
+      }
+      &.o-btn--disabled {
+        opacity: unset;
+        background-color: $k-grey;
+        color: $shade;
+        border-color: $shade;
+      }
+    }
+
+    &--connect-dropdown {
+      background: $k-dark !important;
+
+      &:hover {
+        border: 1px solid $white !important;
+        background: $k-accent !important;
+        color: $black !important;
+      }
+    }
+
+    &.no-shadow {
+      box-shadow: none;
+    }
+  }
+}
+
+.is-fixed-width {
+  width: 10rem;
+}

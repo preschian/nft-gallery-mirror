@@ -1,5 +1,5 @@
 <template>
-  <div class="py-5">
+  <div>
     <o-table v-if="offers?.length" :data="offers" hoverable>
       <!-- token price -->
       <o-table-column v-slot="props" field="id" :label="$t('offer.price')">
@@ -40,9 +40,15 @@
         <span
           :class="{
             'has-text-danger': props.row.status === OfferStatusType.WITHDRAWN,
-            'has-text-success': props.row.status === OfferStatusType.ACTIVE,
+            'has-text-success':
+              props.row.status === OfferStatusType.ACTIVE &&
+              props.row.expiration >= currentBlock,
+            'has-text-warning': isInactiveOffer(
+              props.row.status,
+              props.row.expiration
+            ),
           }"
-          >{{ formatOfferStatus(props.row.status) }}</span
+          >{{ formatOfferStatus(props.row.status, props.row.expiration) }}</span
         >
       </o-table-column>
     </o-table>
@@ -54,7 +60,6 @@
 import { OTable, OTableColumn } from '@oruga-ui/oruga'
 import Identity from '@/components/identity/IdentityIndex.vue'
 
-import { onApiConnect } from '@kodadot1/sub-api'
 import { getKSMUSD } from '@/utils/coingecko'
 import formatBalance from '@/utils/format/balance'
 import { formatSecondsToDuration } from '@/utils/format/time'
@@ -64,7 +69,7 @@ import type { CollectionEvents } from '@/components/rmrk/service/scheme'
 import { OfferStatusType } from '@/utils/offerStatus'
 const { $i18n } = useNuxtApp()
 
-const { apiUrl } = useApi()
+const { apiInstance } = useApi()
 const { urlPrefix, tokenId, assets } = usePrefix()
 const { decimals } = useChain()
 
@@ -79,7 +84,6 @@ const { data } = useGraphql({
   queryPrefix: 'chain-bsx',
   variables: {
     id: dprops.nftId,
-    account: dprops.account,
   },
 })
 
@@ -97,19 +101,26 @@ const offers = ref<Offer[]>()
 const offersAdditionals = ref({})
 const currentBlock = ref(0)
 
-const getOffersDetails = (id) => {
+const getOffersDetails = (id: string) => {
   return offersAdditionals.value[id]
 }
 
-const formatPrice = (price) => {
-  return parseFloat(formatBalance(price, decimals.value, '')).toFixed(2)
+const getPercentage = (numA: number, numB: number) => {
+  if (!numA || !numB) {
+    return '--'
+  }
+  return Math.round(((numA - numB) / numB) * 100) + '%'
 }
 
-const getPercentage = (numA, numB) => {
-  return Math.round(((numA - numB) / numB) * 100)
+const formatPrice = (price: string) => {
+  return formatBalance(price, decimals.value, '')
 }
 
-const expirationTime = (block) => {
+const isInactiveOffer = (status: OfferStatusType, expiration: number) => {
+  return status === OfferStatusType.ACTIVE && expiration < currentBlock.value
+}
+
+const expirationTime = (block: number) => {
   if (currentBlock.value > block) {
     return 'Expired'
   }
@@ -119,18 +130,26 @@ const expirationTime = (block) => {
   return formatSecondsToDuration(secondsToBlock)
 }
 
-const formatOfferStatus = (status: OfferStatusType) => {
-  if (status === OfferStatusType.WITHDRAWN) {
-    return $i18n.t('offer.withdrawn')
+const formatOfferStatus = (status: OfferStatusType, expiration: number) => {
+  switch (status) {
+    case OfferStatusType.WITHDRAWN:
+      return $i18n.t('offer.withdrawn')
+    case OfferStatusType.ACTIVE:
+      if (isInactiveOffer(status, expiration)) {
+        return $i18n.t('offer.inactive')
+      }
+      return $i18n.t('offer.active')
+    case OfferStatusType.ACCEPTED:
+      return $i18n.t('offer.accepted')
+    default:
+      return status
   }
-  return status
 }
 
-onMounted(() => {
-  onApiConnect(apiUrl.value, async (api) => {
-    const block = await api.rpc.chain.getHeader()
-    currentBlock.value = block.number.toNumber()
-  })
+onMounted(async () => {
+  const api = await apiInstance.value
+  const block = await api.rpc.chain.getHeader()
+  currentBlock.value = block.number.toNumber()
 })
 
 watch(
@@ -139,14 +158,11 @@ watch(
     dataCollection as unknown as CollectionEvents,
   ],
   async ([offersData, collectionData]) => {
-    if (
-      offersData?.offers.length &&
-      collectionData?.collectionEntity.nfts[0].price
-    ) {
+    const nftPrice = collectionData?.collectionEntity?.nfts[0]?.price
+
+    if (offersData?.offers.length) {
       const ksmPrice = await getKSMUSD()
-      const floorPrice = formatPrice(
-        collectionData?.collectionEntity.nfts[0].price
-      )
+      const floorPrice = formatPrice(nftPrice || '')
 
       offers.value = offersData.offers
 
@@ -156,7 +172,7 @@ watch(
 
         const token = `${price} ${symbol}`
         const usd = `$${Math.round(Number(price) * ksmPrice)}`
-        const floorDifference = `${getPercentage(price, floorPrice)}%`
+        const floorDifference = getPercentage(Number(price), Number(floorPrice))
 
         offersAdditionals.value[offer.id] = {
           token,

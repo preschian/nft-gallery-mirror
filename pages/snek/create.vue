@@ -20,7 +20,8 @@
 import { Component, mixins } from 'nuxt-property-decorator'
 import CreateMixin from '~/utils/mixins/createMixin'
 
-const Collection = () => import('@/components/bsx/Create/Create.vue')
+const Collection = () =>
+  import('@/components/bsx/Create/CreateCollectionPage.vue')
 const NFT = () => import('@/components/bsx/Create/CreateToken.vue')
 
 const components = { Collection, NFT }
@@ -37,7 +38,7 @@ const components = { Collection, NFT }
       type: 'article',
       description: 'Create carbonless NFTs with low on-chain fees',
       url: '/snek/create',
-      image: `${this.$config.baseUrl}/k_card.png`,
+      image: `${this.$config.public.baseUrl}/k_card.png`,
     }
     return {
       title,
@@ -45,7 +46,7 @@ const components = { Collection, NFT }
         {
           hid: 'canonical',
           rel: 'canonical',
-          href: this.$root.$config.baseUrl + this.$route.path,
+          href: this.$root.$config.public.baseUrl + this.$route.path,
         },
       ],
       meta: [...this.$seoMeta(metaData)],

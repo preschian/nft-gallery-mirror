@@ -31,6 +31,10 @@
     }
   }
 
+  .o-tab-item__content {
+    height: 100%;
+  }
+
   &__content {
     border: 1px solid black;
 
@@ -40,7 +44,6 @@
     }
   }
 }
-
 
 .dark-mode {
   .o-tabs {
@@ -74,6 +77,4 @@
       border: 1px solid white;
     }
   }
-
-
 }

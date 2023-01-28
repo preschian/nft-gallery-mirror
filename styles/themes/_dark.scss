@@ -26,13 +26,28 @@ html.dark-mode {
     }
   }
 
+  .custom-navbar-item {
+    .navbar-item {
+      &:hover {
+        color: $shade !important;
+      }
+    }
+  }
+
   .navbar {
     border-color: $white;
     background-color: $background-dark !important;
-
-    .navbar-item:hover {
-      color: inherit;
-      background-color: inherit;
+    .navbar-item {
+      color: $white;
+      @include mobile {
+        &:hover {
+          color: $white !important;
+        }
+      }
+      &:hover {
+        color: inherit;
+        background-color: inherit;
+      }
     }
 
     .dropdown-content .dropdown-item .menu-item {
@@ -81,16 +96,6 @@ html.dark-mode {
       }
     }
 
-    .navbar__sign-out-button {
-      border-color: $white !important;
-      box-shadow: 4px 4px 0px $white !important;
-      background: $dark-accent !important;
-      color: $white;
-      &:hover {
-        background-color: $primary !important;
-      }
-    }
-
     .mobile-nav-search-btn {
       color: $white;
     }
@@ -114,13 +119,24 @@ html.dark-mode {
         color: $black;
         border: 1px solid $white !important;
         &:hover {
-          background-color: $dark-accent!important;
-          color: $white!important;
+          background-color: $dark-accent !important;
+          color: $white !important;
         }
       }
       .dropdown .dropdown-menu .has-link {
         border-top: 1px solid $white;
       }
+      @include mobile {
+        .button-connect-wallet {
+          box-shadow: $primary-shadow-dark !important;
+          background-color: $k-accent !important;
+          color: $black !important;
+        }
+      }
+    }
+
+    .dropdown .dropdown-menu .has-link {
+      border-color: $white;
     }
 
     .navbar-explore .menu-item {
@@ -258,58 +274,6 @@ html.dark-mode {
     }
   }
 
-  .chain-option {
-    &:hover {
-      color: $shade !important;
-
-    }
-  }
-
-  .modal-card-container {
-    border: 1px solid white;
-    .wallet .buttons {
-      button {
-        background: $k-dark !important;
-        border: 1px solid $white;
-      }
-      .button {
-        background: $k-dark !important;
-        border: 1px solid $white;
-        border-radius: unset;
-
-        &:hover {
-          background-color: $k-accentlight2dark !important;
-          color: $white;
-        }
-      }
-    }
-    .modal-card-bg {
-      background: $white;
-    }
-    .modal-card-head {
-      background: $k-dark !important;
-      .delete {
-        background: none;
-        &::before {
-          background-color: $white;
-        }
-        &::after {
-          background-color: $white;
-        }
-      }
-    }
-    .wallet-name {
-      background: $white !important;
-      .is-white {
-        color: $background-dark !important;
-      }
-    }
-    .dropdown-content .dropdown-item {
-      &:hover {
-        background-color: $k-accentlight2dark !important;
-      }
-    }
-  }
 
   .image-outline {
     border-color: $white;
@@ -375,6 +339,31 @@ html.dark-mode {
   }
 
   .profile-dropdown-divider {
-    background-color: #CCCCCC;
+    background-color: #cccccc;
   }
+
+  .gallery-avatar {
+    .avatar {
+      box-shadow: $primary-shadow-dark !important;
+      border: 1px solid $white !important;
+    }
+  }
+
+  --card-box-shadow: 4px 4px white;
+
+  .identity-name {
+    color: white;
+
+    &:hover {
+      color: $shade;
+    }
+  }
+
+  .input {
+    &-price {
+      background: $k-dark !important;
+      color: $text !important;
+    }
+  }
+
 }

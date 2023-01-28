@@ -1,6 +1,7 @@
 <template>
   <a
-    class="navbar-item is-flex is-align-items-center m-0"
+    class="is-flex is-align-items-center m-0"
+    :class="isMobileDevice ? 'navbar-item' : ''"
     @click="toggleColorMode">
     <ColorScheme placeholder="...">
       <span v-if="$colorMode.value === 'dark'">{{
@@ -37,17 +38,15 @@
   </a>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+<script lang="ts" setup>
+import { isMobileDevice } from '@/utils/extension'
+const { $colorMode } = useNuxtApp()
 
-@Component({})
-export default class ColorModeButton extends Vue {
-  protected toggleColorMode(): void {
-    if (this.$colorMode.preference !== 'light') {
-      this.$colorMode.preference = 'light'
-    } else {
-      this.$colorMode.preference = 'dark'
-    }
+const toggleColorMode = (): void => {
+  if ($colorMode.preference !== 'light') {
+    $colorMode.preference = 'light'
+  } else {
+    $colorMode.preference = 'dark'
   }
 }
 </script>

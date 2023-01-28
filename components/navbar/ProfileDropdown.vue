@@ -192,21 +192,24 @@
       <b-dropdown-item custom aria-role="menuitem">
         <div class="buttons is-justify-content-space-between my-2">
           <ConnectWalletButton
+            class="button is-size-7 is-capitalized"
             label="general.change_account"
-            class="navbar__sign-out-button menu-item is-size-7"
+            variant="connect-dropdown"
             @closeBurgerMenu="closeBurgerMenu" />
-          <b-button
-            class="navbar__sign-out-button menu-item is-size-7"
-            @click="disconnect()">
-            {{ $t('profileMenu.disconnect') }}
-          </b-button>
+          <NeoButton
+            class="button is-size-7 is-capitalized"
+            :label="$t('profileMenu.disconnect')"
+            variant="connect-dropdown"
+            @click.native="disconnect()" />
         </div>
       </b-dropdown-item>
     </b-dropdown>
 
     <div v-else>
       <ConnectWalletButton
-        class="button-connect-wallet"
+        class="button-connect-wallet px-4"
+        variant="k-accent"
+        no-shadow
         @closeBurgerMenu="closeBurgerMenu" />
     </div>
 
@@ -263,6 +266,7 @@
 <script lang="ts">
 import { Component, Prop, Ref, mixins } from 'nuxt-property-decorator'
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk'
+import { NeoButton } from '@kodadot1/brick'
 
 import Avatar from '@/components/shared/Avatar.vue'
 import PrefixMixin from '@/utils/mixins/prefixMixin'
@@ -270,9 +274,11 @@ import AuthMixin from '@/utils/mixins/authMixin'
 import useApiMixin from '@/utils/mixins/useApiMixin'
 import { clearSession } from '@/utils/cachingStrategy'
 import { getKusamaAssetId } from '~~/utils/api/bsx/query'
+import { langsFlags as langsFlagsList } from '@/utils/config/i18n'
 
 const components = {
   Avatar,
+  NeoButton,
   ConnectWalletButton: () =>
     import('@/components/shared/ConnectWalletButton.vue'),
   Identity: () => import('@/components/identity/IdentityIndex.vue'),
@@ -307,11 +313,7 @@ export default class ProfileDropdown extends mixins(
   }
 
   get langsFlags(): { value: string; flag: string; label: string }[] {
-    return this.$store.getters['lang/getLangsFlags']
-  }
-
-  get userFlag(): string {
-    return this.$store.getters['lang/getUserFlag']
+    return langsFlagsList
   }
 
   get userLang(): string {

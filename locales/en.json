@@ -7,6 +7,7 @@
   "collection": "Collection",
   "creator": "Creator",
   "collections": "Collections",
+  "items": "Items",
   "users": "Users",
   "user": "User",
   "soon": "Soon",
@@ -69,9 +70,9 @@
   },
   "topCollections": {
     "timeFrames": {
-      "7 Days": "7 Days",
-      "30 Days": "30 Days",
-      "90 Days": "90 Days",
+      "week": "7 Days",
+      "month": "30 Days",
+      "quarter": "90 Days",
       "all": "All"
     }
   },
@@ -265,7 +266,7 @@
         "m": "Currently, the minimum cost of transferring KSM is 0.01 KSM (the base fee), although this can be changed via governance."
       },
       "36": {
-        "m": "RMRK is currently just an NFT baked into the blockchain and we don't have any chain logic. From the lesson of randomness, we know that there is the possibility that two or more people can make buy transactions in the same block and can lose money. Then it's just about the honesty of the artist to return the money or mint the same NFT as the token of appreciation."
+        "m": "Kusama is currently just an NFT baked into the blockchain and we don't have any chain logic. From the lesson of randomness, we know that there is the possibility that two or more people can make buy transactions in the same block and can lose money. Then it's just about the honesty of the artist to return the money or mint the same NFT as the token of appreciation."
       },
       "37": {
         "m": "Yes, currently the KodaDot integration in Nova wallet is working fine. We've made @.md:faq.a.37.l1 on how to do this.",
@@ -468,7 +469,7 @@
     },
     "49": {
       "heading:": "Did you know ...",
-      "question": "KodaDot was the first unofficial RMRK explorer? We hack fast. "
+      "question": "KodaDot was the first unofficial Kusama explorer? We hack fast. "
     },
     "50": {
       "heading:": "Did you know ...",
@@ -582,11 +583,13 @@
     "submit": "Click to create NFT(s)",
     "estimate": "Show me the transaction fees",
     "estimated": "Transaction fees will cost about",
-    "success": "Congrats to your new NFT(s)",
+    "success": "Congratulations",
+    "successNewNfts": "You have successfully purchased this NFT",
     "shareWithFriends": "Share {0} with your friends",
     "unlimited": "Unlimited items in in your collection",
     "nfsw": "Explicit content (NSFW)",
     "listForSale": "List NFT for sale",
+    "listWithRoyalty": "Add royalty",
     "mass": "NFT mass minter",
     "command": "List of commands for mass mint",
     "transform": "Transform commands in NFT",
@@ -684,6 +687,8 @@
     "frozen": "NFT is frozen",
     "related": "More From This Collection",
     "visited": "Visited NFTs",
+    "buyNFTOn": "Buy NFT on",
+    "notListed": "Not Listed",
     "event": {
       "MINTNFT": "MINT",
       "LIST": "LIST",
@@ -698,7 +703,9 @@
       "PAY_ROYALTY": "PAY ROYALTY"
     },
     "action": {
-      "submit": "Submit {0}"
+      "submit": "Submit {0}",
+      "buy": "Buy",
+      "confirm": "Confirm"
     },
     "properties": {
       "label": "Attributes"
@@ -711,12 +718,19 @@
       "status": "Offer status",
       "date": "Date",
       "title": "Global Marketplace Offers"
+    },
+    "notification" : {
+      "nftChanged": "[{chain}::{action}] Owner changed or NFT does not exist",
+      "info": "[{action}] NFT: {itemId}"
     }
   },
   "offer": {
     "caller": "From",
     "status": "Status",
-    "withdrawn": "CANCELLED",
+    "withdrawn": "Cancelled",
+    "active": "Active",
+    "accepted": "Accepted",
+    "inactive": "Inactive",
     "price": "Price",
     "usdPrice": "USD Price",
     "expiration": "Expiration",
@@ -747,7 +761,11 @@
     "activeWallets": "Active wallets",
     "offers": "Offers",
     "values": "VALUES",
-    "bsxTitle": "Basilisk Marketplace Statistics"
+    "bsxTitle": "Basilisk Marketplace Statistics",
+    "uniqueOwners": "Unique Owners",
+    "highestSale": "Highest Sale",
+    "floorPrice": "Floor Price",
+    "totalVolume": "Total Volume"
   },
   "myOffer": {
     "bsxTitle": "Incoming Offers",
@@ -774,7 +792,6 @@
       "processing": "Predicting (wait around ~20s)",
       "send": "Sending links to your email"
     }
-
   },
   "arweave": {
     "uploadYes": "Upload NFT image to Arweave",
@@ -808,19 +825,20 @@
   "sales": {
     "page": "Sales",
     "title": "Latest KUSAMA Sales",
-    "subtitle": "Featuring the most recently sold NFTs on RMRK.",
+    "subtitle": "Featuring the most recently sold NFTs on Kusama.",
     "buyer": "Buyer",
     "tableDate": "Relative Date",
     "price": "Price of sale"
   },
   "hot": {
+    "label": "Hot",
     "title": "Recently KUSAMA Sales In One Week",
-    "subtitle": "Featuring the recently sold NFTs on RMRK"
+    "subtitle": "Featuring the recently sold NFTs on Kusama"
   },
   "spotlight": {
     "page": "Spotlight",
     "title": "User Spotlight",
-    "subtitle": "Featuring the most active collectors and artits on RMRK.",
+    "subtitle": "Featuring the most active collectors and artits on Kusama.",
     "filter_accounts": "Accounts With Identity",
     "id": "Creator",
     "sold": "Sold",
@@ -838,6 +856,7 @@
     "scoreCalc": "sold * (unique / total)"
   },
   "series": {
+    "label": "Series",
     "title": "Top Collection",
     "subtitle": "The top NFTs on {chain}, ranked by volume, floor price and other statistics.",
     "assets": "Assets",
@@ -908,7 +927,7 @@
     "topCollectionsHeading": "Top Collections",
     "floor": "floor",
     "popularCollectionsHeading": "Popular Collections",
-    "popularCollectionsDesc": "Discover the most popular collections on rmrk",
+    "popularCollectionsDesc": "Discover the most popular collections on Kusama",
     "featuredArticlesHeading": "Featured Articles",
     "from": "from",
     "to": "to",
@@ -1012,6 +1031,12 @@
     "offerStats": "Offers Stats"
   },
   "walletConnect": {
+    "confirm": "Confirm",
+    "warning": "Warning",
+    "moreOption": "More Options",
+    "walletQuestion": "Don't have a wallet yet?",
+    "walletAnswer": "Wallets are used to send, receive, store, and display digital assets",
+    "walletLink": "Learn about wallets",
     "walletHeading": "Connect Wallet",
     "authText": "KodaDot will never ask you to provide your mnemonic phrase or private key.",
     "understand": "I understand",
@@ -1081,11 +1106,11 @@
   },
   "tabs": {
     "properties": "Properties",
-    "noPropertiesForNFT" : "No Properties for this NFT",
+    "noPropertiesForNFT": "No Properties for this NFT",
     "description": "Description",
     "details": "Details",
     "offers": "Offers",
-    "offersDisabledRMRK": "Offers Are Not Available on RMRK",
+    "offersDisabled": "Offers Are Not Available on this chain",
     "activity": "Activity",
     "chart": "Chart",
     "rarity": "Rarity by Kodadot",
@@ -1118,8 +1143,42 @@
       "MINTNFT": "Mints",
       "BUY": "Sales",
       "LIST": "Listings",
-      "SEND": "Transfers"
+      "SEND": "Transfers",
+      "CONSUME": "Burns"
     }
   },
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "transaction": {
+    "list": "List",
+    "transfer": "Transfer",
+    "transferTo": "Transfer to",
+    "price": {
+      "change": "Change Price",
+      "new": "Your New Price",
+      "list": "Your Listing Price",
+      "success": "Price updated",
+      "error": "Price update failed"
+    },
+    "item": {
+      "success": "Item sent",
+      "error": "Failed to send item"
+    },
+    "consume": {
+      "success": "Item burned",
+      "error": "Failed to burned item"
+    },
+    "offer": {
+      "success": "Offer successfully created",
+      "error": "Offer creation failed"
+    },
+    "unlist": {
+      "success": "Item successfully unlisted",
+        "error": "Item unlisting failed"
+    }
+  },
+  "createDropdown": {
+    "start": "Start by creating your collection and add NFTs to it",
+    "simplifiedNft": "Simplified process to create your NFT in a single step",
+    "aiPowered": "AI powered process to create your NFT"
+  }
 }

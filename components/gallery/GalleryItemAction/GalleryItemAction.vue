@@ -1,20 +1,37 @@
 <template>
-  <div>
+  <div
+    class="is-flex is-flex-direction-column is-flex-grow-1 is-justify-content-start mt-5">
     <!-- price -->
-    <GalleryItemPriceBuy v-if="!isOwner" />
+    <GalleryItemPriceBuy
+      v-if="!isOwner"
+      :nft-id="nft?.id"
+      :nft-price="nft?.price"
+      :collection-id="nft?.collection.id"
+      :current-owner="nft?.currentOwner"
+      @buy-success="emit('buy-success')" />
 
     <!-- highest offer -->
     <GalleryItemPriceOffer
-      v-if="urlPrefix !== 'rmrk' && nft?.id && nft.currentOwner"
+      v-if="!offersDisabled && !isOwner && nft?.id && nft.currentOwner"
       :nft-id="nft.id"
+      :collection-id="nft.collection.id"
+      :current-owner="nft.currentOwner"
       :account="nft.currentOwner"
-      class="mt-5" />
+      class="mt-2" />
 
     <!-- change price as an owner -->
-    <GalleryItemPriceRelist v-if="isOwner" />
+    <GalleryItemPriceRelist
+      v-if="isOwner && nft?.id && nft?.price && nft?.collection.id"
+      :collection-id="nft.collection.id"
+      :nft-id="nft.id"
+      :nft-price="nft.price"
+      class="mt-2" />
 
     <!-- transfer item as an owner -->
-    <GalleryItemPriceTransfer v-if="isOwner" class="mt-5" />
+    <GalleryItemPriceTransfer
+      v-if="isOwner && nft?.id"
+      :nft-id="nft.id"
+      class="mt-2" />
   </div>
 </template>
 
@@ -26,15 +43,16 @@ import GalleryItemPriceOffer from './GalleryItemActionType/GalleryItemOffer.vue'
 import GalleryItemPriceRelist from './GalleryItemActionType/GalleryItemRelist.vue'
 import GalleryItemPriceTransfer from './GalleryItemActionType/GalleryItemTransfer.vue'
 
-import { useGalleryItem } from '../useGalleryItem'
+import { NFT } from '~~/components/rmrk/service/scheme'
+const props = defineProps<{
+  nft: NFT | undefined
+}>()
 
-const { $store } = useNuxtApp()
-const { urlPrefix } = usePrefix()
-const { nft } = useGalleryItem()
-
-const accountId = computed(() => $store.getters.getAuthAddress)
+const emit = defineEmits(['buy-success'])
+const { accountId } = useAuth()
+const { offersDisabled } = useChain()
 const isOwner = computed(() =>
-  checkOwner(nft.value?.currentOwner, accountId.value)
+  checkOwner(props.nft?.currentOwner, accountId.value)
 )
 </script>
 

@@ -3,9 +3,9 @@
     <!-- offers -->
     <DisablableTab
       value="0"
-      :disabled="offersTabDisabled"
+      :disabled="offersDisabled"
       :label="$t('tabs.offers')"
-      :disabled-tooltip="$t('tabs.offersDisabledRMRK')">
+      :disabled-tooltip="$t('tabs.offersDisabled')">
       <GalleryItemOffers
         v-if="
           urlPrefix !== 'rmrk' &&
@@ -38,17 +38,27 @@ import GalleryItemActivity from './GalleryItemActivity.vue'
 import GalleryItemChart from './GalleryItemChart.vue'
 import GalleryItemOffers from './GalleryItemOffers.vue'
 import { DisablableTab } from '@kodadot1/brick'
+const props = withDefaults(
+  defineProps<{
+    activeTab?: string
+  }>(),
+  {
+    activeTab: '0',
+  }
+)
 
 const { urlPrefix } = usePrefix()
 const { nft } = useGalleryItem()
+const { offersDisabled } = useChain()
 
 const activeTab = ref('0')
 const collectionId = ref('')
 
-const offersTabDisabled = computed(() => urlPrefix.value === 'rmrk')
-
 watchEffect(() => {
-  if (offersTabDisabled.value) {
+  if (props.activeTab) {
+    activeTab.value = props.activeTab
+  }
+  if (offersDisabled) {
     activeTab.value = '1'
   }
 

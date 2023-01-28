@@ -1,21 +1,6 @@
 html.light-mode {
   background-color: $white;
 
-  a {
-    color: $text-light-theme;
-
-    &:hover {
-      color: $shade;
-    }
-  }
-
-  a.link {
-    color: #000 !important;
-
-    &:hover {
-      color: $k-hovergrey !important;
-    }
-  }
 
   body,
   div#__nuxt,
@@ -53,16 +38,17 @@ html.light-mode {
   }
 
   .navbar {
-    .navbar-item,
     .navbar-link,
     .button.is-text {
       color: $text-light-theme;
-      &:hover {
-        color: $primary-light;
+    }
+
+    @include mobile {
+      .navbar-item:hover {
+        color: $black !important;
       }
     }
 
-    .navbar-item:hover,
     .navbar-link:hover,
     .navbar-item:focus,
     .navbar-link:focus {
@@ -76,28 +62,17 @@ html.light-mode {
       background-color: transparent !important;
     }
 
-
     .navbar-menu.is-active {
       color: $text-light-theme;
       background-color: $white;
       box-shadow: rgba(229, 229, 229, 0.55) !important;
     }
     .navbar-dropdown a.navbar-item,
-    .dropdown-item:not(.is-active)  {
-
+    .dropdown-item:not(.is-active) {
       &:last-child {
         border-bottom: none;
       }
-      color: $text-light-theme
-    }
-
-    &__sign-out-button {
-      color: $black;
-      background-color: $white !important;
-
-      &:hover {
-        background-color: $k-accentlight !important;
-      }
+      color: $text-light-theme;
     }
 
     .button.is-primary {
@@ -105,12 +80,8 @@ html.light-mode {
     }
 
     .navbar-explore {
-        color: $text-light-theme;
-      a {
-        &:hover {
-          color: $black !important;
-        }
-      }
+      color: $text-light-theme;
+
       .menu-item:hover {
         color: $k-hovergrey !important;
       }
@@ -128,8 +99,6 @@ html.light-mode {
       color: $text-light-theme;
     }
   }
-
-
 
   .homepage .tile .box {
     border-color: #f3f3f3;
@@ -156,7 +125,6 @@ html.light-mode {
   .royalty {
     color: $text-light-theme;
   }
-
 
   .level .title,
   .homepage .title:not(h2),
@@ -287,7 +255,7 @@ html.light-mode {
     }
   }
 
-  .b-table .table .chevron-cell>a {
+  .b-table .table .chevron-cell > a {
     color: $primary !important;
   }
 
@@ -302,11 +270,6 @@ html.light-mode {
     }
   }
 
-  .landing-search {
-    .active {
-      color: $text-light-theme;
-    }
-  }
 
   .gallery-item-media {
     border: 1px solid #000;
@@ -331,6 +294,24 @@ html.light-mode {
 
     .search-bar-bg {
       background-color: #000;
+    }
+
+    .identity-name {
+      color: $black;
+    }
+  }
+
+  --card-box-shadow: 4px 4px hsl(0deg, 0%, 4%);
+}
+
+.gallery-avatar {
+  .avatar {
+    box-shadow: $primary-shadow;
+    border: 1px solid $black;
+    border-radius: 50%;
+    & > div {
+      display: flex;
+      align-items: center;
     }
   }
 }

@@ -4,9 +4,9 @@ import type { RowSeries } from '@/components/series/types'
 import {
   convertLastEventFlatNft,
   formatNFT,
-  setNftMetaFromCache,
+  setCarouselMetadata,
 } from '@/utils/carousel'
-import { sanitizeIpfsUrl } from '@/components/rmrk/utils'
+import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { sortItemListByIds } from '@/utils/sorting'
 import { correctPrefix } from '@/utils/uniquery'
 
@@ -66,7 +66,8 @@ export const useCarouselNftEvents = ({ type }: Types) => {
     }
 
     const events = data.events.map(convertLastEventFlatNft)
-    return await formatNFT(events, chain)
+    const listOfNfts = await formatNFT(events, chain)
+    return await setCarouselMetadata(listOfNfts)
   }
 
   // currently only support rmrk and snek
@@ -102,11 +103,11 @@ export const useCarouselPopularCollections = () => {
   const { data } = useGraphql(popularCollectionsGraphql)
   const nfts = ref<RowSeries[]>([])
 
-  const handleResult = ({ data }) => {
-    nfts.value = data.seriesInsightTable.map(
+  const handleResult = ({ data: result }) => {
+    nfts.value = result.seriesInsightTable.map(
       (e: RowSeries): RowSeries => ({
         ...e,
-        image: sanitizeIpfsUrl(e.image),
+        image: sanitizeIpfsUrl(e.image, 'image'),
       })
     )
   }
@@ -147,7 +148,7 @@ export const useCarouselRelated = ({ collectionId }) => {
       const listOfRelatedNFTs = await formatNFT(
         (data.value as Collections).collection?.nfts
       )
-      nfts.value = await setNftMetaFromCache(listOfRelatedNFTs)
+      nfts.value = await setCarouselMetadata(listOfRelatedNFTs)
     }
   })
 
