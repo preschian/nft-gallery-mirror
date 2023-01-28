@@ -5,9 +5,6 @@ overrides:
   vue-template-compiler: 2.7.14
 
 patchedDependencies:
-  '@nuxt/webpack-edge@2.16.0-27720022.54e852f':
-    hash: z7rqtomghstqxo6v7lejvd4y3u
-    path: patches/@nuxt__webpack-edge@2.16.0-27720022.54e852f.patch
   vuex@3.6.2:
     hash: qqzk7obvwc5jewi4v4e35d3zci
     path: patches/vuex@3.6.2.patch
@@ -3681,7 +3678,7 @@ packages:
       '@nuxt/devalue': 2.0.0
       '@nuxt/utils-edge': 2.16.0-27720022.54e852f
       '@nuxt/vue-app-edge': 2.16.0-27720022.54e852f
-      '@nuxt/webpack-edge': 2.16.0-27720022.54e852f_z7rqtomghstqxo6v7lejvd4y3u_vj744rb3neneiaeb3oalctaenu
+      '@nuxt/webpack-edge': 2.16.0-27720022.54e852f_vj744rb3neneiaeb3oalctaenu
       chalk: 4.1.2
       chokidar: 3.5.3
       consola: 2.15.3
@@ -4113,7 +4110,7 @@ packages:
       vue-server-renderer: 2.7.14
     dev: false
 
-  /@nuxt/webpack-edge/2.16.0-27720022.54e852f_z7rqtomghstqxo6v7lejvd4y3u_vj744rb3neneiaeb3oalctaenu:
+  /@nuxt/webpack-edge/2.16.0-27720022.54e852f_vj744rb3neneiaeb3oalctaenu:
     resolution: {integrity: sha512-czM8PzxgJ5DUllF2nW+BdF94nfN2eTwyXENVCBrtTMn2zUbkYwtJoWtSCYuw94nfTAlEsFkBKhV2oSyjLwgJeg==}
     dependencies:
       '@babel/core': 7.20.12
@@ -4225,7 +4222,6 @@ packages:
       - webpack-command
       - whiskers
     dev: false
-    patched: true
 
   /@nuxtjs/apollo/4.0.1-rc.5_f5of7corczyyzufgn47mquc2mu:
     resolution: {integrity: sha512-A5ITCdks87NND6t116nBFTqENiMfUYkFy+b8xDTRV4rz5NHhpYAfoDZDRKDnlszOBYOCvBjro/GDJH+KWW7siQ==}
@@ -16322,7 +16318,7 @@ packages:
       '@nuxt/utils-edge': 2.16.0-27720022.54e852f
       '@nuxt/vue-app-edge': 2.16.0-27720022.54e852f
       '@nuxt/vue-renderer-edge': 2.16.0-27720022.54e852f
-      '@nuxt/webpack-edge': 2.16.0-27720022.54e852f_z7rqtomghstqxo6v7lejvd4y3u_vj744rb3neneiaeb3oalctaenu
+      '@nuxt/webpack-edge': 2.16.0-27720022.54e852f_vj744rb3neneiaeb3oalctaenu
     transitivePeerDependencies:
       - '@vue/compiler-sfc'
       - arc-templates
