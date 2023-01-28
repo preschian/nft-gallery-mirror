@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   },
 
   bridge: {
-    nitro: process.env.NODE_ENV !== 'production',
+    nitro: true,
   },
 
   nitro: {
