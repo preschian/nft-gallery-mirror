@@ -337,8 +337,8 @@ export default defineNuxtConfig({
     ],
     extend(config) {
       if (
-        process.env.NODE_ENV !== 'development' &&
-        process.env.SENTRY_AUTH_TOKEN
+        process.env.SENTRY_AUTH_TOKEN &&
+        process.env.NODE_ENV !== 'development'
       ) {
         config.devtool = 'source-map'
 

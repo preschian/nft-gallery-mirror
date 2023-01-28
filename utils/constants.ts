@@ -33,7 +33,6 @@ export const MAX_UPLOADED_FILE_SIZE = 30
 
 export const URLS = {
   koda: {
-    cloudflare: 'https://durable-jpeg.kodadot.workers.dev/',
     pinata: 'https://image.preschian.xyz/ipfs/',
     directUpload: 'https://direct-upload.kodadot.workers.dev/',
     estuary: 'https://pinning.kodadot.workers.dev/',
