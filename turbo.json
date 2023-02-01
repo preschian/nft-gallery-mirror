@@ -3,7 +3,8 @@
   "pipeline": {
     "generate": {
       "dependsOn": ["^generate"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "inputs": ["**/**/*.ts", "**/**/*.vue"]
     },
     "test": {},
     "lint": {}
