@@ -15,6 +15,8 @@ jobs:
       options: --user 1001
     env:
       CYPRESS_CACHE_FOLDER: '${GITHUB_WORKSPACE}/.cypress-cache'
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     strategy:
       matrix:
         index: [1, 2, 3, 4, 5] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
@@ -44,7 +46,7 @@ jobs:
         run: pnpm install && pnpm cypress install
 
       - name: Build App
-        run: pnpm generate
+        run: pnpm turbo:generate
 
       - name: Cypress run
         timeout-minutes: 10
