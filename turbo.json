@@ -1,9 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "generate": {
-      "outputs": ["dist/**"]
-    },
+    "generate": {},
     "test": {},
     "lint": {}
   }
