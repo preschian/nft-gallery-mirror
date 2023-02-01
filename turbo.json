@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "generate": {
-      "inputs": ["**/**/*.vue", "**/**/*.ts", "**/**/*.json"]
+      "inputs": ["components/**/*.vue"]
     },
     "test": {},
     "lint": {}
