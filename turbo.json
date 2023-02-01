@@ -4,12 +4,16 @@
     "generate": {
       "inputs": [
         "components/**/*.vue",
-        "composables/**/*.vue",
+        "components/**/*.ts",
+        "composables/**/*.ts",
         "layouts/**/*.vue",
         "pages/**/*.vue",
-        "plugins/**/*.vue",
-        "store/**/*.vue"
-      ]
+        "plugins/**/*.ts",
+        "store/**/*.ts",
+        "styles/**/*.scss",
+        "utils/**/*.ts"
+      ],
+      "outputs": ["dist/**"]
     },
     "test": {},
     "lint": {}
