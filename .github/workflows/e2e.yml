@@ -1,4 +1,4 @@
-name: Lint, Build & Test workflow
+name: cypress
 
 on:
   workflow_dispatch:
@@ -12,11 +12,16 @@ env:
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
-  build:
+  e2e:
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:10.10.0
+      options: --user 1001
+    env:
+      CYPRESS_CACHE_FOLDER: '${GITHUB_WORKSPACE}/.cypress-cache'
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+        index: [1, 2, 3, 4, 5] # [1, ..., n] where n === parallelSize in e2e-run-tests.js
     steps:
       - uses: actions/checkout@v3
 
@@ -40,7 +45,20 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install
+        run: pnpm install && pnpm cypress install
 
-      - name: Run Build
+      - name: Build App
         run: pnpm turbo:generate
+
+      - name: Cypress run
+        timeout-minutes: 10
+        uses: Wandalen/wretry.action@master
+        with:
+          command: pnpm start:static & pnpm wait-on http://localhost:9090 && MATRIX=${{ matrix.index }} node tests/cypress/e2e-run-tests.js
+          attempt_limit: 3
+
+      - name: Upload Screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          path: ./cypress/screenshots/
