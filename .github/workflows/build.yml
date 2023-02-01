@@ -1,7 +1,5 @@
 name: Lint, Build & Test workflow
 
-# trigger ci
-
 on:
   workflow_dispatch:
     push:
