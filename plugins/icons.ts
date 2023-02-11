@@ -11,6 +11,7 @@ import {
   faAngleRight,
   faArrowUp,
   faArrowsAlt,
+  faBars,
   faBookOpen,
   faBookmark,
   faCalculator,
@@ -79,6 +80,7 @@ import {
   faShare,
   faShareAlt,
   faShareSquare,
+  faShop,
   faSignOutAlt,
   faSync,
   faTable,
@@ -120,6 +122,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
+  faBars,
   faBookOpen,
   faPaperPlane,
   faFileImage,
@@ -147,6 +150,7 @@ library.add(
   faCaretUp,
   faInfo,
   faShareSquare,
+  faShop,
   faBookmark,
   faLink,
   faHeart,

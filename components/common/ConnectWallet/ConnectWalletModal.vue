@@ -8,13 +8,7 @@
         icon-left="chevron-left"
         @click="hasSelectedWalletProvider = !hasSelectedWalletProvider" />
       <span class="modal-card-title is-size-6">
-        {{
-          $i18n.t(
-            hasUserWalletAuth
-              ? 'walletConnect.walletHeading'
-              : 'walletConnect.warning'
-          )
-        }}
+        {{ headerTitle }}
       </span>
       <a class="is-flex is-align-items-center" @click="emit('close')">
         <svg
@@ -38,7 +32,10 @@
         </svg>
       </a>
     </header>
-    <section v-if="hasUserWalletAuth" class="modal-card-body">
+    <section v-if="showAccount">
+      <WalletAsset @back="setForceWalletSelect" />
+    </section>
+    <section v-else-if="hasUserWalletAuth" class="modal-card-body">
       <div class="buttons m-0">
         <WalletMenuItem
           v-for="(wallet, index) in installedWallet"
@@ -50,12 +47,35 @@
       <a
         class="is-flex is-align-items-center pt-4 pb-3 is-size-7 has-text-grey more-option-button"
         @click="toggleShowUninstalledWallet">
-        {{ $i18n.t('walletConnect.moreOption')
-        }}<b-icon
+        {{ $i18n.t('walletConnect.moreOption') }}
+
+        <svg
+          v-if="showUninstalledWallet"
           class="ml-1"
-          :icon="
-            showUninstalledWallet ? 'chevron-down' : 'chevron-right'
-          "></b-icon>
+          width="9"
+          height="4"
+          viewBox="0 0 9 4"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M8.20068 0.5L4.60068 3.5L1.00068 0.5"
+            stroke="currentColor"
+            stroke-width="0.761905" />
+        </svg>
+
+        <svg
+          v-else
+          class="ml-1"
+          width="5"
+          height="8"
+          viewBox="0 0 5 8"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M1 0.399658L4 3.99966L1 7.59966"
+            stroke="currentColor"
+            stroke-width="0.761905" />
+        </svg>
       </a>
       <div v-if="showUninstalledWallet" class="buttons">
         <WalletMenuItem
@@ -92,7 +112,7 @@
       </b-field>
     </section>
 
-    <footer class="px-5 py-4">
+    <footer v-if="!showAccount" class="px-5 py-4">
       <div>{{ $i18n.t('walletConnect.walletQuestion') }}</div>
       <div class="is-size-7">
         {{ $i18n.t('walletConnect.walletAnswer') }}
@@ -120,18 +140,36 @@
 </template>
 
 <script lang="ts" setup>
-import { SupportedWallets, WalletAccount } from '@/utils/config/wallets'
+import { SupportedWallets } from '@/utils/config/wallets'
 import { BaseDotsamaWallet } from '@/utils/config/wallets/BaseDotsamaWallet'
 import { NeoButton } from '@kodadot1/brick'
 import WalletMenuItem from '@/components/common/ConnectWallet/WalletMenuItem'
+import WalletAsset from '@/components/common/ConnectWallet/WalletAsset'
 
-const { $store } = useNuxtApp()
+const { $store, $i18n } = useNuxtApp()
 const selectedWalletProvider = ref<BaseDotsamaWallet>()
 const hasSelectedWalletProvider = ref(false)
+const account = ref<string>($store.getters.getAuthAddress)
+const forceWalletSelect = ref(false)
+
+const setForceWalletSelect = () => {
+  forceWalletSelect.value = true
+}
+
+const showAccount = computed(() => account.value && !forceWalletSelect.value)
 
 const wallets = SupportedWallets()
-
+const headerTitle = computed(() =>
+  $i18n.t(
+    account.value
+      ? 'walletConnect.walletDetails'
+      : hasUserWalletAuth
+      ? 'walletConnect.walletHeading'
+      : 'walletConnect.warning'
+  )
+)
 const setAccount = (addr: string) => {
+  forceWalletSelect.value = false
   account.value = addr
 }
 const installedWallet = computed(() => {
@@ -141,8 +179,6 @@ const uninstalledWallet = computed(() => {
   return wallets.filter((wallet) => !wallet.installed)
 })
 const showUninstalledWallet = ref(!installedWallet.value.length)
-const walletAccounts = ref<WalletAccount[]>([])
-const account = ref<string>($store.getters.getAuthAddress)
 const hasUserWalletAuth = ref(
   Boolean(localStorage.getItem('user_auth_wallet_add'))
 )
@@ -152,11 +188,7 @@ const toggleShowUninstalledWallet = () => {
   showUninstalledWallet.value = !showUninstalledWallet.value
 }
 watch(account, (account) => {
-  const walletName = walletAccounts.value.find(
-    (wallet) => wallet.address === account
-  )?.name
-  emit('close')
-  $store.dispatch('wallet/setWalletName', { name: walletName })
+  forceWalletSelect.value = false
   $store.dispatch('setAuth', { address: account })
   localStorage.setItem('kodaauth', account)
   if (selectedWalletProvider.value) {

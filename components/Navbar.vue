@@ -105,54 +105,16 @@
             id="NavProfile"
             @closeBurgerMenu="closeBurgerMenu" />
         </MobileExpandableSection>
-        <MobileExpandableSection
+        <div
           v-if="account"
-          :no-padding="true"
-          :title="$t('wallet')"
-          icon="wallet">
-          <b-navbar-item class="navbar-item--noBorder">
-            <div class="has-text-grey is-size-7 mt-2">
-              {{ $t('profileMenu.wallet') }}
-            </div>
-            <Identity
-              :address="account"
-              class="navbar__address is-size-6"
-              hide-identity-popover />
-
-            <hr aria-role="menuitem" class="dropdown-divider" />
-
-            <div v-if="isSnek">
-              <div class="has-text-left has-text-grey is-size-7">
-                {{ $t('general.balance') }}
-              </div>
-              <SimpleAccountBalance
-                v-for="token in tokens"
-                :key="token"
-                :token-id="token"
-                class="is-size-6" />
-            </div>
-            <AccountBalance v-else class="is-size-7" />
-
-            <hr aria-role="menuitem" class="dropdown-divider" />
-
-            <div
-              aria-role="menuitem"
-              class="is-flex is-justify-content-space-between"
-              custom
-              paddingless>
-              <ConnectWalletButton
-                label="general.change_account"
-                variant="connect-dropdown"
-                class="menu-item is-size-7 mr-3 w-100"
-                @closeBurgerMenu="closeBurgerMenu" />
-              <NeoButton
-                class="button is-size-7 is-capitalized w-100"
-                :label="$t('profileMenu.disconnect')"
-                variant="connect-dropdown"
-                @click.native="disconnect()" />
-            </div>
-          </b-navbar-item>
-        </MobileExpandableSection>
+          class="navbar-item"
+          @click.stop="openWalletConnectModal">
+          <span>
+            {{ $t('wallet') }}
+            <b-icon icon="wallet" />
+          </span>
+          <b-icon class="icon--right" icon="chevron-right" pack="fas" />
+        </div>
         <ColorModeButton class="navbar-item" />
 
         <div v-if="!account" id="NavProfile">
@@ -177,7 +139,6 @@ import { Component, Ref, Watch, mixins } from 'nuxt-property-decorator'
 import BasicImage from '@/components/shared/view/BasicImage.vue'
 import MobileExpandableSection from '@/components/navbar/MobileExpandableSection.vue'
 import NavbarExploreOptions from '@/components/navbar/NavbarExploreOptions.vue'
-import Identity from '@/components/identity/IdentityIndex.vue'
 import ProfileDropdown from '~/components/navbar/ProfileDropdown.vue'
 import Search from '@/components/search/Search.vue'
 import ExploreDropdown from '~/components/navbar/ExploreDropdown.vue'
@@ -188,7 +149,6 @@ import PrefixMixin from '@/utils/mixins/prefixMixin'
 import ColorModeButton from '~/components/common/ColorModeButton.vue'
 import MobileLanguageOption from '~/components/navbar/MobileLanguageOption.vue'
 import { createVisible } from '@/utils/config/permision.config'
-import { identityStore } from '@/utils/idbStore'
 import AuthMixin from '@/utils/mixins/authMixin'
 import ExperimentMixin from '@/utils/mixins/experimentMixin'
 import ChainSelectDropdown from '~/components/navbar/ChainSelectDropdown.vue'
@@ -196,14 +156,13 @@ import StatsDropdown from '~/components/navbar/StatsDropdown.vue'
 import MobileNavbarProfile from '~/components/navbar/MobileNavbarProfile.vue'
 import ConnectWalletButton from '~/components/shared/ConnectWalletButton.vue'
 import { getKusamaAssetId } from '~/utils/api/bsx/query'
-import { clearSession } from '~/utils/cachingStrategy'
 import { NeoButton } from '@kodadot1/brick'
+import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
 
 @Component({
   components: {
     NeoButton,
     Search,
-    Identity,
     BasicImage,
     MobileExpandableSection,
     ProfileDropdown,
@@ -261,10 +220,6 @@ export default class NavbarMenu extends mixins(
     return createVisible(this.urlPrefix)
   }
 
-  get isSnek(): boolean {
-    return this.urlPrefix === 'snek'
-  }
-
   get isTargetPage(): boolean {
     // why?
     return (
@@ -301,37 +256,18 @@ export default class NavbarMenu extends mixins(
     return !this.isLandingPage || !this.showTopNavbar || this.isBurgerMenuOpened
   }
 
-  get navBarTitle(): string {
-    let title = ''
-    if (this.inCollectionPage) {
-      title = this.currentCollection.name
-    } else if (this.inGalleryDetailPage) {
-      title = this.currentGalleryItemName
-    } else if (this.inUserProfilePage) {
-      const address = this.$route.params.id
-      title = this.artistName ? this.artistName : address
-      if (!this.artistName) {
-        this.fetchArtistIdentity(address)
-      }
-    }
-    return title
-  }
+  public openWalletConnectModal(): void {
+    this.closeBurgerMenu()
 
-  public disconnect() {
-    this.$store.dispatch('setAuth', { address: '' }) // null not working
-    clearSession()
+    this.$buefy.modal.open({
+      parent: this,
+      ...ConnectWalletModalConfig,
+    })
   }
 
   @Watch('isBurgerMenuOpened')
   onBurgerMenuOpenedChanged() {
     this.setBodyScroll(!this.isBurgerMenuOpened)
-  }
-
-  async fetchArtistIdentity(address) {
-    const identity = await get(address, identityStore)
-    if (identity && identity.display) {
-      this.artistName = identity.display
-    }
   }
 
   onScroll() {

@@ -3,6 +3,7 @@ $themes: (
     'white': #ffffff,
     'black': #000000,
     'text-color': #000000,
+    'border-color': #000000,
     'text-color-inverse': #ffffff,
     'k-accent': #ff7ac3,
     'k-accentlight': #ffe5f3,
@@ -13,7 +14,7 @@ $themes: (
     'k-hovergrey': #6b6b6b,
     'k-blue': #6188e7,
     'k-shade': #cccccc,
-    'primary-shadow': 4px 4px $black,
+    'primary-shadow': 4px 4px black,
     'background-color': #ffffff,
   ),
   'dark-mode': (
@@ -21,6 +22,7 @@ $themes: (
     'black': #000000,
     'text-color': #ffffff,
     'text-color-inverse': #191718,
+    'border-color': #ffffff,
     'k-accent': #191718,
     'k-accentlight': #ffe5f3,
     'k-accentlight2': #363234,
@@ -30,7 +32,7 @@ $themes: (
     'k-hovergrey': #6b6b6b,
     'k-blue': #6188e7,
     'k-shade': #cccccc,
-    'primary-shadow': 4px 4px $white,
+    'primary-shadow': 4px 4px white,
     'background-color': #191718,
   ),
 );
