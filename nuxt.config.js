@@ -301,6 +301,12 @@ export default defineNuxtConfig({
 
   buildModules: ['nuxt-webpack-optimisations'],
 
+  webpackOptimisations: {
+    features: {
+      esbuildLoader: false,
+    },
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     babel: {
