@@ -1,5 +1,7 @@
 <template>
   <section class="landing-search is-flex is-align-items-center">
+    <img src="/landing-blurred-header-left.svg" class="landing-search-left" />
+    <img :src="landingImage[0]" class="landing-shapes" />
     <div
       class="is-flex is-flex-direction-column is-align-items-center search-info">
       <h1
@@ -31,6 +33,8 @@
         </a>
       </div>
     </div>
+    <img src="/landing-blurred-header-right.svg" class="landing-search-right" />
+    <img :src="landingImage[1]" class="landing-shapes" />
   </section>
 </template>
 
