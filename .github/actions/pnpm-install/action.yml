@@ -37,3 +37,9 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install
+      env:
+        HUSKY: '0' # By default do not run HUSKY install
+
+    - name: Remove PWA/Icons
+      shell: bash
+      run: rm -rf ./.nuxt/pwa
