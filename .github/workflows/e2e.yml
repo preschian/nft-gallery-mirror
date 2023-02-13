@@ -31,7 +31,6 @@ jobs:
       - name: Build App Results
         uses: actions/upload-artifact@v3
         with:
-          name: dist
           path: dist
 
   e2e:
@@ -49,7 +48,7 @@ jobs:
       - name: Use Generated App
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          path: dist
 
       - name: Install Dependencies
         uses: ./.github/actions/pnpm-install
