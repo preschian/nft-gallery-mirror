@@ -67,6 +67,11 @@ jobs:
         with:
           name: generated-dist
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
       - name: Cypress run
         timeout-minutes: 10
         uses: Wandalen/wretry.action@master
