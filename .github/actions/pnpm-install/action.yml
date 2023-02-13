@@ -1,5 +1,6 @@
 name: 'pnpm install'
 description: 'Run pnpm install'
+shell: bash
 
 runs:
   using: 'composite'
