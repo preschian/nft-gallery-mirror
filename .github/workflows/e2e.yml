@@ -47,7 +47,6 @@ jobs:
       - name: Build App Results
         uses: actions/upload-artifact@v3
         with:
-          name: generated-dist
           path: dist
 
   e2e:
@@ -65,7 +64,7 @@ jobs:
       - name: Use Generated App
         uses: actions/download-artifact@v3
         with:
-          name: generated-dist
+          name: dist
 
       - name: Cache pnpm modules
         uses: actions/cache@v3
