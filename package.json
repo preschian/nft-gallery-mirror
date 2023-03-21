@@ -182,7 +182,8 @@
       "h3": "1.1.0"
     },
     "patchedDependencies": {
-      "vuex@3.6.2": "patches/vuex@3.6.2.patch"
+      "vuex@3.6.2": "patches/vuex@3.6.2.patch",
+      "@nuxt/webpack-edge@2.16.0-27720022.54e852f": "patches/@nuxt__webpack-edge@2.16.0-27720022.54e852f.patch"
     }
   }
 }
