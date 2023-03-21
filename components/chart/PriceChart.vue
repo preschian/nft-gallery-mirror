@@ -1,6 +1,8 @@
 <template>
   <div class="common-price-chart">
-    <span class="chart-y-description is-size-7">Price ({{ unit }})</span>
+    <span class="chart-y-description is-size-7"
+      >Price ({{ chainSymbol }})
+    </span>
     <NeoDropdown class="py-0">
       <NeoButton :label="selectedTimeRange.label" class="time-range-button" />
 
@@ -32,9 +34,9 @@ import { format } from 'date-fns'
 import { NeoButton, NeoDropdown, NeoDropdownItem } from '@kodadot1/brick'
 
 ChartJS.register(zoomPlugin)
-const { $i18n, $colorMode } = useNuxtApp()
-const { unit } = useChain()
-
+const { $i18n } = useNuxtApp()
+const { chainSymbol } = useChain()
+const { isDarkMode } = useTheme()
 const daysTranslation = (day: number) => $i18n.t('priceChart.days', [day])
 
 const timeRangeList = [
@@ -61,11 +63,6 @@ const selectedTimeRange = ref(timeRangeList[0])
 const setTimeRange = (value: { value: number; label: string }) => {
   selectedTimeRange.value = value
 }
-const isDarkMode = computed(
-  () =>
-    $colorMode.preference === 'dark' ||
-    document.documentElement.className.includes('dark-mode')
-)
 
 const props = defineProps<{
   priceChartData?: [Date, number][][]
@@ -167,7 +164,7 @@ const getPriceChartData = () => {
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  return `Price: ${context.parsed.y}${unit.value}`
+                  return `Price: ${context.parsed.y} ${chainSymbol.value}`
                 },
                 title: function (context) {
                   return format(context[0].parsed.x, 'MMM dd HH:mm')

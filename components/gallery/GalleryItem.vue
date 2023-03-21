@@ -1,19 +1,28 @@
 <template>
   <section class="py-5 gallery-item">
     <MessageNotify
-      v-if="message || showCongratsMessage"
+      v-if="congratsNewNft"
+      :title="$t('mint.success')"
+      :subtitle="$t('mint.successCreateNewNft', [congratsNewNft])" />
+    <MessageNotify
+      v-else-if="showCongratsMessage"
       :title="$t('mint.success')"
       :subtitle="$t('mint.successNewNfts')" />
     <div class="columns is-variable is-6">
       <div class="column is-two-fifths">
         <MediaItem
           :key="nftImage"
+          :class="{
+            'is-flex is-align-items-center is-justify-content-center h-audio':
+              resolveMedia(nftMimeType) == MediaType.AUDIO,
+          }"
           class="gallery-item-media"
           :src="nftImage"
           :animation-src="nftAnimation"
           :mime-type="nftMimeType"
           :title="nft?.name || nft?.id"
-          is-detail />
+          is-detail
+          :original="isMobile && true" />
       </div>
       <div class="py-6 column">
         <div
@@ -21,7 +30,7 @@
           <!-- title section -->
           <div class="pb-4">
             <div class="is-flex is-justify-content-space-between">
-              <div>
+              <div class="name-container">
                 <h1 class="title" data-cy="item-title">
                   {{ nft?.name || nft?.id }}
                 </h1>
@@ -47,14 +56,14 @@
               <IdentityItem
                 v-if="nft?.issuer"
                 class="gallery-avatar mr-4"
-                :label="`${$t('Creator')}`"
+                :label="$t('Creator')"
                 :prefix="urlPrefix"
                 :account="nft?.issuer"
                 data-cy="item-creator" />
               <IdentityItem
                 v-if="nft?.currentOwner !== nft?.issuer"
                 class="gallery-avatar"
-                :label="`${$t('Owner')}`"
+                :label="$t('Owner')"
                 :prefix="urlPrefix"
                 :account="nft?.currentOwner || ''"
                 data-cy="item-owner" />
@@ -104,6 +113,8 @@ import { exist } from '@/components/search/exist'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { generateNftImage } from '@/utils/seoImageGenerator'
 import { formatBalanceEmptyOnZero } from '@/utils/format/balance'
+import { MediaType } from '@/components/rmrk/types'
+import { resolveMedia } from '@/utils/gallery/media'
 
 const { urlPrefix } = usePrefix()
 const { $seoMeta } = useNuxtApp()
@@ -113,6 +124,7 @@ const router = useRouter()
 const { nft, nftMetadata, nftImage, nftAnimation, nftMimeType } =
   useGalleryItem()
 const collection = computed(() => nft.value?.collection)
+const isMobile = ref(window.innerWidth < 768)
 
 const tabs = {
   offers: '0',
@@ -126,7 +138,7 @@ const onNFTBought = () => {
   activeTab.value = tabs.activity
   showCongratsMessage.value = true
 }
-const message = ref('')
+const congratsNewNft = ref('')
 
 const CarouselTypeRelated = defineAsyncComponent(
   () => import('@/components/carousel/CarouselTypeRelated.vue')
@@ -140,9 +152,9 @@ const CollectionDetailsPopover = defineAsyncComponent(
 )
 
 onMounted(() => {
-  exist(route.query.message, (val) => {
-    message.value = val === 'congrats' ? val : ''
-    router.replace({ query: { redesign: 'true' } })
+  exist(route.query.congratsNft, (val) => {
+    congratsNewNft.value = val ? val : ''
+    router.replace({ query: {} })
   })
 })
 
@@ -176,9 +188,10 @@ useNuxt2Meta({
   font-size: 2.4375em;
 }
 
-hr {
-  height: 1px;
+.name-container {
+  max-width: 75%;
 }
+
 .gallery-item-tabs-panel-wrapper {
   margin-top: unset;
   height: 100%;
@@ -188,5 +201,23 @@ hr {
   .gallery-item-tabs-panel-wrapper {
     margin-top: 1.25rem;
   }
+}
+
+@media screen and (max-width: 930px) {
+  .columns {
+    display: inherit;
+    & > .column {
+      width: 100%;
+    }
+  }
+}
+
+.gallery-item-media image {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.h-audio {
+  height: 70%;
 }
 </style>

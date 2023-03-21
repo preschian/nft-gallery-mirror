@@ -1,17 +1,22 @@
 #import "../../fragments/collection.graphql"
 #import "../../fragments/collectionDetails.graphql"
+#import "../../fragments/subsquidNft.graphql"
+#import "../../fragments/baseMeta.graphql"
 
 query collectionById(
   $id: String!
   $search: [NFTEntityWhereInput!]
   $orderBy: NFTEntityOrderByInput = blockNumber_DESC
-  $first: Int!
+  $first: Int
   $offset: Int
 ) {
   collectionEntity: collectionEntityById(id: $id) {
     ...collection
     ...collectionDetails
     createdAt
+    meta {
+      ...baseMeta
+    }
     nfts(
       orderBy: [$orderBy, blockNumber_DESC]
       limit: $first
@@ -24,16 +29,13 @@ query collectionById(
       price
       burned
       currentOwner
+      ...subsquidNft
     }
   }
 
   nftEntitiesConnection(
     orderBy: id_ASC
-    where: {
-      burned_eq: false
-      collection: { id_eq: $id }
-      AND: $search
-    }
+    where: { burned_eq: false, collection: { id_eq: $id }, AND: $search }
   ) {
     totalCount
   }

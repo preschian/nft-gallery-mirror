@@ -55,7 +55,11 @@ export default defineNuxtConfig({
       },
       { property: 'og:locale', content: 'en_US' },
       { property: 'twitter:site', content: '@KodaDot' },
-      { property: 'twitter:card', content: 'summary_large_image' },
+      {
+        hid: 'twitter:card',
+        name: 'twitter:card',
+        content: 'summary_large_image',
+      },
       { hid: 'og:type', property: 'og:type', content: 'website' },
       { hid: 'og:url', property: 'og:url', content: baseUrl },
       {
@@ -73,20 +77,24 @@ export default defineNuxtConfig({
         property: 'og:image',
         content: `${baseUrl}/k_card.png`,
       },
-      { hid: 'twitter:url', name: 'twitter:url', content: baseUrl },
+      {
+        hid: 'twitter:url',
+        property: 'twitter:url',
+        content: baseUrl,
+      },
       {
         hid: 'twitter:title',
-        name: 'twitter:title',
+        property: 'twitter:title',
         content: 'KodaDot - NFT Market Explorer',
       },
       {
         hid: 'twitter:description',
-        name: 'twitter:description',
+        property: 'twitter:description',
         content: 'One Stop NFT Shop on Polkadot',
       },
       {
         hid: 'twitter:image',
-        name: 'twitter:image',
+        property: 'twitter:image',
         content: `${baseUrl}/k_card.png`,
       },
     ],
@@ -106,6 +114,12 @@ export default defineNuxtConfig({
         href: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&display=swap',
       },
     ],
+    script: [
+      {
+        src: 'https://kit.fontawesome.com/54f29b7997.js',
+        crossorigin: 'anonymous',
+      },
+    ],
   },
 
   loadingIndicator: {
@@ -115,7 +129,7 @@ export default defineNuxtConfig({
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['styles/index.scss', '@fortawesome/fontawesome-svg-core/styles.css'],
+  css: ['styles/index.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -147,6 +161,10 @@ export default defineNuxtConfig({
     dirs: [
       {
         path: '~/components',
+        extensions: ['vue'],
+      },
+      {
+        path: '~/components/common',
         extensions: ['vue'],
       },
       {
@@ -207,6 +225,7 @@ export default defineNuxtConfig({
     '@kevinmarrec/nuxt-pwa',
     '@nuxtjs/color-mode',
     '@vueuse/nuxt',
+    ['@pinia/nuxt', { disableVuex: false }],
   ],
 
   sentry: {

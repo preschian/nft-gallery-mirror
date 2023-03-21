@@ -70,7 +70,7 @@
         field="timestamp"
         :label="$t('tabs.tabActivity.date')">
         <o-tooltip :label="parseDate(props.row.timestamp)" position="left">
-          {{ formatToNow(props.row.timestamp) }}
+          <span class="no-wrap">{{ formatToNow(props.row.timestamp) }}</span>
         </o-tooltip>
       </o-table-column>
     </o-table>
@@ -104,7 +104,10 @@ const { data, loading } = useGraphql({
   clientName: urlPrefix.value,
   variables: {
     id: dprops.nftId,
-    interaction: dprops.interactions,
+    interaction:
+      urlPrefix.value === 'rmrk2'
+        ? dprops.interactions.filter((i) => i !== 'MINTNFT' && i !== 'CONSUME')
+        : dprops.interactions,
     limit: 100,
   },
 })
@@ -125,7 +128,9 @@ watchEffect(() => {
 
 const formatPrice = (price) => {
   const { symbol } = assets(tokenId.value)
-  const tokenSymbol = urlPrefix.value === 'rmrk' ? unit.value : symbol
+  const tokenSymbol = ['rmrk', 'rmrk2'].includes(urlPrefix.value)
+    ? unit.value
+    : symbol
 
   return formatBalance(price, decimals.value, tokenSymbol)
 }

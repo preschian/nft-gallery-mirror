@@ -14,16 +14,15 @@ export default class InfiniteScrollMixin extends Vue {
   protected itemsPerRow = 4
   private scrollItemSizeInit = false
   protected mobileScreenWidth = 768
-  protected first = 12
+  protected first = 20
   protected total = 0
-  protected prefetchDistance = 600
+  protected prefetchDistance = 1600
   protected isFetchingData = false
+  protected disablePrefetchPreviousPage = false
   protected scrollContainerId = INFINITE_SCROLL_CONTAINER_ID
   protected scrollItemClassName = INFINITE_SCROLL_ITEM_CLASS_NAME
-  protected prefetching = false
 
   protected mounted(): void {
-    this.prefetchNextPage()
     window.addEventListener('resize', this.onResize)
     window.addEventListener('scroll', this.onScroll)
   }
@@ -43,8 +42,7 @@ export default class InfiniteScrollMixin extends Vue {
     return this.scrollItemHeight * (this.first / this.itemsPerRow)
   }
 
-  @Debounce(1000)
-  protected onScroll(): void {
+  private updateCurrentPage() {
     const currentPage =
       Math.floor(document.documentElement.scrollTop / this.pageHeight) +
       this.startPage
@@ -52,6 +50,11 @@ export default class InfiniteScrollMixin extends Vue {
       this.replaceUrlPage(String(currentPage))
       this.currentPage = currentPage
     }
+  }
+
+  @Debounce(1000)
+  protected onScroll(): void {
+    this.updateCurrentPage()
   }
 
   protected replaceUrlPage(page: string): void {
@@ -136,26 +139,20 @@ export default class InfiniteScrollMixin extends Vue {
   }
 
   public async prefetchNextPage() {
-    if (
-      this.endPage - this.currentPage <= 3 &&
-      this.canLoadNextPage &&
-      !this.prefetching
-    ) {
-      this.prefetching = true
+    this.updateCurrentPage()
+    if (this.endPage - this.currentPage <= 3 && this.canLoadNextPage) {
       await this.fetchNextPage()
-      this.prefetching = false
     }
   }
 
   public async prefetchPreviousPage() {
+    this.updateCurrentPage()
     if (
+      !this.disablePrefetchPreviousPage &&
       this.currentPage - this.startPage <= 1 &&
-      this.startPage > 1 &&
-      !this.prefetching
+      this.startPage > 1
     ) {
-      this.prefetching = true
       await this.fetchPreviousPage()
-      this.prefetching = false
     }
   }
 

@@ -9,7 +9,9 @@ config.autoAddCss = false
 import {
   faAngleLeft,
   faAngleRight,
+  faArrowRight,
   faArrowUp,
+  faArrowUpRightFromSquare,
   faArrowsAlt,
   faBars,
   faBookOpen,
@@ -82,6 +84,8 @@ import {
   faShareSquare,
   faShop,
   faSignOutAlt,
+  faSort,
+  faSquareArrowUpRight,
   faSync,
   faTable,
   faTag,
@@ -95,6 +99,7 @@ import {
   faUserCircle,
   faUsers,
   faWallet,
+  faX,
 } from '@fortawesome/free-solid-svg-icons'
 
 // throws error, idk why
@@ -122,6 +127,10 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
+  faArrowRight,
+  faSort,
+  faArrowUpRightFromSquare,
+  faSquareArrowUpRight,
   faBars,
   faBookOpen,
   faPaperPlane,
@@ -229,16 +238,17 @@ library.add(
   faThumbsDown,
   faExternalLinkSquareAlt,
   faYoutube,
-  faInstagram
+  faInstagram,
+  faX
 )
 
 Vue.component('VueFontawesome', FontAwesomeIcon).use(Neo, {
-  iconComponent: 'vue-fontawesome',
-  iconPack: 'fas',
+  iconPack: 'fa-sharp',
   customIconPacks: {
-    fas: {
+    'fa-sharp': {
+      iconPrefix: 'fa-',
       sizes: {
-        default: 'fw',
+        default: 'fw fa-regular',
       },
     },
   },

@@ -1,0 +1,56 @@
+.gallery-avatar {
+  .avatar {
+    border-radius: 50%;
+    & > div {
+      display: flex;
+      align-items: center;
+    }
+
+    @include ktheme() {
+      box-shadow: theme('primary-shadow');
+      border: 1px solid theme('border-color');
+    }
+  }
+}
+
+.gallery-item {
+  .media-object {
+    @include ktheme() {
+      box-shadow: theme('primary-shadow');
+      border: 1px solid theme('border-color');
+    }
+  }
+
+  .icon-action {
+    width: 2.188rem;
+  }
+
+  @media screen and (max-width: 806px) and (min-width: 768px) {
+    .column {
+      padding-right: 0!important;
+    }
+  }
+}
+
+.gallery-item-desc-markdown {
+  pre {
+    background-color: transparent;
+    margin: 1rem 0;
+    white-space: pre-wrap;
+    @include ktheme() {
+      border: 1px solid theme('k-shade');
+      color: theme('k-shade');
+    }
+  }
+
+  a {
+    @include ktheme() {
+      color: theme('k-blue') !important;
+      &:hover {
+        color: theme('k-blue-hover')  !important;
+      }
+    }
+  }
+
+  word-break: 'break-word';
+}

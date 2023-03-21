@@ -18,7 +18,7 @@
           :name="name"
           :show-default-suggestions="showDefaultSuggestions"
           :query="query"
-          @gotoGallery="redirectToGalleryPageIfNeed"
+          @gotoGallery="$emit('redirect', $event)"
           @close="closeDropDown">
         </SearchSuggestion>
       </template>
@@ -48,8 +48,6 @@ import { SearchQuery } from './types'
 import PrefixMixin from '~/utils/mixins/prefixMixin'
 import KeyboardEventsMixin from '~/utils/mixins/keyboardEventsMixin'
 
-const SearchPageRoutePathList = ['collectibles', 'items']
-
 @Component({
   components: {
     SearchSuggestion: () => import('./SearchSuggestion.vue'),
@@ -77,10 +75,10 @@ export default class SearchBar extends mixins(
   }
 
   @Emit('enter')
+  @Emit('redirect')
   onEnter() {
-    this.redirectToGalleryPageIfNeed()
     this.closeDropDown()
-
+    this.searchRef?.$refs?.input?.$refs?.input?.blur()
     // insert search term in history
     this.searchSuggestionRef?.insertNewHistory()
   }
@@ -100,7 +98,10 @@ export default class SearchBar extends mixins(
 
   private bindSearchEvents(event) {
     event.preventDefault()
-    if (event.key === 'k') {
+    if (
+      event.key === 'k' &&
+      this.searchRef?.$el?.getBoundingClientRect()?.top > 0
+    ) {
       this.focusInput()
     }
   }
@@ -111,21 +112,6 @@ export default class SearchBar extends mixins(
 
   get showDefaultSuggestions() {
     return this.urlPrefix === 'rmrk' || this.urlPrefix === 'bsx'
-  }
-
-  redirectToGalleryPageIfNeed(params?: Record<string, string>) {
-    const routePathList = SearchPageRoutePathList.map(
-      (route) => `/${this.urlPrefix}/explore/${route}`
-    )
-    if (routePathList.indexOf(this.$route.path) === -1) {
-      this.$router.push({
-        path: `${this.urlPrefix}/explore/items`,
-        query: {
-          ...this.$route.query,
-          ...params,
-        },
-      })
-    }
   }
 }
 </script>

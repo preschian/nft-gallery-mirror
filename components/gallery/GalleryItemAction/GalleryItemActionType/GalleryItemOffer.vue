@@ -19,8 +19,12 @@
         <template #action>
           <NeoTooltip
             v-if="active && !confirm"
-            :active="insufficientBalance"
-            :label="$t('tooltip.notEnoughBalance')">
+            :active="insufficientBalance || offerPriceInvalid"
+            :label="
+              insufficientBalance
+                ? $t('tooltip.notEnoughBalance')
+                : $t('tooltip.invalidAmount')
+            ">
             <NeoButton
               :disabled="disabledConfirmBtn"
               label="Confirm 1/2"
@@ -49,7 +53,7 @@
               class="input-price is-flex is-align-items-center"
               type="number"
               placeholder="Type Your Offer"
-              min="0" />
+              :min="MIN_OFFER_PRICE" />
             <div class="px-4">KSM</div>
           </div>
           <div
@@ -84,6 +88,7 @@ import { simpleDivision } from '@/utils/balance'
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
 import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import { MIN_OFFER_PRICE } from '@/utils/constants'
 import Vue from 'vue'
 
 const Loader = defineAsyncComponent(
@@ -134,7 +139,7 @@ const insufficientBalance = computed(
 
 const offerPriceInvalid = computed(() => {
   if (offerPrice.value) {
-    return Math.sign(offerPrice.value) !== 1
+    return offerPrice.value < MIN_OFFER_PRICE
   }
   return true
 })
@@ -178,17 +183,18 @@ async function confirm2() {
   }
 }
 
-watchEffect(async () => {
-  price.value =
-    currentBlock < data.value?.offers[0]?.expiration
-      ? data.value?.offers[0]?.price
-      : ''
-})
-
-const currentBlock = computed(async () => {
+async function currentBlock() {
   const api = await apiInstance.value
   const block = await api.rpc.chain.getHeader()
   return block.number.toNumber()
+}
+
+watchEffect(async () => {
+  const blockNumber = await currentBlock()
+  price.value =
+    blockNumber < data.value?.offers[0]?.expiration
+      ? data.value?.offers[0]?.price
+      : ''
 })
 
 const actionRef = ref(null)
@@ -234,10 +240,13 @@ onClickOutside(actionRef, () => {
       cursor: pointer;
       display: block;
       line-height: 1;
-      border-left: 1px solid $k-grey;
       text-align: center;
       margin-left: 0.5rem;
       padding-left: 0.5rem;
+
+      @include ktheme() {
+        border-left: 1px solid theme('k-grey');
+      }
     }
 
     & > *:first-child label {
