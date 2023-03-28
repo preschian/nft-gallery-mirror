@@ -1,4 +1,3 @@
-import { defineNuxtConfig } from '@nuxt/bridge'
 import SentryWebpackPlugin from '@sentry/webpack-plugin'
 
 import { apolloClientConfig } from './utils/constants'
@@ -207,17 +206,6 @@ export default defineNuxtConfig({
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/buefy
-    [
-      'nuxt-buefy',
-      {
-        css: false,
-        defaultIconPack: 'fas',
-        defaultIconComponent: 'vue-fontawesome',
-        defaultFieldLabelPosition: 'inside',
-        materialDesignIcons: false,
-      },
-    ],
     '@nuxtjs/apollo',
     '@nuxtjs/i18n',
     '@nuxtjs/sentry',
