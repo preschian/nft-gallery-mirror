@@ -61,19 +61,14 @@
             :label="nameHeaderLabel">
             <nuxt-link
               v-if="groupKey === 'Holder' || groupKey === 'Flipper'"
-              :to="{
-                name: `${urlPrefix}-u-id`,
-                params: { id: props.row[groupKey] },
-                query: { tab: groupKey === 'Holder' ? 'holdings' : 'gains' },
-              }">
+              :to="`/${urlPrefix}/u/${props.row[groupKey]}?tab=${
+                groupKey === 'Holder' ? 'holdings' : 'gains'
+              }`">
               <Identity :address="props.row[groupKey]" />
             </nuxt-link>
             <nuxt-link
-              v-else-if="groupKey === 'CollectionId'"
-              :to="{
-                name: `${urlPrefix}-collection-id`,
-                params: { id: props.row.CollectionId },
-              }">
+              v-else
+              :to="`/${urlPrefix}/collection/${props.row.CollectionId}`">
               <Identity
                 :address="props.row.Item.collection.issuer"
                 :custom-name-option="props.row.Item.collection.name" />
@@ -133,11 +128,7 @@
               <td
                 v-show="columnsVisible['Name'].display"
                 class="short-name-column">
-                <nuxt-link
-                  :to="{
-                    name: `${urlPrefix}-gallery-id`,
-                    params: { id: item.Item.id },
-                  }">
+                <nuxt-link :to="`/${urlPrefix}/gallery/${item.Item.id}`">
                   {{ item.Item.name || item.Item.id }}
                 </nuxt-link>
               </td>
@@ -183,6 +174,7 @@ import PrefixMixin from '@/utils/mixins/prefixMixin'
 
 import { parseDate, parsePriceForItem } from './helper'
 import { Interaction as EventInteraction } from '../../service/scheme'
+import { usePreferencesStore } from '@/stores/preferences'
 
 const components = {
   Identity: () => import('@/components/identity/IdentityIndex.vue'),
@@ -260,6 +252,7 @@ export default class CommonHolderTable extends mixins(
   }
   public isOpen = false
   private showDetailIcon = true
+  private preferencesStore = usePreferencesStore()
 
   public async created() {
     this.initKeyboardEventHandler({
@@ -305,7 +298,7 @@ export default class CommonHolderTable extends mixins(
   }
 
   get itemsPerPage(): number {
-    return this.$store.getters['preferences/getHistoryItemsPerPage']
+    return this.preferencesStore.getHistoryItemsPerPage
   }
 
   get showList(): TableRow[] {

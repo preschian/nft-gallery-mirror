@@ -16,16 +16,13 @@
     </Search>
     <InfiniteLoading
       v-if="startPage > 1 && !isLoading && total > 0"
+      :distance="prefetchDistance"
       direction="top"
       @infinite="reachTopHandler"></InfiniteLoading>
-    <GalleryCardList
-      :items="items"
-      horizontal-layout
-      :route="prefixedRoute"
-      :link="link"
-      :listed="searchQuery.listed" />
+    <GalleryItemCardList :items="items" />
     <InfiniteLoading
       v-if="canLoadNextPage && !isLoading && total > 0"
+      :distance="prefetchDistance"
       @infinite="reachBottomHandler"></InfiniteLoading>
     <ScrollTopButton />
   </div>
@@ -42,7 +39,8 @@ import { Debounce } from 'vue-debounce-decorator'
 import shouldUpdate from '~/utils/shouldUpdate'
 
 const components = {
-  GalleryCardList: () => import('./GalleryCardList.vue'),
+  GalleryItemCardList: () =>
+    import('@/components/shared/gallery/GalleryItemCardList.vue'),
   Pagination: () => import('@/components/rmrk/Gallery/Pagination.vue'),
   Search: () => import('@/components/search/SearchCollection.vue'),
   Layout: () => import('@/components/rmrk/Gallery/Layout.vue'),
@@ -128,7 +126,7 @@ export default class PaginatedCardList extends mixins(
       PRICE_ASC: 'price_ASC',
     }
 
-    return remapTable[this.searchQuery.sortBy || '']
+    return remapTable[this.searchQuery.sortBy || ''] || this.searchQuery.sortBy
   }
 
   created() {
@@ -178,9 +176,8 @@ export default class PaginatedCardList extends mixins(
       }
 
       this.total = totalCount
-      // this.items = nftEntities
       this.isLoading = false
-      this.$emit('change', this.total)
+      this.total > 0 && this.$emit('change', this.total)
     }
   }
 

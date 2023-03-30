@@ -1,5 +1,3 @@
-import shortAddress from '@/utils/chainProperties'
-
 const users = [
   {
     address: 'FqCJeGcPidYSsvvmT17fHVaYdE2nXMYgPsBn3CP9gugvZR5',
@@ -34,13 +32,13 @@ describe('Identity.vue component', () => {
             },
           })
         )
-        cy.visit(`/rmrk/u/${address}`)
-          .its('navigator.permissions')
-          .invoke('query', { name: 'clipboard-read' })
-          .its('state')
-          .should('equal', 'granted')
 
-        cy.getCy('identity').realHover()
+        // test visit cross-chain first
+        cy.visit('/bsx')
+
+        // back to rmrk
+        cy.visit(`/rmrk/u/${address}`)
+        cy.contains('[data-cy="identity"]', name).realHover()
         cy.get('.tippy-popper')
           .should('exist')
           .then(() => {
@@ -58,10 +56,12 @@ describe('Identity.vue component', () => {
               '\n      0\n    '
             )
             cy.getCy('identity-sold').should('not.have.text', '\n      0\n    ')
-            cy.window()
-              .its('navigator.clipboard')
-              .invoke('readText')
-              .should('equal', address)
+
+            cy.window().then((win) => {
+              win.navigator.clipboard.readText().then((text) => {
+                expect(text).to.eq(address)
+              })
+            })
           })
       }
     )

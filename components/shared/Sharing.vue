@@ -104,6 +104,7 @@
 import { Component, Prop, Vue } from 'nuxt-property-decorator'
 import { IFrame, emptyIframe } from '../../components/rmrk/types'
 import { downloadImage } from '~/utils/download'
+import { useHistoryStore } from '@/stores/history'
 
 const components = {
   ShowQRModal: () => import('@/components/shared/modals/ShowQRModal.vue'),
@@ -118,8 +119,9 @@ export default class Sharing extends Vue {
   @Prop({ default: '' }) btnType?: string
 
   private active = false
+  private historyStore = useHistoryStore()
 
-  private hashtags = 'KusamaNetwork,KodaDot'
+  public hashtags = 'KusamaNetwork,KodaDot'
 
   get helloText(): string {
     return this.label
@@ -168,8 +170,8 @@ export default class Sharing extends Vue {
     })
   }
 
-  get currentGalleryItemImage(): { image: string; name: string } {
-    return this.$store.getters['history/getCurrentlyViewedItem'] || {}
+  get currentGalleryItemImage() {
+    return this.historyStore.getCurrentlyViewedItem || {}
   }
 
   public async shareTooltip(): Promise<void> {
@@ -188,9 +190,9 @@ export default class Sharing extends Vue {
     }
   }
 
-  protected downloadImage() {
-    const { image, name } = this.currentGalleryItemImage
-    image && downloadImage(image, name)
+  public downloadImage() {
+    const { image } = this.currentGalleryItemImage
+    image && downloadImage(image)
   }
 
   public openFallbackShareTooltip(): void {
@@ -207,10 +209,13 @@ export default class Sharing extends Vue {
 
 .share {
   &__button {
-    color: $white;
     background: transparent;
     border: none;
     margin: 5px;
+
+    @include ktheme() {
+      color: 1px solid theme('text-color-inverse');
+    }
 
     & > span {
       display: flex;
@@ -220,9 +225,11 @@ export default class Sharing extends Vue {
 
   &__tooltip {
     .tooltip-content {
-      border: 1px solid $black !important;
-      box-shadow: $primary-shadow !important;
-      background: $white !important;
+      @include ktheme() {
+        box-shadow: theme('primary-shadow' !important);
+        border: 1px solid theme('border-color') !important;
+        background: theme('background-color') !important;
+      }
     }
 
     .tooltip-trigger {
@@ -233,7 +240,9 @@ export default class Sharing extends Vue {
 
     &.is-light {
       .tooltip-content {
-        background-color: $white;
+        @include ktheme() {
+          background-color: 1px solid theme('background-color');
+        }
       }
     }
   }
@@ -241,8 +250,11 @@ export default class Sharing extends Vue {
 
 .qr-basic button {
   border: none !important;
-  border-top: 1px solid #ff47ac !important;
   background-color: transparent !important;
+
+  @include ktheme() {
+    border-top: 1px solid theme('k-primary') !important;
+  }
 }
 
 .share-option,
@@ -251,15 +263,9 @@ export default class Sharing extends Vue {
   background-color: transparent !important;
 
   .icon svg {
-    color: $k-blue;
-  }
-}
-
-.dark-mode .share__tooltip {
-  .tooltip-content {
-    background-color: $dark-accent !important;
-    border: 1px solid $white !important;
-    box-shadow: $primary-shadow-dark !important;
+    @include ktheme() {
+      color: 1px solid theme('k-blue') !important;
+    }
   }
 }
 </style>

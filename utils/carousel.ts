@@ -1,6 +1,4 @@
 import { formatDistanceToNow } from 'date-fns'
-import { get, set } from 'idb-keyval'
-import { isEmpty } from '@kodadot1/minimark'
 import { LastEvent } from '@/utils/types/types'
 
 import { CarouselNFT } from '@/components/base/types'
@@ -21,40 +19,42 @@ export const formatNFT = (nfts, chain?: string): CarouselNFT[] => {
     const timestamp = nft.updatedAt || nft.timestamp
     const metaImage = nft.meta.image
     const metaAnimationUrl = nft.meta.animationUrl
+    const name = nft.name || nft.meta.name
 
     return {
       ...nft,
-      timestamp: formatDistanceToNow(new Date(timestamp), {
-        addSuffix: true,
-      }),
+      timestamp: timestamp
+        ? formatDistanceToNow(new Date(timestamp), {
+            addSuffix: true,
+          })
+        : '',
       unixTime: new Date(timestamp).getTime(),
       price: nft.price || 0,
       image: metaImage && sanitizeIpfsUrl(metaImage),
       animationUrl: metaAnimationUrl && sanitizeIpfsUrl(metaAnimationUrl),
+      collectionName: nft.collectionName || nft.collection?.name || '--',
+      name,
+      collectionId: nft.collectionId || nft.collection?.id,
       chain: chain || urlPrefix.value,
     }
   })
 }
 
-export const setNftMetaFromCache = async (nfts): Promise<CarouselNFT[]> => {
+export const setCarouselMetadata = async (nfts): Promise<CarouselNFT[]> => {
   return await Promise.all(
     nfts.map(async (nft) => {
       if (nft.image) {
         return nft
       }
 
-      let meta = await get(nft.metadata)
-
-      if (isEmpty(meta)) {
-        meta = await fetchNFTMetadata(nft, getSanitizer(nft.metadata))
-        set(nft.metadata, meta)
-      }
-      const imageSanitizer = getSanitizer(meta.image, 'image')
+      const meta = await fetchNFTMetadata(nft, getSanitizer(nft.metadata))
+      const image = meta.image || ''
+      const imageSanitizer = getSanitizer(image, 'image')
       return {
         ...nft,
         name: meta.name,
-        image: imageSanitizer(meta.image),
-        animation_url: sanitizeIpfsUrl(meta.animation_url || meta.image),
+        image: imageSanitizer(image),
+        animation_url: sanitizeIpfsUrl(meta.animation_url || image),
       }
     })
   )

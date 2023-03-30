@@ -1,13 +1,12 @@
 // TODO: hacky, but works for now
 import { isEmpty } from '@kodadot1/minimark'
-import { get, getMany, update } from 'idb-keyval'
 import { fetchMetadata, getSanitizer } from '@/utils/ipfs'
 import { emptyObject } from './empty'
-import { imageStore } from './idbStore'
 import { fastExtract } from './ipfs'
 
 type P<T> = Promise<T>
 type KeyValue = Record<string, string>
+const metadataCache = {}
 
 export const cacheOrFetchMetadata = async <T>(
   fromCache: T | undefined,
@@ -18,42 +17,28 @@ export const cacheOrFetchMetadata = async <T>(
   }
 
   try {
-    const meta = await fetchMetadata<T>({ metadata })
-    metadata && update(metadata, () => meta) // DEV: think how does it behave in
-    return meta
+    return await fetchMetadata<T>({ metadata })
   } catch (e) {
     console.warn('[ERR] unable to get metadata', e)
     return emptyObject<T>()
   }
 }
 
-export const getSingleCloudflareImage = async (
-  metadata: string
-): P<string | undefined> => {
-  return get<string>(fastExtract(metadata), imageStore)
+export const processSingleMetadata = <T>(metadata: string): P<T> => {
+  return cacheOrFetchMetadata<T>(metadataCache[metadata], metadata)
 }
 
-export const processSingleMetadata = async <T>(
-  metadata: string,
-  disableIDB = false
-): P<T> => {
-  if (disableIDB) {
-    return cacheOrFetchMetadata<T>(undefined, metadata)
-  }
-
-  const meta = metadata ? await get(metadata) : undefined
-  return cacheOrFetchMetadata(meta, metadata)
-}
-
-export const processMetadata = async <T>(
+export const processMetadata = <T>(
   metadataList: string[],
   cb?: (meta: T, index: number) => void
-): P<void> => {
+): void => {
   const metadata = metadataList.map((meta) => meta || '')
-  const storedMetadata = await getMany<T>(metadata)
-  storedMetadata.forEach(async (m, i) => {
-    const meta = await cacheOrFetchMetadata(m, metadata[i])
-    if (cb) {
+
+  metadata.forEach(async (m, i) => {
+    const meta = await cacheOrFetchMetadata(metadataCache[m], m)
+
+    if (cb && meta !== undefined) {
+      metadataCache[m] = meta
       cb(meta, i)
     }
   })
@@ -77,12 +62,16 @@ export const flushIndexedDb = () => {
 
 export const clearSession = () => {
   try {
-    window.sessionStorage.clear()
-    window.localStorage.clear()
-    flushIndexedDb()
+    setTimeout(() => {
+      window.sessionStorage.clear()
+      window.localStorage.clear()
+      flushIndexedDb()
+    }, 100)
   } catch (error) {
     console.error(error)
   } finally {
-    window.location.reload()
+    setTimeout(() => {
+      window.location.reload()
+    }, 200)
   }
 }

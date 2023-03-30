@@ -3,12 +3,12 @@
     <!-- offers -->
     <DisablableTab
       value="0"
-      :disabled="offersTabDisabled"
+      :disabled="offersDisabled"
       :label="$t('tabs.offers')"
-      :disabled-tooltip="$t('tabs.offersDisabledRMRK')">
+      :disabled-tooltip="$t('tabs.offersDisabled')">
       <GalleryItemOffers
         v-if="
-          urlPrefix !== 'rmrk' &&
+          !['rmrk', 'rmrk2'].includes(urlPrefix) &&
           nft?.collection.id &&
           nft?.id &&
           nft.currentOwner
@@ -49,17 +49,16 @@ const props = withDefaults(
 
 const { urlPrefix } = usePrefix()
 const { nft } = useGalleryItem()
+const { offersDisabled } = useChain()
 
 const activeTab = ref('0')
 const collectionId = ref('')
-
-const offersTabDisabled = computed(() => urlPrefix.value === 'rmrk')
 
 watchEffect(() => {
   if (props.activeTab) {
     activeTab.value = props.activeTab
   }
-  if (offersTabDisabled.value) {
+  if (offersDisabled) {
     activeTab.value = '1'
   }
 

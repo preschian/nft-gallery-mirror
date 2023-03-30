@@ -24,7 +24,7 @@
         <b-dropdown-item has-link aria-role="menuitem">
           <nuxt-link to="/settings">{{ $t('settings') }}</nuxt-link>
         </b-dropdown-item>
-        <template v-if="chain === 'rmrk'">
+        <template v-if="chain === 'rmrk' || chain === 'rmrk2'">
           <b-dropdown-item has-link aria-role="menuitem">
             <a @click="showRampSDK">
               {{ $t('credit') }}
@@ -34,12 +34,6 @@
             <nuxt-link :to="{ name: 'identity' }">
               {{ $t('identity.page') }}
             </nuxt-link>
-          </b-dropdown-item>
-          <b-dropdown-item has-link aria-role="menuitem">
-            <nuxt-link to="/teleport">{{ $t('navbar.teleport') }}</nuxt-link>
-          </b-dropdown-item>
-          <b-dropdown-item has-link aria-role="menuitem">
-            <nuxt-link to="/transform">{{ $t('transform') }}</nuxt-link>
           </b-dropdown-item>
         </template>
         <b-dropdown-item v-if="isSnekOrBsx" has-link aria-role="menuitem">
@@ -91,119 +85,80 @@
       </b-dropdown-item>
     </b-dropdown>
 
-    <b-dropdown
+    <a
       v-if="account"
-      position="is-bottom-left"
-      aria-role="menu"
-      :triggers="['hover']">
-      <template #trigger>
-        <a class="navbar-item" role="button">
-          <svg
-            width="28"
-            height="27"
-            viewBox="0 0 28 23"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <rect
-              x="0.75"
-              y="1.25"
-              width="23.5"
-              height="20.5"
-              fill="none"
-              :stroke="isDarkMode ? 'white' : 'black'"
-              stroke-width="1.5" />
-            <g filter="url(#filter0_d_2684_755)">
-              <rect
-                x="15"
-                y="7.5"
-                width="12"
-                height="9"
-                :fill="isDarkMode ? 'black' : 'white'" />
-              <rect
-                x="15.75"
-                y="8.25"
-                width="10.5"
-                height="7.5"
-                :stroke="isDarkMode ? 'white' : 'black'"
-                stroke-width="1.5" />
-            </g>
-            <rect
-              x="19"
-              y="10.5"
-              width="3"
-              height="3"
-              rx="1.5"
-              :fill="isDarkMode ? 'white' : 'black'" />
-            <defs>
-              <filter
-                id="filter0_d_2684_755"
-                x="15"
-                y="7.5"
-                width="13"
-                height="10"
-                filterUnits="userSpaceOnUse"
-                color-interpolation-filters="sRGB">
-                <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                <feColorMatrix
-                  in="SourceAlpha"
-                  type="matrix"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                  result="hardAlpha" />
-                <feOffset dx="1" dy="1" />
-                <feComposite in2="hardAlpha" operator="out" />
-                <feColorMatrix
-                  type="matrix"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" />
-                <feBlend
-                  mode="normal"
-                  in2="BackgroundImageFix"
-                  result="effect1_dropShadow_2684_755" />
-                <feBlend
-                  mode="normal"
-                  in="SourceGraphic"
-                  in2="effect1_dropShadow_2684_755"
-                  result="shape" />
-              </filter>
-            </defs>
-          </svg>
-        </a>
-      </template>
-
-      <b-dropdown-item custom aria-role="menuitem">
-        <div class="has-text-grey is-size-7 mt-2">
-          {{ $t('profileMenu.wallet') }}
-        </div>
-        <span class="is-size-6">{{ userWalletName }}</span>
-        <Identity
-          :address="account"
-          class="navbar__address is-size-6"
-          hide-identity-popover />
-      </b-dropdown-item>
-
-      <hr class="dropdown-divider mx-4" aria-role="menuitem" />
-
-      <b-dropdown-item custom aria-role="menuitem">
-        <ProfileAssetsList v-if="isSnekOrBsx" />
-        <AccountBalance v-else class="is-size-7" />
-      </b-dropdown-item>
-
-      <hr class="dropdown-divider mx-4" aria-role="menuitem" />
-
-      <b-dropdown-item custom aria-role="menuitem">
-        <div class="buttons is-justify-content-space-between my-2">
-          <ConnectWalletButton
-            class="button is-size-7 is-capitalized"
-            label="general.change_account"
-            variant="connect-dropdown"
-            @closeBurgerMenu="closeBurgerMenu" />
-          <NeoButton
-            class="button is-size-7 is-capitalized"
-            :label="$t('profileMenu.disconnect')"
-            variant="connect-dropdown"
-            @click.native="disconnect()" />
-        </div>
-      </b-dropdown-item>
-    </b-dropdown>
+      class="navbar-item"
+      role="button"
+      @click="toggleWalletConnectModal">
+      <svg
+        width="28"
+        height="27"
+        viewBox="0 0 28 23"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <rect
+          x="0.75"
+          y="1.25"
+          width="23.5"
+          height="20.5"
+          fill="none"
+          :stroke="isDarkMode ? 'white' : 'black'"
+          stroke-width="1.5" />
+        <g filter="url(#filter0_d_2684_755)">
+          <rect
+            x="15"
+            y="7.5"
+            width="12"
+            height="9"
+            :fill="isDarkMode ? 'black' : 'white'" />
+          <rect
+            x="15.75"
+            y="8.25"
+            width="10.5"
+            height="7.5"
+            :stroke="isDarkMode ? 'white' : 'black'"
+            stroke-width="1.5" />
+        </g>
+        <rect
+          x="19"
+          y="10.5"
+          width="3"
+          height="3"
+          rx="1.5"
+          :fill="isDarkMode ? 'white' : 'black'" />
+        <defs>
+          <filter
+            id="filter0_d_2684_755"
+            x="15"
+            y="7.5"
+            width="13"
+            height="10"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha" />
+            <feOffset dx="1" dy="1" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_2684_755" />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_2684_755"
+              result="shape" />
+          </filter>
+        </defs>
+      </svg>
+    </a>
 
     <div v-else>
       <ConnectWalletButton
@@ -274,6 +229,10 @@ import AuthMixin from '@/utils/mixins/authMixin'
 import useApiMixin from '@/utils/mixins/useApiMixin'
 import { clearSession } from '@/utils/cachingStrategy'
 import { getKusamaAssetId } from '~~/utils/api/bsx/query'
+import { langsFlags as langsFlagsList } from '@/utils/config/i18n'
+import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import { useLangStore } from '@/stores/lang'
+import { useWalletStore } from '@/stores/wallet'
 
 const components = {
   Avatar,
@@ -299,6 +258,7 @@ export default class ProfileDropdown extends mixins(
   @Prop() public showIncomingOffers!: boolean
   @Prop() public chain!: string
   @Ref('languageDropdown') readonly languageDropdown
+  private modal: { close: () => void; isActive?: boolean } | null = null
 
   get isDarkMode() {
     return (
@@ -312,16 +272,20 @@ export default class ProfileDropdown extends mixins(
   }
 
   get langsFlags(): { value: string; flag: string; label: string }[] {
-    return this.$store.getters['lang/getLangsFlags']
+    return langsFlagsList
   }
 
-  get userFlag(): string {
-    return this.$store.getters['lang/getUserFlag']
+  get langStore() {
+    return useLangStore()
+  }
+
+  get walletStore() {
+    return useWalletStore()
   }
 
   get userLang(): string {
-    this.$i18n.locale = this.$store.getters['lang/getUserLang']
-    return this.$store.getters['lang/getUserLang']
+    this.$i18n.locale = this.langStore.language.userLang
+    return this.langStore.language.userLang
   }
 
   get account() {
@@ -332,9 +296,23 @@ export default class ProfileDropdown extends mixins(
     this.$store.dispatch('setAuth', { address: account })
   }
 
+  public toggleWalletConnectModal(): void {
+    if (this.modal?.isActive) {
+      this.modal.close()
+      this.modal = null
+      return
+    }
+    this.modal = this.$buefy.modal.open({
+      parent: this,
+      ...ConnectWalletModalConfig,
+    })
+
+    this.$emit('closeBurgerMenu')
+  }
+
   setUserLang(value: string) {
-    this.$store.dispatch('lang/setLanguage', { userLang: value })
     this.$i18n.locale = value
+    this.langStore.setLanguage({ userLang: value })
   }
 
   public toggleLanguageMenu() {
@@ -367,7 +345,7 @@ export default class ProfileDropdown extends mixins(
     return this.chain === 'snek' || this.chain === 'bsx'
   }
   get userWalletName(): string {
-    return this.$store.getters['wallet/getWalletName']
+    return this.walletStore.wallet.name
   }
 }
 </script>

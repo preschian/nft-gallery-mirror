@@ -3,7 +3,6 @@
 </template>
 
 <script lang="ts" setup>
-import CarouselIndex from './CarouselIndex.vue'
 import { useCarouselRelated } from './utils/useCarousel'
 
 const props = defineProps<{

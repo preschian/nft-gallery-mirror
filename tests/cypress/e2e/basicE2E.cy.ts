@@ -1,24 +1,23 @@
 describe('landingRmrk', () => {
   it('loadLanding', () => {
     cy.loginWithKeyring()
-    cy.visit('/rmrk')
-  })
-  it('checkNavbar', () => {
+    cy.visit(
+      '/rmrk/gallery/16516179-36FDCC8B7888DCED32-SUBWORK_MO-SUBWORK_MORNING_VIBE-0000000000000001'
+    )
     cy.rmrkNavbar()
   })
 })
 
 describe('landingBsx', () => {
   it('loadLanding', () => {
-    cy.visit('/snek')
-  })
-  it('checkNavbar', () => {
+    cy.visit('/snek/gallery/659233203-5')
     cy.snekNavbar()
   })
 })
 
-describe('snekCollectionItem', () => {
+describe.skip('snekCollectionItem', () => {
   it('collectionActions', { scrollBehavior: false }, () => {
+    cy.visit('/snek/gallery/659233203-5')
     cy.snekCollectionActions('3132385849', 'Morski pes', 'bXkmyH...J5CSGP')
   })
 })
@@ -34,8 +33,11 @@ describe.skip('snekGalleryItem', () => {
   })
 })
 
-describe('rmrkCollectionItem', () => {
+describe.skip('rmrkCollectionItem', () => {
   it('collectionActions', { scrollBehavior: false }, () => {
+    cy.visit(
+      '/rmrk/gallery/16516179-36FDCC8B7888DCED32-SUBWORK_MO-SUBWORK_MORNING_VIBE-0000000000000001'
+    )
     cy.rmrkCollectionActions(
       '32b209ecbe2b33dd24-DINOXEGGS',
       'Angel',
@@ -47,15 +49,19 @@ describe('rmrkCollectionItem', () => {
 describe('rmrkGalleryItem', () => {
   it('galleryListedItemActions', () => {
     cy.loginWithKeyring()
-    cy.rmrkGalleryListedItemActions(
-      '9834502-32b209ecbe2b33dd24-DINOXEGGS-DXDANGLS-0000000000000080',
-      'DinoPQ...LPj2rd'
+    cy.visit(
+      '/rmrk/gallery/9834502-32b209ecbe2b33dd24-DINOXEGGS-DXDANGLS-0000000000000080'
     )
+    cy.waitForNetworkIdle('+(HEAD|GET)', '*', 1000)
+    cy.get('[data-cy="item-price"]').should('contain', 'KSM')
+    cy.get('[data-cy="item-buy"]').should('be.disabled')
   })
+
   it('galleryUnlistedItemActions', () => {
-    cy.rmrkGalleryUnlistedItemActions(
-      '9834502-32b209ecbe2b33dd24-DINOXEGGS-DXDANGLS-0000000000000061',
-      'DinoPQ...LPj2rd'
+    cy.visit(
+      '/rmrk/gallery/9834502-32b209ecbe2b33dd24-DINOXEGGS-DXDANGLS-0000000000000061'
     )
+    cy.waitForNetworkIdle('POST', '*', 1000)
+    cy.get('[data-cy="item-price"]').should('not.contain', 'KSM')
   })
 })

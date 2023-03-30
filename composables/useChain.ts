@@ -1,8 +1,10 @@
 import { chainPropListOf } from '@/utils/config/chain.config'
 import { ChainProperties } from '@/utils/api/Query'
+import { availablePrefixes } from '@/utils/chain'
 
 export default function () {
-  const { urlPrefix } = usePrefix()
+  const { urlPrefix, tokenId, assets } = usePrefix()
+  const { symbol } = assets(tokenId.value)
 
   const chainProperties = computed<ChainProperties>(() => {
     return chainPropListOf(urlPrefix.value)
@@ -11,12 +13,27 @@ export default function () {
   const decimals = computed<number>(() => {
     return chainProperties.value.tokenDecimals
   })
+
   const unit = computed<string>(() => {
     return chainProperties.value.tokenSymbol
+  })
+
+  const offersDisabled = computed(() => {
+    return urlPrefix.value !== 'snek' && urlPrefix.value !== 'bsx'
+  })
+
+  const availableChains = computed(() => availablePrefixes())
+
+  const chainSymbol = computed(() => {
+    return ['rmrk', 'rmrk2'].includes(urlPrefix.value) ? unit.value : symbol
   })
 
   return {
     decimals,
     unit,
+    offersDisabled,
+    chainProperties,
+    availableChains,
+    chainSymbol,
   }
 }

@@ -6,21 +6,24 @@
           v-for="(item, index) in nfts"
           :key="`${item.id}-${index}`"
           class="keen-slider__slide carousel-item">
-          <div>
+          <div class="h-full is-flex is-flex-direction-column">
             <CarouselMedia :item="item" />
             <CarouselInfo :item="item" />
           </div>
         </div>
       </div>
-      <div class="arrow arrow-left" @click="slider?.prev()"></div>
-      <div class="arrow arrow-right" @click="slider?.next()"></div>
-    </div>
-    <div v-if="slider && !isCollection" class="dots">
-      <button
-        v-for="(_slide, idx) in dotHelper"
-        :key="idx"
-        :class="{ dot: true, active: current === idx }"
-        @click="slider?.moveToIdx(idx)"></button>
+      <Transition name="fade">
+        <div
+          v-if="sliderSettings.leftArrowValid"
+          class="arrow arrow-left"
+          @click="slider?.moveToIdx(sliderSettings.leftCarouselIndex)"></div>
+      </Transition>
+      <Transition name="fade">
+        <div
+          v-if="sliderSettings.rightArrowValid"
+          class="arrow arrow-right"
+          @click="slider?.moveToIdx(sliderSettings.rightCarouselIndex)"></div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -28,15 +31,13 @@
 <script lang="ts" setup>
 import type { CarouselNFT } from '@/components/base/types'
 
-import CarouselMedia from './CarouselMedia.vue'
-import CarouselInfo from './CarouselInfo.vue'
-
 import 'keen-slider/keen-slider.min.css'
 import { useKeenSlider } from 'keen-slider/vue.es'
 import { wheelControls } from '../utils/useCarousel'
 
 const props = defineProps<{
   nfts: CarouselNFT[]
+  step: number
 }>()
 
 const url = inject('itemUrl', 'gallery') as string
@@ -44,7 +45,6 @@ const isCollection = computed(() => url.includes('collection'))
 provide('isCollection', isCollection.value)
 
 const current = ref(0)
-const minWidths = [1280, 1024, 768, 640]
 
 const [wrapper, slider] = useKeenSlider(
   {
@@ -70,34 +70,46 @@ const [wrapper, slider] = useKeenSlider(
         slides: { perView: 2.5, spacing: 32 },
       },
       '(min-width: 1024px)': {
-        slides: { perView: 3, spacing: 32 },
+        slides: { perView: 4, spacing: 32 },
       },
       '(min-width: 1280px)': {
-        slides: { perView: 4, spacing: 32 },
+        slides: { perView: 5, spacing: 32 },
+      },
+      '(min-width: 1540px)': {
+        slides: { perView: 6, spacing: 32 },
       },
     },
     slides: { perView: 1.5, spacing: 32 },
   },
   [wheelControls]
 )
-const totalDots = computed(() => {
-  const width = window.innerWidth
 
-  for (const [index, breakpoint] of minWidths.entries()) {
-    if (breakpoint <= width) {
-      const perView = 4.5 - (index + 1)
-      return Math.round(props.nfts.length - perView)
+const sliderSettings = computed(() => {
+  if (slider.value) {
+    const { track, options, slides } = slider.value
+    const abs = Number(track.details.abs)
+    const perView = Number(options.slides.perView)
+    const leftArrowValid = abs !== 0
+    const rightArrowValid = abs + perView < slides.length
+    const leftCarouselIndex = Math.max(abs - props.step, 0)
+    const rightCarouselIndex = Math.min(
+      abs + props.step,
+      slides.length - perView
+    )
+
+    return {
+      leftArrowValid,
+      rightArrowValid,
+      leftCarouselIndex,
+      rightCarouselIndex,
     }
+  } else {
+    return {}
   }
-
-  return 0
 })
-const dotHelper = computed(() =>
-  slider.value && totalDots.value > 0 ? [...Array(totalDots.value).keys()] : []
-)
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 // avoid fouc on navigating
 @media screen and (min-width: 768px) {
   @for $i from 0 through 3 {
@@ -107,5 +119,9 @@ const dotHelper = computed(() =>
       transform: translate3d(#{$i * 32px}, 0px, 0px);
     }
   }
+}
+.fade-leave-active,
+.fade-enter-active {
+  transition: all 0.2s ease;
 }
 </style>

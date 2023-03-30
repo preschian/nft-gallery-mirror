@@ -1,29 +1,7 @@
 <template>
   <o-tabs v-model="activeTab" expanded content-class="o-tabs__content--fixed">
-    <!-- properties tab -->
-    <DisablableTab
-      value="0"
-      :disabled="propertiesTabDisabled"
-      :label="$t('tabs.properties')"
-      :disabled-tooltip="$t('tabs.noPropertiesForNFT')">
-      <o-table
-        v-if="nftMetadata?.attributes?.length"
-        :data="nftMetadata?.attributes"
-        hoverable>
-        <o-table-column v-slot="props" field="value" label="Trait">
-          {{ props.row.value }}
-        </o-table-column>
-        <o-table-column
-          v-slot="props"
-          field="trait_type"
-          :label="$t('tabs.tabProperties.section')">
-          {{ props.row.trait_type }}
-        </o-table-column>
-      </o-table>
-    </DisablableTab>
-
     <!-- description tab -->
-    <o-tab-item value="1" :label="$t('tabs.description')" class="p-5">
+    <o-tab-item value="0" :label="$t('tabs.description')" class="p-5">
       <div class="mb-3 is-flex">
         <span class="mr-2">{{ $t('tabs.tabDescription.made') }}:</span>
         <nuxt-link
@@ -36,8 +14,27 @@
 
       <vue-markdown
         :source="nftMetadata?.description?.replaceAll('\n', '  \n') || ''"
-        :style="{ wordBreak: 'break-word' }" />
+        class="gallery-item-desc-markdown" />
     </o-tab-item>
+
+    <!-- properties tab -->
+    <DisablableTab
+      value="1"
+      :disabled="propertiesTabDisabled"
+      :label="$t('tabs.properties')"
+      :disabled-tooltip="$t('tabs.noPropertiesForNFT')">
+      <o-table v-if="properties?.length" :data="properties" hoverable>
+        <o-table-column
+          v-slot="props"
+          field="trait_type"
+          :label="$t('tabs.tabProperties.section')">
+          {{ props.row.trait_type }}
+        </o-table-column>
+        <o-table-column v-slot="props" field="value" label="Trait">
+          {{ props.row.value }}
+        </o-table-column>
+      </o-table>
+    </DisablableTab>
 
     <!-- details tab -->
     <o-tab-item value="2" :label="$t('tabs.details')" class="p-5">
@@ -74,6 +71,7 @@
           target="_blank"
           rel="noopener noreferrer"
           class="has-text-link"
+          data-cy="media-link"
           >{{ nftMimeType }}</a
         >
       </div>
@@ -84,6 +82,7 @@
           :href="metadataURL"
           target="_blank"
           rel="noopener noreferrer"
+          data-cy="metadata-link"
           >{{ metadataMimeType }}</a
         >
       </div>
@@ -105,16 +104,36 @@ const { nft, nftMimeType, nftMetadata, nftImage, nftAnimation } =
   useGalleryItem()
 const activeTab = ref('0')
 
+const properties = computed(() => {
+  // we have different format between rmrk2 and the other chains
+  if (urlPrefix.value === 'rmrk2') {
+    return Object.entries(nftMetadata.value?.properties || {}).map(
+      ([key, value]) => {
+        return {
+          trait_type: key,
+          value: value.value,
+        }
+      }
+    )
+  }
+
+  const attributes = (nftMetadata.value?.attributes ||
+    nftMetadata.value?.meta.attributes ||
+    []) as Array<{ trait_type: string; value: string; key?: string }>
+  return attributes.map((attr) => {
+    return {
+      trait_type: attr.trait_type || attr.key,
+      value: attr.value,
+    }
+  })
+})
+
 const propertiesTabDisabled = computed(() => {
   if (!nftMetadata.value) {
     return false
   }
 
-  return !nftMetadata.value.attributes?.length
-})
-
-watch(propertiesTabDisabled, () => {
-  activeTab.value = propertiesTabDisabled.value ? '1' : '0'
+  return !properties.value?.length
 })
 
 const metadataMimeType = ref('application/json')

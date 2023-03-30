@@ -1,24 +1,28 @@
 <template>
-  <div>
-    <div class="events p-5">
-      <div class="events-filter is-flex">
-        <div class="events-checkbox" @click="checkAll">
+  <div class="gallery-activity-events-wrapper is-flex is-flex-direction-column">
+    <div class="events p-5 is-flex is-flex-direction-column">
+      <div class="events-filter is-flex is-flex-wrap-wrap">
+        <a
+          class="is-capitalized is-flex is-align-items-center"
+          @click="checkAll">
           {{ $t('tabs.tabActivity.all') }}
-        </div>
-        <div
+        </a>
+
+        <label
           v-for="(value, name) in filters"
           :key="name"
-          class="events-checkbox">
+          class="is-clickable is-capitalized events-checkbox-container"
+          :class="cssActive(value)">
           <input
             :id="name"
             v-model="interactions"
             type="checkbox"
             :value="value"
             class="is-hidden" />
-          <label :for="name" :class="cssActive(value)">
+          <span :for="name">
             {{ $t(`tabs.tabActivity.${value}`) }}
-          </label>
-        </div>
+          </span>
+        </label>
       </div>
     </div>
 
@@ -36,13 +40,21 @@ defineProps<{
   nftId: string
 }>()
 
-const defaultInteractions = ['MINTNFT', 'BUY', 'LIST', 'SEND']
-const interactions = ref(['BUY']) // default to sales
+const defaultInteractions = [
+  'MINTNFT',
+  'BUY',
+  'LIST',
+  'SEND',
+  'CONSUME',
+  'UNLIST',
+]
+const interactions = ref(defaultInteractions) // default to all
 const filters = {
   mints: 'MINTNFT',
   sales: 'BUY',
   listings: 'LIST',
   transfers: 'SEND',
+  burns: 'CONSUME',
 }
 
 const checkAll = () => {
@@ -61,31 +73,39 @@ const cssActive = (value) => {
 <style lang="scss" scoped>
 @import '@/styles/abstracts/variables.scss';
 
-.dark-mode .events {
-  border-bottom: 1px solid white;
+.gallery-activity-events-wrapper {
+  height: 100%;
 }
 
 .events {
-  border-bottom: 1px solid black;
-
-  &-filter {
-    gap: 2rem;
+  @include ktheme() {
+    border-bottom: 1px solid theme('border-color');
   }
 
-  &-checkbox {
-    cursor: pointer;
-    text-transform: capitalize;
+  &-filter {
+    column-gap: 0.625rem;
+    row-gap: 1rem;
 
-    label {
-      cursor: pointer;
+    @include mobile {
+      column-gap: 1rem;
     }
+  }
 
-    &:hover {
-      color: $shade;
+  .events-checkbox-container {
+    @include ktheme() {
+      border: 1px solid theme('k-shade');
+      &:hover {
+        border-color: theme('border-color');
+      }
     }
+    border-radius: 25px;
+    padding: 5px 20px;
+  }
 
-    &-active {
-      font-weight: bold;
+  .events-checkbox-active {
+    @include ktheme() {
+      background-color: theme('k-shade');
+      color: theme('black');
     }
   }
 }

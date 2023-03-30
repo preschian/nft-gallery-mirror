@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-cy="item-section-buy">
     <Loader v-model="isLoading" :status="status" />
     <GalleryItemPriceSection
       v-if="nftPrice"
@@ -10,20 +10,35 @@
         v-if="Number(nftPrice)"
         ref="actionRef"
         :active="active"
+        :class="{ 'gallery-item-slides-entry': !active }"
         :disabled="disabled">
-        <template #action>
+        <template #entry>
           <NeoTooltip
+            v-if="!active"
             :active="disabled"
             :label="$t('tooltip.notEnoughBalance')">
             <NeoButton
-              :label="`${label}`"
+              :label="label"
               size="large"
-              fixed-width
+              class="full-width-action-button"
               variant="k-accent"
               :disabled="disabled"
               no-shadow
+              data-cy="item-buy"
               @click.native="onClick" />
           </NeoTooltip>
+        </template>
+
+        <template #action>
+          <NeoButton
+            :label="label"
+            size="large"
+            fixed-width
+            variant="k-accent"
+            :disabled="disabled"
+            no-shadow
+            data-cy="item-buy"
+            @click.native="onClick" />
         </template>
 
         <template #content>
@@ -45,15 +60,17 @@ import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
 import { onClickOutside } from '@vueuse/core'
-import { notificationTypes, showNotification } from '@/utils/notification'
-import { getApiCall } from '@/utils/gallery/abstractCalls'
+import {
+  notificationTypes,
+  showNotification,
+  warningMessage,
+} from '@/utils/notification'
 import { getKusamaAssetId } from '@/utils/api/bsx/query'
-import { somePercentFromTX } from '@/utils/support'
 import { tokenIdToRoute } from '@/components/unique/utils'
-import { JustInteraction, createInteraction } from '@kodadot1/minimark'
 import nftByIdMinimal from '@/queries/rmrk/subsquid/nftByIdMinimal.graphql'
-import useRmrkVersion from '@/composables/useRmrkVersion'
-import WalletModal from '@/components/common/WalletModal.vue'
+import { ShoppingActions } from '@/utils/shoppingActions'
+import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+
 import Vue from 'vue'
 
 const props = withDefaults(
@@ -74,14 +91,11 @@ const props = withDefaults(
 const { urlPrefix, client } = usePrefix()
 const { accountId } = useAuth()
 const root = ref<Vue<Record<string, string>>>()
-const { $store, $apollo, $i18n, $buefy } = useNuxtApp()
-const { apiInstance } = useApi()
+const { $store, $apollo, $i18n, $buefy, $route } = useNuxtApp()
 const emit = defineEmits(['buy-success'])
-const ACTION = 'BUY'
 const actionLabel = $i18n.t('nft.action.buy')
 
-const { howAboutToExecute, initTransactionLoader, isLoading, status } =
-  useMetaTransaction()
+const { transaction, status, isLoading } = useTransaction()
 const connected = computed(() => Boolean(accountId.value))
 const active = ref(false)
 const label = computed(() =>
@@ -89,7 +103,7 @@ const label = computed(() =>
 )
 
 const balance = computed<string>(() => {
-  if (urlPrefix.value == 'rmrk') {
+  if (['rmrk', 'rmrk2'].includes(urlPrefix.value)) {
     return $store.getters.getAuthBalance
   }
   return $store.getters.getTokenBalanceOf(getKusamaAssetId(urlPrefix.value))
@@ -105,10 +119,7 @@ function onClick() {
   if (!connected.value) {
     $buefy.modal.open({
       parent: root?.value,
-      component: WalletModal,
-      hasModalCard: true,
-      trapFocus: true,
-      canCancel: true,
+      ...ConnectWalletModalConfig,
     })
     return
   }
@@ -123,34 +134,6 @@ watch(isLoading, (loading) => {
   active.value = loading
 })
 
-const getTranasactionParams = async () => {
-  const api = await apiInstance.value
-  if (urlPrefix.value == 'rmrk') {
-    const rmrk = createInteraction(
-      ACTION as JustInteraction,
-      useRmrkVersion().version,
-      props.nftId,
-      ''
-    )
-    return {
-      cb: api.tx.utility.batchAll,
-      arg: [
-        [
-          api.tx.system.remark(rmrk),
-          api.tx.balances.transfer(props.currentOwner, props.nftPrice),
-          somePercentFromTX(api, props.nftPrice),
-        ],
-      ],
-    }
-  }
-
-  // not RMRK
-  const { id: collectionId, item: itemId } = tokenIdToRoute(props.nftId)
-  return {
-    cb: getApiCall(api, urlPrefix.value, ACTION),
-    arg: [collectionId, itemId],
-  }
-}
 const checkBuyBeforeSubmit = async () => {
   const nft = await $apollo.query({
     query: nftByIdMinimal,
@@ -174,7 +157,7 @@ const checkBuyBeforeSubmit = async () => {
       $i18n.t('nft.notification.nftChanged', {
         chain: urlPrefix.value.toUpperCase(),
         action: actionLabel,
-      }) as string,
+      }),
       notificationTypes.warn
     )
     return false
@@ -184,22 +167,32 @@ const checkBuyBeforeSubmit = async () => {
 
 const handleBuy = async () => {
   const { item: itemId } = tokenIdToRoute(props.nftId)
-  const { cb, arg } = await getTranasactionParams()
 
   showNotification(
-    $i18n.t('nft.notification.info', { itemId, action: actionLabel }) as string
+    $i18n.t('nft.notification.info', { itemId, action: actionLabel })
   )
 
   if (urlPrefix.value === 'rmrk' && !(await checkBuyBeforeSubmit())) {
     return
   }
 
-  initTransactionLoader()
-  howAboutToExecute(accountId.value, cb, arg, (blockNumber: string) => {
-    showNotification(blockNumber, notificationTypes.info)
+  try {
+    transaction({
+      interaction: ShoppingActions.BUY,
+      currentOwner: props.currentOwner,
+      price: props.nftPrice,
+      nftId: $route.params.id,
+      tokenId: $route.params.id,
+      urlPrefix: urlPrefix.value,
+      successMessage: $i18n.t('mint.successNewNfts'),
+      errorMessage: $i18n.t('transaction.buy.error'),
+    })
+  } catch (error) {
+    warningMessage(error)
+  } finally {
     showNotification(`[${actionLabel}] ${itemId}`, notificationTypes.success)
     emit('buy-success')
-  })
+  }
 }
 
 const actionRef = ref(null)

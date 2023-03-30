@@ -1,11 +1,12 @@
 <template>
   <o-dropdown
-    aria-role="list"
     :position="position"
     :append-to-body="appendToBody"
     class="neo-dropdown"
     :class="{ 'o-drop-active': isActive }"
-    @active-change="isActive = $event">
+    :mobile-modal="mobileModal"
+    :disabled="disabled"
+    @active-change="onActiveChange($event)">
     <template #trigger>
       <slot />
     </template>
@@ -14,6 +15,7 @@
 </template>
 
 <script lang="ts" setup>
+import { defineEmits } from 'vue'
 import { ODropdown } from '@oruga-ui/oruga'
 
 const isActive = ref(false)
@@ -22,12 +24,23 @@ withDefaults(
   defineProps<{
     position?: string
     appendToBody?: boolean
+    mobileModal?: boolean
+    disabled?: boolean
   }>(),
   {
     position: 'bottom-left',
     appendToBody: false,
+    mobileModal: false,
+    disabled: false,
   }
 )
+
+const emit = defineEmits(['active-change'])
+
+function onActiveChange(event) {
+  isActive.value = event
+  emit('active-change', event)
+}
 </script>
 
 <style lang="scss">

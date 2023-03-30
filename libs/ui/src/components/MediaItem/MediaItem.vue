@@ -5,7 +5,8 @@
       :src="properSrc"
       :animation-src="animationSrc"
       :alt="title"
-      :original="original" />
+      :original="original"
+      :is-detail="isDetail" />
   </div>
 </template>
 
@@ -39,6 +40,10 @@ export default {
     },
     original: {
       // original size of the image
+      type: Boolean,
+      default: false,
+    },
+    isDetail: {
       type: Boolean,
       default: false,
     },
@@ -88,10 +93,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.media-object {
-  box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 1);
-  border: 1px solid black;
-}
-</style>

@@ -1,8 +1,13 @@
 <template>
   <div class="common-price-chart">
-    <span class="chart-y-description is-size-7">Price ({{ unit }})</span>
+    <span class="chart-y-description is-size-7"
+      >Price ({{ chainSymbol }})
+    </span>
     <NeoDropdown class="py-0">
-      <NeoButton :label="selectedTimeRange.label" class="time-range-button" />
+      <NeoButton
+        :label="selectedTimeRange.label"
+        class="time-range-button"
+        no-shadow />
 
       <template #items>
         <NeoDropdownItem
@@ -17,7 +22,7 @@
       </template>
     </NeoDropdown>
 
-    <div class="content">
+    <div :class="{ content: !chartHeight }" :style="heightStyle">
       <canvas id="priceChart" />
     </div>
   </div>
@@ -32,9 +37,9 @@ import { format } from 'date-fns'
 import { NeoButton, NeoDropdown, NeoDropdownItem } from '@kodadot1/brick'
 
 ChartJS.register(zoomPlugin)
-const { $i18n, $colorMode } = useNuxtApp()
-const { unit } = useChain()
-
+const { $i18n } = useNuxtApp()
+const { chainSymbol } = useChain()
+const { isDarkMode } = useTheme()
 const daysTranslation = (day: number) => $i18n.t('priceChart.days', [day])
 
 const timeRangeList = [
@@ -61,15 +66,15 @@ const selectedTimeRange = ref(timeRangeList[0])
 const setTimeRange = (value: { value: number; label: string }) => {
   selectedTimeRange.value = value
 }
-const isDarkMode = computed(
-  () =>
-    $colorMode.preference === 'dark' ||
-    document.documentElement.className.includes('dark-mode')
-)
 
 const props = defineProps<{
   priceChartData?: [Date, number][][]
+  chartHeight?: string
 }>()
+
+const heightStyle = computed(() =>
+  props.chartHeight ? `height: ${props.chartHeight}` : ''
+)
 let Chart: ChartJS<'line', any, unknown>
 
 onMounted(() => {
@@ -127,11 +132,11 @@ const getPriceChartData = () => {
     )?.getContext('2d')
     if (ctx) {
       const commonStyle = {
-        tension: 0,
+        tension: 0.2,
         pointRadius: 6,
         pointHoverRadius: 6,
         pointHoverBackgroundColor: isDarkMode.value ? '#181717' : 'white',
-        borderJoinStyle: 'miter' as const,
+        borderJoinStyle: 'round' as const,
         radius: 0,
         pointStyle: 'rect',
         borderWidth: 1,
@@ -160,6 +165,16 @@ const getPriceChartData = () => {
         },
         options: {
           maintainAspectRatio: false,
+          responsive: true,
+          responsiveAnimationDuration: 0,
+          transitions: {
+            resize: {
+              animation: {
+                duration: 0,
+              },
+            },
+          },
+
           plugins: {
             customCanvasBackgroundColor: {
               color: isDarkMode.value ? '#181717' : 'white',
@@ -167,7 +182,7 @@ const getPriceChartData = () => {
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  return `Price: ${context.parsed.y}${unit.value}`
+                  return `Price: ${context.parsed.y} ${chainSymbol.value}`
                 },
                 title: function (context) {
                   return format(context[0].parsed.x, 'MMM dd HH:mm')
@@ -228,7 +243,7 @@ const getPriceChartData = () => {
                 callback: (value) => {
                   return `${Number(value).toFixed(2)}  `
                 },
-                maxTicksLimit: 7,
+                stepSize: 1,
                 color: lineColor.value,
               },
               grid: {

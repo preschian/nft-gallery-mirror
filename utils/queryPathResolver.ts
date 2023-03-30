@@ -1,19 +1,6 @@
-type AvailableClients = 'subquery' | 'subsquid'
-
-type PathOptions = {
-  client?: AvailableClients
-  specialized?: boolean
-}
-
-const defaultPaths: Record<AvailableClients, string> = {
-  subquery: '',
-  subsquid: 'subsquid/general/',
-}
-
 function resolveQueryPath(
   prefix: string,
-  queryName: string,
-  opts?: PathOptions
+  queryName: string
 ): Promise<typeof import('*.graphql')> {
   const path = getPath(prefix)
   return import(`@/queries/${path}${queryName}.graphql`)
@@ -28,19 +15,20 @@ function getPath(prefix: string) {
     case 'glmr':
     case 'snek':
     case 'subsquid':
+    case 'rmrk2':
       return 'subsquid/general/'
     case 'statemine':
     case 'westmint':
       return 'unique/'
     case 'chain-bsx':
       return 'subsquid/bsx/'
+    case 'chain-rmrk':
+      return 'subsquid/rmrk/'
+    case 'chain-rmrk2':
+      return 'subsquid/rmrk2/'
     default:
       return ''
   }
-}
-
-function getDefaultPathForClient(client: AvailableClients): string {
-  return defaultPaths[client]
 }
 
 // const queryPaths: Record<string, { subsquid: string, subquery: string | undefined }> = {

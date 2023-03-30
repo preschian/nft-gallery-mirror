@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div
+    class="is-flex is-flex-direction-column is-flex-grow-1 is-justify-content-start mt-5">
     <!-- price -->
     <GalleryItemPriceBuy
       v-if="!isOwner"
@@ -11,12 +12,12 @@
 
     <!-- highest offer -->
     <GalleryItemPriceOffer
-      v-if="urlPrefix !== 'rmrk' && !isOwner && nft?.id && nft.currentOwner"
+      v-if="!offersDisabled && !isOwner && nft?.id && nft.currentOwner"
       :nft-id="nft.id"
       :collection-id="nft.collection.id"
       :current-owner="nft.currentOwner"
       :account="nft.currentOwner"
-      class="mt-5" />
+      class="mt-2" />
 
     <!-- change price as an owner -->
     <GalleryItemPriceRelist
@@ -24,13 +25,13 @@
       :collection-id="nft.collection.id"
       :nft-id="nft.id"
       :nft-price="nft.price"
-      class="mt-5" />
+      class="mt-2" />
 
     <!-- transfer item as an owner -->
     <GalleryItemPriceTransfer
       v-if="isOwner && nft?.id"
       :nft-id="nft.id"
-      class="mt-5" />
+      class="mt-2" />
   </div>
 </template>
 
@@ -46,9 +47,10 @@ import { NFT } from '~~/components/rmrk/service/scheme'
 const props = defineProps<{
   nft: NFT | undefined
 }>()
+
 const emit = defineEmits(['buy-success'])
-const { urlPrefix } = usePrefix()
 const { accountId } = useAuth()
+const { offersDisabled } = useChain()
 const isOwner = computed(() =>
   checkOwner(props.nft?.currentOwner, accountId.value)
 )

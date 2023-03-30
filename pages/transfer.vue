@@ -11,7 +11,7 @@
     <p class="title is-size-3">
       {{ $t('transfer') }} {{ unit }}
       <span v-if="isKSM" class="has-text-primary"
-        >${{ $store.getters['fiat/getCurrentKSMValue'] }}</span
+        >${{ fiatStore.getCurrentKSMValue }}</span
       >
     </p>
 
@@ -166,8 +166,13 @@ import ChainMixin from '@/utils/mixins/chainMixin'
 import PrefixMixin from '@/utils/mixins/prefixMixin'
 import TransactionMixin from '@/utils/mixins/txMixin'
 import UseApiMixin from '@/utils/mixins/useApiMixin'
+import { useFiatStore } from '@/stores/fiat'
 
-import { getExplorer, hasExplorer } from '@/components/rmrk/Profile/utils'
+import { getExplorer, hasExplorer } from '@kodadot1/static'
+import { emptyObject } from '@kodadot1/minimark'
+
+type Target = 'target' | `target${number}`
+type TargetMap = Record<Target, string>
 
 @Component({
   components: {
@@ -193,10 +198,14 @@ export default class Transfer extends mixins(
   protected transactionValue = ''
   protected price = 0
   protected usdValue = 0
-  protected targets = {}
+  protected targets = emptyObject<TargetMap>()
 
   layout() {
     return 'centered-half-layout'
+  }
+
+  get fiatStore() {
+    return useFiatStore()
   }
 
   get isApiConnected() {
@@ -243,8 +252,7 @@ export default class Transfer extends mixins(
   }
 
   protected created() {
-    this.$store.dispatch('fiat/fetchFiatPrice')
-    this.checkQueryParams()
+    this.fiatStore.fetchFiatPrice().then(this.checkQueryParams)
     onApiConnect(this.apiUrl, async (api) => {
       this.$store.commit('setApiConnected', api.isConnected)
     })
@@ -254,7 +262,7 @@ export default class Transfer extends mixins(
     /* calculating usd value on the basis of price entered */
     if (this.price) {
       this.usdValue = calculateUsdFromKsm(
-        this.$store.getters['fiat/getCurrentKSMValue'],
+        Number(this.fiatStore.getCurrentKSMValue),
         this.price
       )
     } else {
@@ -266,7 +274,7 @@ export default class Transfer extends mixins(
     /* calculating price value on the basis of usd entered */
     if (this.usdValue) {
       this.price = calculateKsmFromUsd(
-        this.$store.getters['fiat/getCurrentKSMValue'],
+        Number(this.fiatStore.getCurrentKSMValue),
         this.usdValue
       )
     } else {
@@ -299,9 +307,9 @@ export default class Transfer extends mixins(
 
     if (query.usdamount) {
       this.usdValue = Number(query.usdamount)
-      // getting ksm value from the usd value
+
       this.price = calculateKsmFromUsd(
-        this.$store.getters['fiat/getCurrentKSMValue'],
+        Number(this.fiatStore.getCurrentKSMValue),
         this.usdValue
       )
     }
@@ -369,7 +377,7 @@ export default class Transfer extends mixins(
       )
     } catch (e: any) {
       if (e.message === 'Cancelled') {
-        showNotification(e.message, notificationTypes.danger)
+        showNotification(e.message, notificationTypes.warn)
         this.isLoading = false
         return
       }
@@ -391,7 +399,7 @@ export default class Transfer extends mixins(
       } else {
         this.$consola.error('[ERR: TRANSFER SUBMIT]', e)
         if (e instanceof Error) {
-          showNotification(e.message, notificationTypes.danger)
+          showNotification(e.message, notificationTypes.warn)
         }
       }
     }
@@ -404,12 +412,12 @@ export default class Transfer extends mixins(
       const { docs, name, section } = decoded
       showNotification(
         `[ERR] ${section}.${name}: ${docs.join(' ')}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     } else {
       showNotification(
         `[ERR] ${dispatchError.toString()}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     }
 
@@ -452,7 +460,7 @@ export default class Transfer extends mixins(
           ...object,
           [`target${i == 0 ? '' : i}`]: address,
         }),
-        {}
+        {} as TargetMap
       )
     this.targets = targets
     this.$router.replace({ query: { ...targets, usdamount } }).catch(() => null) // null to further not throw navigation errors

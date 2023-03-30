@@ -1,39 +1,84 @@
 <template>
-  <div class="min-h-full is-flex is-flex-direction-column is-clipped">
+  <div class="min-h-full is-flex is-flex-direction-column">
+    <MobileFilter />
     <Navbar />
-    <ExploreTabsFilterSort />
+
     <main class="is-flex-grow-1">
-      <section class="section">
-        <div class="container">
-          <Error
-            v-if="$nuxt.isOffline"
-            :has-img="false"
-            error-subtitle="Please check your network connections"
-            error-title="Offline Detected" />
-          <Nuxt v-else />
+      <Error
+        v-if="$nuxt.isOffline"
+        :has-img="false"
+        error-subtitle="Please check your network connections"
+        error-title="Offline Detected" />
+      <div v-else>
+        <!-- new header component for collection here -->
+        <div v-if="isCollection">
+          <CollectionBanner :key="route.path" />
+          <section class="pt-5">
+            <div class="container is-fluid mobile-padding">
+              <CollectionInfo />
+              <hr class="mb-0" />
+            </div>
+          </section>
         </div>
-      </section>
+        <section class="explore-header">
+          <div class="container is-fluid">
+            <h1 v-if="isExplore" class="title">{{ $t('explore') }}</h1>
+
+            <ExploreTabsFilterSort />
+          </div>
+        </section>
+        <hr class="text-color my-0" />
+        <Nuxt />
+      </div>
     </main>
-    <LazyTheFooter />
   </div>
 </template>
 
-<script lang="ts">
-import ExploreTabsFilterSort from '@/components/shared/exploreTabsFilterSort/ExploreTabsFilterSort.vue'
+<script lang="ts" setup>
+import ExploreTabsFilterSort from '@/components/explore/Controls.vue'
+import MobileFilter from '@/components/shared/filters/MobileFilter.vue'
+import CollectionBanner from '@/components/collection/CollectionHeader/CollectionBanner.vue'
+import CollectionInfo from '@/components/collection/CollectionInfo.vue'
 
-export default {
-  name: 'ExploreLayout',
-  components: { ExploreTabsFilterSort },
-  head() {
-    return {
-      link: [
-        {
-          hid: 'canonical',
-          rel: 'canonical',
-          href: this.$root.$config.public.baseUrl + this.$route.path,
-        },
-      ],
-    }
-  },
-}
+const { $config } = useNuxtApp()
+const route = useRoute()
+
+useNuxt2Meta({
+  link: [
+    {
+      hid: 'canonical',
+      rel: 'canonical',
+      href: $config.public.baseUrl + route.path,
+    },
+  ],
+})
+
+const isExplore = computed(() => route.path.includes('/explore'))
+const isCollection = computed(() =>
+  route.name?.includes('prefix-collection-id')
+)
 </script>
+
+<style lang="scss" scoped>
+@import '@/styles/abstracts/variables';
+hr {
+  @include ktheme() {
+    background: theme('k-grey');
+  }
+}
+.text-color {
+  @include ktheme() {
+    background: theme('text-color');
+  }
+}
+
+@include touch {
+  .mobile-padding {
+    padding: 0 1rem;
+  }
+}
+
+.explore-header {
+  padding: 2.5rem 0;
+}
+</style>

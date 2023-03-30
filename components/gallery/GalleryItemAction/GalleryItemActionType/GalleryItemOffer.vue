@@ -2,25 +2,38 @@
   <div>
     <Loader v-model="isLoading" :status="status" />
     <GalleryItemPriceSection ref="root" title="Highest Offer" :price="price">
-      <GalleryItemActionSlides ref="actionRef" :active="active">
-        <template #action>
+      <GalleryItemActionSlides
+        ref="actionRef"
+        :active="active"
+        :class="{ 'gallery-item-slides-entry': !active }">
+        <template #entry>
           <NeoButton
             v-if="!active"
             label="Make Offer"
             size="large"
-            fixed-width
             variant="k-blue"
+            class="full-width-action-button"
             no-shadow
             @click.native="toggleActive" />
-          <NeoButton
+        </template>
+        <template #action>
+          <NeoTooltip
             v-if="active && !confirm"
-            :disabled="disabledConfirmBtn"
-            label="Confirm 1/2"
-            size="large"
-            fixed-width
-            variant="k-blue"
-            no-shadow
-            @click.native="confirm1" />
+            :active="insufficientBalance || offerPriceInvalid"
+            :label="
+              insufficientBalance
+                ? $t('tooltip.notEnoughBalance')
+                : $t('tooltip.invalidAmount')
+            ">
+            <NeoButton
+              :disabled="disabledConfirmBtn"
+              label="Confirm 1/2"
+              size="large"
+              fixed-width
+              variant="k-blue"
+              no-shadow
+              @click.native="confirm1" />
+          </NeoTooltip>
           <NeoButton
             v-if="confirm"
             label="Confirm 2/2"
@@ -37,16 +50,16 @@
             class="offer is-flex is-justify-content-space-between is-align-items-center">
             <input
               v-model="offerPrice"
-              class="offer-price"
+              class="input-price is-flex is-align-items-center"
               type="number"
               placeholder="Type Your Offer"
-              min="0" />
+              :min="MIN_OFFER_PRICE" />
             <div class="px-4">KSM</div>
           </div>
           <div
             v-else
             class="offer is-flex is-justify-content-space-evenly is-align-items-center">
-            <div>Expire In:</div>
+            <img src="/timer.svg" />
             <div class="is-flex offer-days">
               <div v-for="day in days" :key="day">
                 <input
@@ -67,14 +80,15 @@
 </template>
 
 <script setup lang="ts">
-import { NeoButton } from '@kodadot1/brick'
+import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 import { onClickOutside } from '@vueuse/core'
-import { dangerMessage } from '@/utils/notification'
+import { warningMessage } from '@/utils/notification'
 import { ShoppingActions } from '@/utils/shoppingActions'
 import { simpleDivision } from '@/utils/balance'
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
-import WalletModal from '@/components/common/WalletModal.vue'
+import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import { MIN_OFFER_PRICE } from '@/utils/constants'
 import Vue from 'vue'
 
 const Loader = defineAsyncComponent(
@@ -88,6 +102,7 @@ const props = defineProps<{
   account: string
 }>()
 
+const { apiInstance } = useApi()
 const { urlPrefix, tokenId } = usePrefix()
 const { $store, $route, $i18n, $buefy } = useNuxtApp()
 const { transaction, status, isLoading } = useTransaction()
@@ -97,7 +112,7 @@ const root = ref<Vue<Record<string, string>>>()
 const connected = computed(() => Boolean(accountId.value))
 
 const balance = computed<string>(() => {
-  if (urlPrefix.value == 'rmrk') {
+  if (urlPrefix.value == 'rmrk' || urlPrefix.value == 'rmrk2') {
     return $store.getters.getAuthBalance
   }
   return $store.getters.getTokenBalanceOf(tokenId.value)
@@ -107,7 +122,6 @@ const { data } = useGraphql({
   queryPrefix: 'chain-bsx',
   variables: {
     id: props.nftId,
-    account: props.account,
   },
 })
 
@@ -115,24 +129,29 @@ const price = ref('')
 const offerPrice = ref<number>()
 const active = ref(false)
 const confirm = ref(false)
-const days = [1, 3, 7, 14, 30]
+const days = [7, 14, 30]
 const selectedDay = ref(14)
 
-const disabledConfirmBtn = computed(
-  () =>
-    !(
-      offerPrice.value &&
-      Number(offerPrice.value) < simpleDivision(balance.value, decimals.value)
-    )
+const insufficientBalance = computed(
+  () => Number(offerPrice.value) > simpleDivision(balance.value, decimals.value)
 )
+
+const offerPriceInvalid = computed(() => {
+  if (offerPrice.value) {
+    return offerPrice.value < MIN_OFFER_PRICE
+  }
+  return true
+})
+
+const disabledConfirmBtn = computed(
+  () => offerPriceInvalid.value || insufficientBalance.value
+)
+
 function toggleActive() {
   if (!connected.value) {
     $buefy.modal.open({
       parent: root?.value,
-      component: WalletModal,
-      hasModalCard: true,
-      trapFocus: true,
-      canCancel: true,
+      ...ConnectWalletModalConfig,
     })
     return
   }
@@ -149,22 +168,32 @@ async function confirm2() {
       interaction: ShoppingActions.MAKE_OFFER,
       currentOwner: props.currentOwner,
       day: selectedDay.value,
-      price: offerPrice.value,
+      price: offerPrice.value || 0,
       tokenId: $route.params.id,
       urlPrefix: urlPrefix.value,
       successMessage: $i18n.t('transaction.offer.success') as string,
       errorMessage: $i18n.t('transaction.item.error') as string,
     })
   } catch (error) {
-    dangerMessage(error)
+    warningMessage(error)
   } finally {
     active.value = false
     confirm.value = false
   }
 }
 
-watchEffect(() => {
-  price.value = data.value?.offers[0]?.price || ''
+async function currentBlock() {
+  const api = await apiInstance.value
+  const block = await api.rpc.chain.getHeader()
+  return block.number.toNumber()
+}
+
+watchEffect(async () => {
+  const blockNumber = await currentBlock()
+  price.value =
+    blockNumber < data.value?.offers[0]?.expiration
+      ? data.value?.offers[0]?.price
+      : ''
 })
 
 const actionRef = ref(null)
@@ -178,15 +207,20 @@ onClickOutside(actionRef, () => {
 @import '@/styles/abstracts/variables';
 
 .offer {
-  width: 20rem;
+  width: 12rem;
 
   &-price {
     border: 1px solid black;
     border-left: 0;
+    padding: 0 0.5rem;
     height: 54px;
     outline: none;
-    padding: 0 1rem;
     width: 100%;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none !important;
+    }
   }
 
   &-days {
@@ -205,11 +239,13 @@ onClickOutside(actionRef, () => {
       cursor: pointer;
       display: block;
       line-height: 1;
-      // width: 1.5rem;
-      border-left: 1px solid $k-grey;
       text-align: center;
       margin-left: 0.5rem;
       padding-left: 0.5rem;
+
+      @include ktheme() {
+        border-left: 1px solid theme('k-grey');
+      }
     }
 
     & > *:first-child label {
@@ -217,6 +253,10 @@ onClickOutside(actionRef, () => {
       margin-left: 0;
       padding-left: 0;
     }
+  }
+
+  @include until-widescreen {
+    width: 100%;
   }
 }
 </style>

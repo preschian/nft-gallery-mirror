@@ -4,23 +4,29 @@
     <GalleryItemPriceSection title="Price" :price="nftPrice">
       <GalleryItemActionSlides ref="actionRef" :active="active">
         <template #action>
-          <NeoButton
-            :label="
-              isListed
-                ? `${$i18n.t('transaction.price.change')}`
-                : `${$i18n.t('transaction.list')}`
-            "
-            size="large"
-            fixed-width
-            no-shadow
-            :variant="isListed ? 'k-accent' : 'primary'"
-            @click.native="updatePrice" />
+          <NeoTooltip
+            :active="isListDisabled"
+            :label="$t('tooltip.emptyListAmount')">
+            <NeoButton
+              :label="
+                isListed
+                  ? `${$i18n.t('transaction.price.change')}`
+                  : `${$i18n.t('transaction.list')}`
+              "
+              size="large"
+              :disabled="isListDisabled"
+              fixed-width
+              :variant="isListed ? undefined : 'k-accent'"
+              no-shadow
+              @click.native="updatePrice" />
+          </NeoTooltip>
         </template>
 
         <template #content>
           <div>
             <input
               v-model="price"
+              class="input-price pl-3"
               type="number"
               :placeholder="
                 isListed
@@ -36,7 +42,7 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
-import { NeoButton } from '@kodadot1/brick'
+import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 import { calculateBalance } from '@/utils/format/balance'
 
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
@@ -55,8 +61,15 @@ const props = defineProps<{
 
 const active = ref(false)
 const price = ref()
-const isListed = computed(() => Boolean(props.nftPrice))
-
+const isListed = computed(() => Boolean(Number(props.nftPrice)))
+const isListDisabled = computed(() => {
+  return (
+    active.value &&
+    (price.value === undefined ||
+      price.value === '' ||
+      Number(price.value) <= 0)
+  )
+})
 const actionRef = ref(null)
 onClickOutside(actionRef, () => (active.value = false))
 

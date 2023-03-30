@@ -7,6 +7,7 @@ export const denyList = [
   'Gskn3eRyr3tDiKxhzU1MPG4ha8RFTBG9ft3C6Rrn3kGJMXn', // No One, art thief
   'Go6QNymw2HicMi64uiQSPyiXy68wM7dvujwR8bDJ13exPTM', // 18+ manga porn
   'DinoPQrFS2u4NgEk18v6W5QH1SBmHKYUPJGjZUV4JLPj2rd', // Guardians DINO
+  'EfPxwVvLpSV4VG5sNZUacTE3UJgcgBHtuWuHxuJkPmmkwTe', // Malicious activity
 ]
 
 export const statemineDenyList = [
@@ -44,6 +45,7 @@ export const URLS = {
     snekRococo: 'https://squid.subsquid.io/snekk/v/004/graphql',
     click: 'https://squid.subsquid.io/click/v/002/graphql',
     antick: 'https://squid.subsquid.io/antick/v/001-rc0/graphql',
+    rmrk: 'https://squid.subsquid.io/rubick/v/009-rc0/graphql',
     replicate: 'https://replicate.kodadot.workers.dev/',
   },
   providers: {
@@ -81,12 +83,22 @@ export const NFT_SQUID_SORT_CONDITION_LIST_FOR_MOONRIVER: string[] = [
   'sn_ASC',
 ]
 
+export const NFT_SQUID_SORT_COLLECTIONS: string[] = [
+  'blockNumber_ASC',
+  'blockNumber_DESC',
+  'updatedAt_ASC',
+  'updatedAt_DESC',
+  'supply_ASC',
+  'supply_DESC',
+]
+
 export const disableChainListOnProductionEnv = [
   'westend',
   'westmint',
   'movr',
   'glmr',
   'snek',
+  'rmrk2',
 ]
 
 export const chainTestList = ['westend', 'westmint']
@@ -96,3 +108,5 @@ export const getChainTestList = () => {
     ? disableChainListOnProductionEnv
     : chainTestList
 }
+
+export const MIN_OFFER_PRICE = 0.01

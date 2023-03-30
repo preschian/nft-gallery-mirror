@@ -1,19 +1,24 @@
-import { $fetch } from 'ohmyfetch'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { getMimeType } from '@/utils/gallery/media'
-import type { NFT, NFTMetadata } from '@/components/rmrk/service/scheme'
+import { useHistoryStore } from '@/stores/history'
+import { getNftMetadata } from '@/composables/useNft'
 import useSubscriptionGraphql from '@/composables/useSubscriptionGraphql'
+import type { NFT } from '@/components/rmrk/service/scheme'
+import type { NFTWithMetadata } from '@/composables/useNft'
+
 interface NFTData {
-  nftEntity?: NFT
+  nftEntity?: NFTWithMetadata
 }
 
 const whichMimeType = async (data) => {
   if (data?.type) {
     return data?.type
-  } else if (data?.animation_url) {
+  }
+  if (data?.animation_url) {
     return await getMimeType(sanitizeIpfsUrl(data.animation_url))
-  } else if (data?.image) {
-    return await getMimeType(sanitizeIpfsUrl(data.image))
+  }
+  if (data?.image || data?.mediaUri) {
+    return await getMimeType(sanitizeIpfsUrl(data?.image || data?.mediaUri))
   }
 
   return ''
@@ -22,24 +27,31 @@ const whichMimeType = async (data) => {
 const whichAsset = (data) => {
   return {
     animation_url: sanitizeIpfsUrl(data.animation_url || ''),
-    image: sanitizeIpfsUrl(data.image || '', 'image'),
+    image: sanitizeIpfsUrl(data.image || data.mediaUri || '', 'image'),
   }
 }
 
 export const useGalleryItem = () => {
-  const { $consola, $store } = useNuxtApp()
+  const { $consola } = useNuxtApp()
+  const historyStore = useHistoryStore()
   const nft = ref<NFT>()
   const nftImage = ref('')
   const nftAnimation = ref('')
   const nftMimeType = ref('')
-  const nftMetadata = ref<NFTMetadata>()
+  const nftMetadata = ref<NFTWithMetadata>()
 
   const { params } = useRoute()
   // const { id: collectionID, item: id } = tokenIdToRoute(params.id)
 
+  const queryPath = {
+    rmrk: 'chain-rmrk',
+    rmrk2: 'chain-rmrk2',
+  }
+
   const { urlPrefix } = usePrefix()
   const { data, refetch } = useGraphql({
-    queryName: urlPrefix.value === 'rmrk' ? 'nftByIdWithoutRoyalty' : 'nftById',
+    queryName: 'nftById',
+    queryPrefix: queryPath[urlPrefix.value],
     variables: {
       id: params.id,
     },
@@ -47,6 +59,7 @@ export const useGalleryItem = () => {
       fetchPolicy: 'network-only',
     },
   })
+
   useSubscriptionGraphql({
     query: `   nft: nftEntityById(id: "${params.id}") {
       id
@@ -59,6 +72,7 @@ export const useGalleryItem = () => {
     }`,
     onChange: refetch,
   })
+
   watch(data as unknown as NFTData, async (newData) => {
     const nftEntity = newData?.nftEntity
     if (!nftEntity) {
@@ -67,14 +81,15 @@ export const useGalleryItem = () => {
     }
 
     nft.value = nftEntity
-    nftMetadata.value = await $fetch(sanitizeIpfsUrl(nftEntity.metadata))
+
+    nftMetadata.value = await getNftMetadata(nftEntity, urlPrefix.value)
     nftMimeType.value = await whichMimeType(nftMetadata.value)
 
     const asset = whichAsset(nftMetadata.value)
     nftImage.value = asset.image
     nftAnimation.value = asset.animation_url
 
-    $store.dispatch('history/addHistoryItem', {
+    historyStore.addHistoryItem({
       id: nft.value.id,
       name: nft.value.name,
       image: nftImage.value,

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { Neo } from '@kodadot1/brick'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { config, library } from '@fortawesome/fontawesome-svg-core'
 
@@ -8,8 +9,11 @@ config.autoAddCss = false
 import {
   faAngleLeft,
   faAngleRight,
+  faArrowRight,
   faArrowUp,
+  faArrowUpRightFromSquare,
   faArrowsAlt,
+  faBars,
   faBookOpen,
   faBookmark,
   faCalculator,
@@ -18,6 +22,7 @@ import {
   faCaretDown,
   faCaretUp,
   faChartLine,
+  faCheck,
   faChevronDown,
   faChevronLeft,
   faChevronRight,
@@ -77,7 +82,10 @@ import {
   faShare,
   faShareAlt,
   faShareSquare,
+  faShop,
   faSignOutAlt,
+  faSort,
+  faSquareArrowUpRight,
   faSync,
   faTable,
   faTag,
@@ -91,6 +99,7 @@ import {
   faUserCircle,
   faUsers,
   faWallet,
+  faX,
 } from '@fortawesome/free-solid-svg-icons'
 
 // throws error, idk why
@@ -118,6 +127,11 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 
 library.add(
+  faArrowRight,
+  faSort,
+  faArrowUpRightFromSquare,
+  faSquareArrowUpRight,
+  faBars,
   faBookOpen,
   faPaperPlane,
   faFileImage,
@@ -145,6 +159,7 @@ library.add(
   faCaretUp,
   faInfo,
   faShareSquare,
+  faShop,
   faBookmark,
   faLink,
   faHeart,
@@ -202,6 +217,7 @@ library.add(
   faChartLine,
   faListUl,
   faDownload,
+  faCheck,
 
   // Social
   faTwitter,
@@ -222,7 +238,18 @@ library.add(
   faThumbsDown,
   faExternalLinkSquareAlt,
   faYoutube,
-  faInstagram
+  faInstagram,
+  faX
 )
 
-Vue.component('VueFontawesome', FontAwesomeIcon)
+Vue.component('VueFontawesome', FontAwesomeIcon).use(Neo, {
+  iconPack: 'fa-sharp',
+  customIconPacks: {
+    'fa-sharp': {
+      iconPrefix: 'fa-',
+      sizes: {
+        default: 'fw fa-regular',
+      },
+    },
+  },
+})

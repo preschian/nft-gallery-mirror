@@ -2,13 +2,14 @@ import { KeyringAccount } from '@/utils/types/types'
 import keyring from '@polkadot/ui-keyring'
 import { getAddress } from '@/utils/extension'
 import {
-  decodeAddress,
-  encodeAddress,
   addressEq,
   addressToEvm,
+  decodeAddress,
+  encodeAddress,
 } from '@polkadot/util-crypto'
-import * as store from '~/store'
 import { Prefix } from '@polkadot/util-crypto/address/types'
+import { ss58Of } from './config/chain.config'
+import { useChainStore } from '@/stores/chain'
 
 export const isAccountLocked = (account: KeyringAccount | string): boolean => {
   const address = typeof account === 'string' ? account : account.address
@@ -40,7 +41,8 @@ export const toDefaultAddress = (account: KeyringAccount | string) => {
     return address
   }
 
-  const ss58Format = store.getters['chain/getChainProperties58Format']
+  const chainStore = useChainStore()
+  const ss58Format = chainStore.getChainProperties58Format
 
   return encodeAddress(decodeAddress(address, <any>ss58Format))
 }
@@ -49,7 +51,8 @@ export const formatAddress = (address: string, ss58Format: number) =>
   encodeAddress(address, ss58Format)
 
 export const pubKeyToAddress = (publicKey: string) => {
-  const ss58Format = store.getters['chain/getChainProperties58Format']
+  const chainStore = useChainStore()
+  const ss58Format = chainStore.getChainProperties58Format
   return encodeAddress(publicKey, <any>ss58Format)
 }
 
@@ -58,9 +61,8 @@ export const formatAccount = (
   format?: Prefix
 ) => {
   const address = accountToAddress(account)
-  const ss58Format = format
-    ? format
-    : store.getters['chain/getChainProperties58Format']
+  const chainStore = useChainStore()
+  const ss58Format = format ? format : chainStore.getChainProperties58Format
   return encodeAddress(decodeAddress(address), <any>ss58Format)
 }
 
@@ -83,6 +85,12 @@ export const isOwner = (
 export const accountToEvm = (account: KeyringAccount | string): string => {
   const address = accountToAddress(account)
   return addressToEvm(address)?.toString()
+}
+
+export const getss58AddressByPrefix = (address: string, prefix: string) => {
+  const ss58Format = ss58Of(prefix)
+  const decodedAddress = decodeAddress(address)
+  return encodeAddress(decodedAddress, ss58Format)
 }
 
 export default passwordRequired

@@ -17,12 +17,12 @@
     <template v-else-if="!hideIdentityPopover && !isMobileDevice">
       <IdentityPopover v-if="address">
         <template #trigger>
-          {{ name }}
+          <span>{{ name }}</span>
         </template>
       </IdentityPopover>
     </template>
     <span v-else>
-      <IdentityLink :shortened-address="name" :address="address" />
+      {{ name }}
     </span>
   </div>
 </template>
@@ -42,6 +42,7 @@ defineProps<{
   showOnchainIdentity?: boolean
   hideIdentityPopover?: boolean
   isFetchingIdentity?: boolean
+  showClipboard?: boolean
   identity?: IdentityFields
   address?: Address
   shortenedAddress?: string

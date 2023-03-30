@@ -3,6 +3,9 @@ import { URLS } from '../utils/constants'
 // import consola from 'consola'
 
 const BASE_URL = URLS.koda.replicate
+const VERSION =
+  '42a996d39a96aedc57b2e0aa8105dea39c9c89d9d266caf6bb4327a1c191b061'
+export const OUTPUTS = '4'
 
 type Option<T> = T | null
 
@@ -45,6 +48,7 @@ export type PredictionStatus = {
 
 export type Input = {
   prompt: string
+  negative_prompt?: string
   width: Option<string>
   height: Option<string>
   num_outputs: Option<string>
@@ -56,12 +60,13 @@ export const predict = async (
   object: string
 ): Promise<PredictionRequestStatus> => {
   const input: PredictionRequest = {
-    version: '25d2f75ecda0c0bed34c806b7b70319a53a1bccad3ade1a7496524f013f48983',
+    version: VERSION,
     input: {
       prompt: object,
+      negative_prompt: 'bad eyes, ugly hands',
       width: '512',
       height: '512',
-      num_outputs: '4',
+      num_outputs: OUTPUTS,
       guidance_scale: '7',
       num_inference_steps: '50',
     },

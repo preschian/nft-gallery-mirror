@@ -5,12 +5,18 @@
       <div>&nbsp;</div>
       <GalleryItemActionSlides ref="actionRef" :active="active">
         <template #action>
-          <NeoButton
-            :label="`${$i18n.t('transaction.transfer')}`"
-            size="large"
-            fixed-width
-            no-shadow
-            @click.native="sendItem" />
+          <NeoTooltip
+            :active="isTransferButtonDisabled"
+            position="bottom"
+            :label="$t('tooltip.emptyAddress')">
+            <NeoButton
+              :label="`${$i18n.t('transaction.transfer')}`"
+              size="large"
+              fixed-width
+              :disabled="isTransferButtonDisabled"
+              no-shadow
+              @click.native="sendItem" />
+          </NeoTooltip>
         </template>
 
         <template #content>
@@ -18,6 +24,7 @@
             <input
               v-model="address"
               type="text"
+              class="pl-3"
               :placeholder="`${$i18n.t('transaction.transferTo')}:`" />
           </div>
         </template>
@@ -28,7 +35,7 @@
 
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core'
-import { NeoButton } from '@kodadot1/brick'
+import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
 import { Interaction } from '@kodadot1/minimark'
@@ -43,6 +50,10 @@ const props = defineProps<{
 
 const active = ref(false)
 const address = ref()
+
+const isTransferButtonDisabled = computed(() => {
+  return active.value && !address.value
+})
 
 function sendItem() {
   if (active.value === false) {

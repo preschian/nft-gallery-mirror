@@ -1,5 +1,10 @@
 <template>
-  <figure :class="[!original ? 'is-square image' : '']">
+  <figure
+    class="image-container"
+    :class="{
+      'is-square image': !original,
+      'is-detail': isDetail,
+    }">
     <img
       class="is-block image-media__image"
       :src="src"
@@ -13,11 +18,16 @@ defineProps<{
   src?: string
   alt?: string
   original: boolean
+  isDetail?: boolean
 }>()
 </script>
 
-<style scoped>
-figure > img.image-media__image {
+<style>
+.image-container.is-square.is-detail > img {
+  object-fit: contain;
+}
+
+.image-container.is-square > img {
   object-fit: cover;
 }
 </style>

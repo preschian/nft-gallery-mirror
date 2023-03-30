@@ -7,3 +7,6 @@ export type NeoButtonVariant =
   | 'k-accent'
   | 'k-blue'
   | 'connect'
+  | 'connect-dropdown'
+
+export type NftCardVariant = 'primary' | 'minimal'

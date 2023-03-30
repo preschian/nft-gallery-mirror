@@ -1,39 +1,32 @@
 <template>
   <div class="min-h-full is-flex is-flex-direction-column is-clipped">
     <Navbar />
-    <main class="is-flex-grow-1">
-      <section class="section">
-        <div class="container">
-          <Error
-            v-if="$nuxt.isOffline"
-            :has-img="false"
-            error-subtitle="Please check your network connections"
-            error-title="Offline Detected" />
-          <Nuxt v-else />
-        </div>
-      </section>
+    <main class="is-flex-grow-1 py-6">
+      <div class="container is-fluid">
+        <Error
+          v-if="$nuxt.isOffline"
+          :has-img="false"
+          error-subtitle="Please check your network connections"
+          error-title="Offline Detected" />
+        <Nuxt v-else />
+      </div>
     </main>
     <LazyTheFooter />
     <LazyCookieBanner />
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+<script lang="ts" setup>
+const { $config } = useNuxtApp()
+const route = useRoute()
 
-@Component<DefaultLayout>({
-  name: 'DefaultLayout',
-  head() {
-    return {
-      link: [
-        {
-          hid: 'canonical',
-          rel: 'canonical',
-          href: this.$root.$config.public.baseUrl + this.$route.path,
-        },
-      ],
-    }
-  },
+useNuxt2Meta({
+  link: [
+    {
+      hid: 'canonical',
+      rel: 'canonical',
+      href: $config.public.baseUrl + route.path,
+    },
+  ],
 })
-export default class DefaultLayout extends Vue {}
 </script>

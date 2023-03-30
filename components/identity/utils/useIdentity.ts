@@ -1,22 +1,11 @@
-import { get, update } from 'idb-keyval'
 import { hexToString, isHex } from '@polkadot/util'
-import { GenericAccountId } from '@polkadot/types/generic/AccountId'
-import { onApiConnect } from '@kodadot1/sub-api'
 
 import { emptyObject } from '@/utils/empty'
-import { identityStore } from '@/utils/idbStore'
 import shortAddress from '@/utils/shortAddress'
 
 import type { NFT } from '@/components/rmrk/service/scheme'
 
-type Address = string | GenericAccountId | undefined
 type IdentityFields = Record<string, string>
-
-const resolveAddress = (account: Address): string => {
-  return account instanceof GenericAccountId
-    ? account.toString()
-    : account || ''
-}
 
 const handleRaw = (display): string => {
   if (display?.isRaw) {
@@ -51,8 +40,6 @@ const fetchIdentity = async (address: string): Promise<IdentityFields> => {
       return acc
     }, {} as IdentityFields)
 
-  update(address, () => final, identityStore)
-
   return final
 }
 
@@ -73,36 +60,33 @@ const displayName = ({
   return display || shortenedAddress.value
 }
 
-export default function useIdentity({ address, customNameOption }) {
-  const { apiUrl } = useApi()
+export default function useIdentity({
+  address: initAddress,
+  customNameOption = '',
+}) {
+  const address = ref(initAddress)
   const identity = ref<IdentityFields>({})
   const isFetchingIdentity = ref(false)
-  const shortenedAddress = computed(() => shortAddress(address))
+  const shortenedAddress = computed(() => shortAddress(address.value))
   const twitter = computed(() => identity?.value?.twitter)
   const discord = computed(() => identity?.value?.discord)
+  const instagram = computed(() => identity?.value?.instagram)
   const display = computed(() => identity?.value?.display)
   const name = computed(() =>
     displayName({ customNameOption, identity, shortenedAddress })
   )
 
   const whichIdentity = async (addr) => {
-    const identityCached = await get(resolveAddress(addr), identityStore)
+    isFetchingIdentity.value = true
 
-    if (identityCached) {
-      identity.value = identityCached
-    } else {
-      isFetchingIdentity.value = true
-
-      // better if get data from indexer
-      // reference: https://github.com/kodadot/nft-gallery/issues/3783
-      onApiConnect(apiUrl.value, async () => {
-        identity.value = await fetchIdentity(addr)
-        isFetchingIdentity.value = false
-      })
-    }
+    // better if get data from indexer
+    // reference: https://github.com/kodadot/nft-gallery/issues/3783
+    identity.value = await fetchIdentity(addr)
+    isFetchingIdentity.value = false
+    address.value = addr
   }
 
-  onMounted(() => whichIdentity(address))
+  onMounted(() => address.value && whichIdentity(address.value))
 
   return {
     identity,
@@ -110,21 +94,31 @@ export default function useIdentity({ address, customNameOption }) {
     shortenedAddress,
     twitter,
     discord,
+    instagram,
     display,
     name,
     whichIdentity,
   }
 }
 
-interface NFTListSold {
+export interface NFTListSold {
   nftEntities?: NFT[]
   nftEntitiesConnection: {
     totalCount: number
   }
 }
 
-export function useIdentitySoldData({ address }) {
+export function useIdentitySoldData({ address }, collectionId?) {
   const nftEntities = ref<NFT[]>([])
+  let collectionObject = {}
+  if (collectionId) {
+    collectionObject = {
+      collectionId,
+      where: {
+        collection: { id_eq: collectionId },
+      },
+    }
+  }
 
   const { data } = useGraphql({
     queryName: 'nftListSold',
@@ -132,6 +126,7 @@ export function useIdentitySoldData({ address }) {
       account: address,
       limit: 3,
       orderBy: 'price_DESC',
+      ...collectionObject,
     },
   })
 

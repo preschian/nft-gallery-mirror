@@ -1,12 +1,12 @@
 import { getExpiration } from '@/utils/api/bsx/query'
 import { calculateBalance } from '@/utils/format/balance'
 import { bsxParamResolver, getApiCall } from '@/utils/gallery/abstractCalls'
-import { dangerMessage } from '@/utils/notification'
+import { warningMessage } from '@/utils/notification'
 import { ShoppingActions } from '@/utils/shoppingActions'
 
 import type { ActionOffer } from './types'
 
-export async function exectMakeOfferTx(
+export async function execMakeOfferTx(
   item: ActionOffer,
   api,
   executeTransaction
@@ -27,6 +27,6 @@ export async function exectMakeOfferTx(
       ),
     })
   } catch (error) {
-    dangerMessage(error)
+    warningMessage(error)
   }
 }

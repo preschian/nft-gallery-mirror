@@ -6,11 +6,11 @@ import Vue from 'vue'
 import { formatAddress } from '@/utils/account'
 import type { ApiPromise } from '@polkadot/api'
 import { getChainEndpointByPrefix } from '@/utils/chain'
-import { unwrapOrNull } from '@/utils/api/format'
-import type { Option, u32 } from '@polkadot/types'
-
-declare type Unsubscribe = () => void
-type UnsubscribePromise = Promise<Unsubscribe>
+import {
+  Unsubscribe,
+  UnsubscribePromise,
+  subscribeBalance,
+} from '@/utils/balance'
 
 export interface IdentityMap {
   [address: string]: Registration
@@ -51,19 +51,8 @@ const defaultState: IdentityStruct = {
     tokens: emptyObject<BalanceMap>(),
   },
 }
-
 let balanceSub: Unsubscribe = () => void 0
 let tokenSub: Unsubscribe = () => void 0
-
-function subscribeBalance(
-  api: ApiPromise,
-  address: string,
-  cb: (value: string) => void
-): UnsubscribePromise {
-  return api.derive.balances.all(address, ({ availableBalance }) => {
-    cb(availableBalance.toString())
-  })
-}
 
 function free({ free }: any) {
   return free.toString()
@@ -72,14 +61,12 @@ function free({ free }: any) {
 async function subscribeTokens(
   api: ApiPromise,
   address: string,
+  prefix: string,
   cb: (value: BalanceMap) => void
 ): UnsubscribePromise {
   if (api.query.tokens) {
-    const kusamaTokenId = await api.query.assetRegistry
-      .assetIds('KSM')
-      .then((value) => unwrapOrNull(value as Option<u32>))
-    const realKusamaTokenId = kusamaTokenId ? '5' : '1'
-    return api.query.tokens.accounts.multi(
+    const realKusamaTokenId = prefix === 'bsx' || prefix === 'rmrk' ? '1' : '5'
+    return await api.query.tokens.accounts.multi(
       [[address, realKusamaTokenId]],
       ([ksm]: any[]) =>
         cb({
@@ -145,13 +132,15 @@ export const actions = {
     { commit, dispatch, rootState },
     { address, apiUrl }: ChangeAddressRequest
   ) {
-    const directEndpoint = getChainEndpointByPrefix(rootState.setting.urlPrefix)
+    const prefix = rootState.setting.urlPrefix
+    const directEndpoint = getChainEndpointByPrefix(prefix)
     const endpoint = apiUrl || directEndpoint || rootState.setting.apiUrl
     if (!address) {
       balanceSub()
       tokenSub()
       return
     }
+
     onApiConnect(endpoint, async (api) => {
       try {
         if (balanceSub) {
@@ -166,7 +155,7 @@ export const actions = {
           dispatch('setBalance', balance)
         })
 
-        tokenSub = await subscribeTokens(api, address, (balance) => {
+        tokenSub = await subscribeTokens(api, address, prefix, (balance) => {
           commit('setTokenListBalance', balance)
         })
       } catch (e) {
