@@ -37,9 +37,8 @@
           :to="{
             path: `/${urlPrefix}/explore/collectibles`,
             query: { ...$route.query },
-          }"
-          @click.native="$emit('close')">
-          <div :class="loadMoreItemClassName">
+          }">
+          <div :class="loadMoreItemClassName" @click="seeAllButtonHandler">
             {{ $t('search.seeAll') }}
             <svg
               class="ml-1"
@@ -91,11 +90,10 @@
         <nuxt-link
           class="search-footer-link"
           :to="{
-            path: 'explore/items',
+            path: `/${urlPrefix}/explore/items`,
             query: { ...$route.query },
-          }"
-          @click.native="$emit('close')">
-          <div :class="loadMoreItemClassName">
+          }">
+          <div :class="loadMoreItemClassName" @click="seeAllButtonHandler">
             {{ $t('search.seeAll') }} <span class="info-arrow">--></span>
           </div>
         </nuxt-link>
@@ -299,6 +297,20 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
     }
   }
 
+  public updateSearchUrl() {
+    if (this.name) {
+      this.$router
+        .replace({
+          path: String(this.$route.path),
+          query: {
+            page: '1',
+            search: this.name,
+          },
+        })
+        .catch(this.$consola.warn)
+    }
+  }
+
   public async fetchSuggestions() {
     if (this.showDefaultSuggestions) {
       try {
@@ -319,7 +331,7 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
           .slice(0, this.searchSuggestionEachTypeMaxNum)
           .map(mapNFTorCollectionMetadata)
         const collectionResult: (CollectionWithMeta & RowSeries)[] = []
-        processMetadata<CollectionWithMeta>(
+        await processMetadata<CollectionWithMeta>(
           collectionMetadataList,
           (meta, i) => {
             collectionResult.push({
@@ -328,13 +340,17 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
               image: getSanitizer(meta.image || '', 'image')(meta.image || ''),
             })
           }
-        ).then(() => {
-          this.defaultCollectionSuggestions = collectionResult
-        })
+        )
+        this.defaultCollectionSuggestions = collectionResult
       } catch (e) {
         this.$consola.warn(e, 'Error while fetching default suggestions')
       }
     }
+  }
+
+  seeAllButtonHandler() {
+    this.$emit('close')
+    this.updateSearchUrl()
   }
 
   nativeSearch() {
@@ -397,7 +413,6 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
 
   private buildSearchParam(): Record<string, unknown>[] {
     const params: any[] = []
-
     if (this.query.search) {
       params.push({ name_containsInsensitive: this.query.search })
     }
@@ -502,7 +517,7 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
       )
       const metadataList: string[] = nftList.map(mapNFTorCollectionMetadata)
       const nftResult: NFTWithMeta[] = []
-      processMetadata<NFTWithMeta>(metadataList, (meta, i) => {
+      await processMetadata<NFTWithMeta>(metadataList, (meta, i) => {
         nftResult.push({
           ...nftList[i],
           ...meta,
@@ -511,10 +526,9 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
             meta.animation_url || ''
           ),
         })
-      }).then(() => {
-        this.nftResult = nftResult
-        this.isNFTResultLoading = false
       })
+      this.nftResult = nftResult
+      this.isNFTResultLoading = false
     } catch (e) {
       logError(e, (msg) =>
         this.$consola.warn('[PREFETCH] Unable fo fetch', msg)
@@ -543,16 +557,15 @@ export default class SearchSuggestion extends mixins(PrefixMixin) {
       const metadataList: string[] = collections.map(mapNFTorCollectionMetadata)
 
       const collectionWithImages: CollectionWithMeta[] = []
-      processMetadata<CollectionWithMeta>(metadataList, (meta, i) => {
+      await processMetadata<CollectionWithMeta>(metadataList, (meta, i) => {
         collectionWithImages.push({
           ...collections[i],
           ...meta,
           image: getSanitizer(meta.image || '', 'image')(meta.image || ''),
         })
-      }).then(() => {
-        this.collectionResult = collectionWithImages
-        this.isCollectionResultLoading = false
       })
+      this.collectionResult = collectionWithImages
+      this.isCollectionResultLoading = false
     } catch (e) {
       logError(e, (msg) =>
         this.$consola.warn('[PREFETCH] Unable fo fetch', msg)

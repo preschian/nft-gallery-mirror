@@ -1,22 +1,17 @@
-import { URL_PREFIXES } from '@kodadot1/vuex-options'
-const withPrefix = /-/
-const prefixes = URL_PREFIXES.map((option) => option.value as string).map(
-  // skipcq allowRegExp
-  (value) => RegExp(`^${value}`)
-)
+import { chainPrefixes } from '@kodadot1/static'
 
 export default function ({ store, route }): void {
-  const prefix = store.getters.currentUrlPrefix
-  const routeName = route.name
+  const prefix = route.params.prefix || route.path.split('/')[1]
+  const chains = ['rmrk', ...chainPrefixes]
+  const isAnyChainPrefixInPath = chains.some((prefix) =>
+    route.path.includes(prefix)
+  )
 
   if (
-    // skipcq allowRegExp
-    !RegExp(`^${prefix}`).test(routeName) &&
-    prefixes.some((x) => x.test(routeName))
+    store.getters.currentUrlPrefix !== prefix &&
+    prefix &&
+    isAnyChainPrefixInPath
   ) {
-    const newPrefix = routeName.split(withPrefix)[0]
-    console.log('[PREFIX] from', prefix, 'to', newPrefix)
-    store.dispatch('setUrlPrefix', newPrefix)
-    return routeName.split(withPrefix)[0]
+    store.dispatch('setUrlPrefix', prefix)
   }
 }

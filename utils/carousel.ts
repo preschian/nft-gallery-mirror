@@ -19,16 +19,22 @@ export const formatNFT = (nfts, chain?: string): CarouselNFT[] => {
     const timestamp = nft.updatedAt || nft.timestamp
     const metaImage = nft.meta.image
     const metaAnimationUrl = nft.meta.animationUrl
+    const name = nft.name || nft.meta.name
 
     return {
       ...nft,
-      timestamp: formatDistanceToNow(new Date(timestamp), {
-        addSuffix: true,
-      }),
+      timestamp: timestamp
+        ? formatDistanceToNow(new Date(timestamp), {
+            addSuffix: true,
+          })
+        : '',
       unixTime: new Date(timestamp).getTime(),
       price: nft.price || 0,
       image: metaImage && sanitizeIpfsUrl(metaImage),
       animationUrl: metaAnimationUrl && sanitizeIpfsUrl(metaAnimationUrl),
+      collectionName: nft.collectionName || nft.collection?.name || '--',
+      name,
+      collectionId: nft.collectionId || nft.collection?.id,
       chain: chain || urlPrefix.value,
     }
   })

@@ -1,4 +1,6 @@
 import { NotificationProgrammatic as Notification } from 'buefy'
+import { captureMessage } from '@sentry/browser'
+import consola from 'consola'
 
 export type NotificationType = { type: string; actionText: string }
 export type AvailableNotification = 'success' | 'info' | 'danger' | 'warn'
@@ -29,6 +31,11 @@ export const showNotification = (
   message: string | null,
   params: any = notificationTypes.info
 ): void => {
+  if (params === notificationTypes.danger) {
+    consola.error('[Notification Error]', message)
+    captureMessage(String(message))
+    return
+  }
   Notification.open({
     duration: 10000,
     message,
@@ -54,7 +61,9 @@ export const infiniteNotif = (message: string) => {
 
 export const infoMessage = (msg) =>
   showNotification(`[INFO] ${msg}`, notificationTypes.info)
+export const successMessage = (msg) =>
+  showNotification(`[SUCCESS] ${msg}`, notificationTypes.success)
 export const warningMessage = (msg) =>
   showNotification(`[WARN] ${msg}`, notificationTypes.warn)
 export const dangerMessage = (msg) =>
-  showNotification(`[ERR] ${msg}`, notificationTypes.danger)
+  showNotification(`[ERR] ${msg}`, notificationTypes.warn)

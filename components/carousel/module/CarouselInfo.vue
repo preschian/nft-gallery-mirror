@@ -7,14 +7,13 @@
         'has-text-weight-bold carousel-info-name',
         { 'carousel-info-collection': isCollection },
       ]">
-      <span class="is-ellipsis">{{ item.name }}</span>
+      <span class="is-ellipsis">{{ item.name || '--' }}</span>
       <span v-if="isCollection" class="carousel-info-arrow">----></span>
     </nuxt-link>
     <CollectionDetailsPopover v-if="item?.collectionId" :nft="item">
       <template #trigger>
         <nuxt-link
-          v-if="!isCollection && item.collectionName && item.collectionId"
-          :title="item.collectionName"
+          v-if="!isCollection && item.collectionId"
           :to="
             urlOf({
               id: item.collectionId,
@@ -23,7 +22,7 @@
             })
           "
           class="is-size-7 carousel-info-collection-name">
-          {{ item.collectionName }}
+          {{ item.collectionName || '--' }}
         </nuxt-link>
       </template>
     </CollectionDetailsPopover>

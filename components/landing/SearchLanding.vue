@@ -1,6 +1,6 @@
 <template>
   <section class="landing-search is-flex is-align-items-center">
-    <img src="/landing-blurred-header-left.svg" class="landing-search-left" />
+    <img src="/landing-blurred-header-left.png" class="landing-search-left" />
     <img :src="landingImage[0]" class="landing-shapes" />
     <div
       class="is-flex is-flex-direction-column is-align-items-center search-info">
@@ -22,7 +22,7 @@
         id="networkList"
         class="is-flex is-justify-content-center is-flex-wrap-wrap is-align-items-baseline">
         <a
-          v-for="chain in chainList"
+          v-for="chain in availableChains"
           :key="chain.value"
           :class="['m-2', 'chain-option active']"
           @click="switchChain(chain.value)">
@@ -33,23 +33,16 @@
         </a>
       </div>
     </div>
-    <img src="/landing-blurred-header-right.svg" class="landing-search-right" />
+    <img src="/landing-blurred-header-right.png" class="landing-search-right" />
     <img :src="landingImage[1]" class="landing-shapes" />
   </section>
 </template>
 
 <script lang="ts" setup>
-import { Option } from '@kodadot1/vuex-options/dist/types'
-
-import { getChainTestList } from '~/utils/constants'
-
 const { urlPrefix } = usePrefix()
-const { $store, $colorMode, $router } = useNuxtApp()
-const isDarkMode = computed(
-  () =>
-    $colorMode.preference === 'dark' ||
-    document.documentElement.className.includes('dark-mode')
-)
+const { $store, $router } = useNuxtApp()
+const { isDarkMode } = useTheme()
+const { availableChains } = useChain()
 
 const chainText = (chain: string) => {
   if (chain.includes('[Beta]')) {
@@ -70,13 +63,6 @@ const landingImage = computed(() => {
       '/landing-shape-header-right-light.svg',
     ]
   }
-})
-
-const chainList = computed(() => {
-  const availableUrlPrefixes: Option[] = $store.getters['availableUrlPrefixes']
-  return availableUrlPrefixes.filter(
-    (urlPrefix) => !getChainTestList().includes(urlPrefix.value as string)
-  )
 })
 
 const switchChain = (value) => {

@@ -33,8 +33,12 @@ describe('Identity.vue component', () => {
           })
         )
 
+        // test visit cross-chain first
+        cy.visit('/bsx')
+
+        // back to rmrk
         cy.visit(`/rmrk/u/${address}`)
-        cy.getCy('identity').realHover()
+        cy.contains('[data-cy="identity"]', name).realHover()
         cy.get('.tippy-popper')
           .should('exist')
           .then(() => {

@@ -2,4 +2,6 @@ fragment baseMeta on MetadataEntity {
   id
   image
   animationUrl
+  name
+  description
 }

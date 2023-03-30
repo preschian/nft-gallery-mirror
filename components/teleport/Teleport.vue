@@ -101,6 +101,8 @@ import { getss58AddressByPrefix } from '@/utils/account'
 import { getAsssetBalance } from '@/utils/api/bsx/query'
 import { blockExplorerOf } from '@/utils/config/chain.config'
 import { simpleDivision, subscribeBalance } from '@/utils/balance'
+import { useFiatStore } from '@/stores/fiat'
+
 const getKusamaApi = async () =>
   await ApiPromise.create({
     provider: new WsProvider(getChainEndpointByPrefix('kusama') as string),
@@ -109,9 +111,12 @@ const getBasiliskApi = async () =>
   await ApiPromise.create({
     provider: new WsProvider(getChainEndpointByPrefix('basilisk') as string),
   })
+
 const { accountId } = useAuth()
 const { assets } = usePrefix()
-const { $store, $i18n } = useNuxtApp()
+const { $i18n } = useNuxtApp()
+const fiatStore = useFiatStore()
+
 const chains = ref([Chain.KUSAMA, Chain.BASILISK])
 const fromChain = ref(Chain.KUSAMA) //Selected origin parachain
 const toChain = ref(Chain.BASILISK) //Selected destination parachain
@@ -165,12 +170,12 @@ const getAddressByChain = (chain) => {
 const fromAddress = computed(() => getAddressByChain(fromChain.value))
 const toAddress = computed(() => getAddressByChain(toChain.value))
 
-const ksmValue = computed(() => {
-  return calculateExactUsdFromToken(
+const ksmValue = computed(() =>
+  calculateExactUsdFromToken(
     amount.value,
-    $store.getters['fiat/getCurrentKSMValue']
+    fiatStore.getCurrentKSMValue as number
   )
-})
+)
 
 const fetchBasiliskBalance = async () => {
   const api = await getBasiliskApi()
@@ -237,7 +242,7 @@ const sendXCM = async () => {
       resetStatus()
     },
     (dispatchError) => {
-      showNotification(dispatchError.toString(), notificationTypes.danger)
+      showNotification(dispatchError.toString(), notificationTypes.warn)
       isLoading.value = false
     },
     ({ txHash }) => {
@@ -296,6 +301,7 @@ const sendXCM = async () => {
 </script>
 <style lang="scss" scoped>
 @import '@/styles/abstracts/variables.scss';
+
 .teleport-container {
   max-width: 30rem;
 
@@ -306,30 +312,41 @@ const sendXCM = async () => {
 
   .short-address,
   .max-button {
-    color: $k-blue;
+    @include ktheme() {
+      color: theme('k-blue');
+    }
   }
 }
 
 .input-wrapper {
-  border: 1px solid $black;
+  @include ktheme() {
+    border: 1px solid theme('border-color');
+  }
+
   .token {
     width: 16rem;
     position: relative;
+
     .token-value {
-      color: $k-grey;
       position: absolute;
       left: 0;
       transform: translateX(-110%);
+
+      @include ktheme() {
+        color: theme('k-grey');
+      }
     }
   }
 
   .transfer-amount {
     border: none;
+
     @include ktheme() {
       color: theme('text-color');
       border-right: 1px solid theme('border-color');
       background: theme('background-color');
     }
+
     background: transparent;
     padding: 0 0.5rem;
     height: 54px;
@@ -340,11 +357,6 @@ const sendXCM = async () => {
     &::-webkit-inner-spin-button {
       -webkit-appearance: none !important;
     }
-  }
-}
-.dark-mode {
-  .input-wrapper {
-    border-color: $white;
   }
 }
 </style>

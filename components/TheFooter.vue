@@ -1,7 +1,7 @@
 <template>
   <footer class="footer-container section">
     <div
-      class="container is-flex is-align-items-start is-justify-content-space-between">
+      class="footer-container-inner is-flex is-align-items-start is-justify-content-space-between">
       <div class="footer-container-subs is-flex is-flex-direction-column">
         <h4 class="subtitle is-5">
           {{ $t('footer.subscribe') }}
@@ -68,13 +68,13 @@
                 :pack="item.name == 'Swag' ? 'fas' : 'fab'"
                 :icon="item.icon"
                 size="is-small"
-                :type="$colorMode.value === 'dark' ? 'is-white' : 'is-black'" />
+                :type="isDarkMode ? 'is-white' : 'is-black'" />
             </a>
           </li>
         </ul>
       </div>
     </div>
-    <img src="/blurred-landing-footer.svg" class="left-blurred-image" />
+    <img src="/blurred-landing-footer.png" class="left-blurred-image" />
   </footer>
 </template>
 
@@ -87,7 +87,8 @@ interface Menu {
   external?: boolean
 }
 
-const { $i18n, $colorMode } = useNuxtApp()
+const { $i18n } = useNuxtApp()
+const { isDarkMode } = useTheme()
 
 const menu: Menu[] = [
   {
@@ -107,8 +108,8 @@ const menu: Menu[] = [
     url: '/contribute',
   },
   {
-    name: $i18n.t('grants'),
-    url: 'https://form.kodadot.xyz/grant',
+    name: $i18n.t('referralProgram'),
+    url: 'https://docs.kodadot.xyz/referral-program.html',
     external: true,
   },
   {

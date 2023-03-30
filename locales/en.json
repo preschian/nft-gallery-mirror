@@ -18,6 +18,7 @@
   "transfer": "Transfer",
   "chart": "Chart",
   "holders": "Holders",
+  "flippers": "Flippers",
   "assets": "Assets",
   "incomingOffers": "Incoming Offers",
   "transform": "Transform",
@@ -33,6 +34,7 @@
   "name": "Name",
   "simple": "Simple",
   "creative": "Creative",
+  "multipleNFTS": "Multiple NFT's",
   "about": "About",
   "ambassador program": "Ambassador Program",
   "press kit": "Press Kit",
@@ -40,7 +42,7 @@
   "contribute": "Contribute",
   "qrCode": "QR",
   "documentation": "Documentation",
-  "grants": "Grants",
+  "referralProgram": "Referral Program",
   "theatre": "theatre",
   "view": "view",
   "price": "price",
@@ -58,6 +60,9 @@
   "createNftExplainer": "If your collection was minted recently and it doesn't show up here, please wait, it will show up in the selector below shortly",
   "passion": "Passion Feed",
   "beta": "Beta",
+  "go back": "Go Back",
+  "showMore": "Show More",
+  "showLess": "Show Less",
   "search": {
     "seeAll": "See All",
     "rankings": "Rankings",
@@ -550,6 +555,7 @@
     "sn_ASC": "Serial Number Ascending",
     "listed": "Buy now",
     "own": "Own",
+    "clearAll": "Clear All",
     "collection": {
       "blockNumber_DESC": "New first",
       "blockNumber_ASC": "Old first",
@@ -582,11 +588,16 @@
     }
   },
   "mint": {
+    "creatingCollection": "Creating collection {name}",
+    "mintCollectionSuccess": "Collection {name} Saved in block {block}",
+    "mintNFTSuccess": "NFT {name} Saved in block {block}",
     "submit": "Click to create NFT(s)",
     "estimate": "Show me the transaction fees",
     "estimated": "Transaction fees will cost about",
     "success": "Congratulations",
     "successNewNfts": "You have successfully purchased this NFT",
+    "successCreateNewNft": "You have successfully created {0}",
+    "ErrorCreateNewNft": "Minting {name} failed",
     "shareWithFriends": "Share {0} with your friends",
     "unlimited": "Unlimited items in your collection",
     "nfsw": "Explicit content (NSFW)",
@@ -677,9 +688,12 @@
     "failedMaxSize": "Your File is too large",
     "needToSetValidPrice": "In order to list NFT, price has to be more than 0",
     "notEnoughBalance": "Insufficient funds",
+    "invalidAmount": "Amount must be higher than 0.01 KSM",
     "haveNoToS": "Have no permission to use the asset",
     "smallDisplay": "Small Display",
-    "largeDisplay": "Large Display"
+    "largeDisplay": "Large Display",
+    "emptyAddress": "Receiver address cannot be empty",
+    "emptyListAmount": "Amount should be greater than 0"
   },
   "nft": {
     "carbonless": "This NFT is carbonless",
@@ -875,6 +889,9 @@
     "history": "History",
     "chart": "Chart"
   },
+  "time": {
+    "ago": "Ago"
+  },
   "activity": {
     "listed": "Listed",
     "totalItems": "Σ Items",
@@ -885,7 +902,30 @@
     "unique": "UNIQUE",
     "owners": "OWNERS",
     "distribution": "DISTRIBUTION",
-    "floorPrice": "FLOOR PRICE"
+    "floorPrice": "FLOOR PRICE",
+    "floor": "Floor",
+    "bestOffer": "Best Offer",
+    "volume": "Volume",
+    "network": "Network",
+    "creator": "Creator",
+    "owned": "Owned",
+    "totalBought": "Total Bought",
+    "totalSold": "Total Sold",
+    "date": "Date",
+    "bestFlip": "Best Flip",
+    "latestActivity": "LatestActivity",
+    "nftDetails": "NFT Details",
+    "profit": "Profit",
+    "bought": "Bought",
+    "sold": "Sold",
+    "event": {
+      "item": "Item",
+      "event": "Event",
+      "amount": "Amount",
+      "from": "From",
+      "to": "To",
+      "time": "Time"
+    }
   },
   "profileStats": {
     "listed": "Listed",
@@ -907,6 +947,8 @@
   },
   "general": {
     "apply": "Apply",
+    "resetAll": "Reset All",
+    "filters": "Filters",
     "asset": "Asset",
     "using": "using",
     "balance": "Balance",
@@ -921,6 +963,7 @@
     "copyRewardTooltip": "Your reward link copied to clipboard",
     "copyRewardLink": "Copy Reward Me link",
     "latestSales": "Latest sales",
+    "search": "Search",
     "searchResultsText": "Showing results for",
     "searchNoResultsTitle": "Whoops, Couldn't find anything matching your search",
     "searchNoResultsText": "Give it another shot with different parameters or check back later - New awesome NFTs are added all the time",
@@ -1052,6 +1095,7 @@
     "walletHeading": "Connect Wallet",
     "walletDetails": "Your Wallet",
     "authText": "KodaDot will never ask you to provide your mnemonic phrase or private key.",
+    "authTip": "Waiting For Authorization",
     "understand": "I understand",
     "learnText": "Learn how to Connect",
     "downloadExtension": "Download extension"
@@ -1113,6 +1157,19 @@
     "join": "Join Our Community",
     "subscribeLabel": "Subscribe"
   },
+  "share": {
+    "copyLink": "Copy Link",
+    "qrCode": "QR Code",
+    "twitter": "Share on Twitter"
+  },
+
+  "moreActions": {
+    "download": "Download",
+    "reportNFT": "Report NFT",
+    "delete": "Delete",
+    "customize": "Customize"
+  },
+
   "collectionCard": {
     "volume": "Volume",
     "items": "Items"
@@ -1172,6 +1229,9 @@
       "success": "Price updated",
       "error": "Price update failed"
     },
+    "buy": {
+      "error": "Failed to buy this item"
+    },
     "item": {
       "success": "Item sent",
       "error": "Failed to send item"
@@ -1186,13 +1246,49 @@
     },
     "unlist": {
       "success": "Item successfully unlisted",
-        "error": "Item unlisting failed"
+      "error": "Item unlisting failed"
     }
   },
   "createDropdown": {
     "start": "Start by creating your collection and add NFTs to it",
     "simplifiedNft": "Simplified process to create your NFT in a single step",
     "aiPowered": "AI powered process to create your NFT",
-    "waifu": "Create your anime waifu using AI"
+    "waifu": "Create your anime waifu using AI",
+    "massmint": "Simplified process to create multiple NFT's for your collection"
+  },
+  "massmint": {
+    "backToOnbaording": "Back To Onboarding",
+    "chooseCollection": "Choose a collection to which you want to mint",
+    "selectCollection": "Select Collection",
+    "createNewCollection": "Create New Collection",
+    "noCollection": "No Collection",
+    "onboarding": {
+      "pageTitle": "Mass Mint Onboarding",
+      "skip": "Skip",
+      "next": "Next",
+      "done": "Done",
+      "cards": {
+        "1": {
+          "title": "How to Name your NFTs",
+          "content": "instructions:\n* **File Name:** the file name of your assets should be **numeric** and **consecutive**\n e.g.\n * '1.png', '2.png', '3.png', or\n* 'awesome_art_1', 'awesome_art_2' and so on..."
+        },
+        "2": {
+          "title": "description for your NFTs",
+          "content": "Each NFT has a name, description and price.\nYou can prepare this up front in a separate file\nso that you don’t have to do it manually for all of your NFTs.\n\nInstructions:\n* File type: .TXT, .JSON or CSV"
+        },
+        "3": {
+          "title": "You need to have A collection",
+          "content": "In order to use the Mass Mint feature **you need to have an NFT collection created**\nto which you will mint all of your NFTs.\n\nIf you don’t have a collection created yet, you will be able to create one in the Miss Mint."
+        }
+      }
+    }
+  },
+  "filters": {
+    "sale": "Sale",
+    "offer": "Offer",
+    "listing": "Listing",
+    "mint": "Mint",
+    "transfer": "Transfer"
+
   }
 }

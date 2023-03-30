@@ -5,19 +5,19 @@
         <th class="is-size-7 has-text-weight-normal">
           {{ $t('general.asset') }}
         </th>
-        <th class="is-size-7 has-text-weight-normal">
+        <th class="is-size-7 has-text-weight-normal has-text-right">
           {{ $t('general.balance') }}
         </th>
-        <th class="is-size-7 has-text-weight-normal">USD</th>
+        <th class="is-size-7 has-text-weight-normal has-text-right">USD</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="asset in nonZeroAssetList" :key="asset.id">
         <td>{{ asset.symbol }}</td>
-        <td>
+        <td class="has-text-right">
           <Money :value="Number(asset.balance)" inline hide-unit />
         </td>
-        <td>{{ '$' + usdValueFormat(asset) }}</td>
+        <td class="has-text-right">{{ '$' + usdValueFormat(asset) }}</td>
       </tr>
     </tbody>
   </table>
@@ -34,16 +34,14 @@ import { showNotification } from '@/utils/notification'
 import { AssetItem, AssetListQueryResponse } from '@/components/bsx/Asset/types'
 import Money from '~/components/shared/format/Money.vue'
 import { calculateExactUsdFromToken } from '~/utils/calculation'
-import formatBalance, {
-  checkInvalidBalanceFilter,
-  roundTo,
-} from '@/utils/format/balance'
+import { checkInvalidBalanceFilter } from '@/utils/format/balance'
+import { useFiatStore } from '@/stores/fiat'
 
 const { accountId } = useAuth()
-const emit = defineEmits(['totalValueChange'])
-
+const fiatStore = useFiatStore()
 const { urlPrefix, client } = usePrefix()
-const { $apollo, $consola, $set, $store } = useNuxtApp()
+const { $apollo, $consola, $set } = useNuxtApp()
+const emit = defineEmits(['totalValueChange'])
 
 const nonZeroAssetList = computed(() => {
   return assetList.value.filter((asset) => asset.balance !== '0')
@@ -82,24 +80,22 @@ const updatedBalanceFor = async (balance: Promise<string>, index: number) => {
 }
 
 const assetToUsdValue = (asset: AssetItem) => {
+  const DECIMALS = 12
   if (asset.symbol === 'KSM') {
-    let value = checkInvalidBalanceFilter(asset.balance)
-    value = roundTo(formatBalance(value, 12, ''), 4).replace(',', '.')
+    const value =
+      checkInvalidBalanceFilter(asset.balance) * Math.pow(10, -1 * DECIMALS)
     return calculateExactUsdFromToken(
       value,
-      $store.getters['fiat/getCurrentKSMValue']
+      Number(fiatStore.getCurrentKSMValue)
     )
   }
   if (asset.symbol === 'BSX') {
-    let value = checkInvalidBalanceFilter(asset.balance)
-    value = checkInvalidBalanceFilter(
-      roundTo(formatBalance(value, 12, ''), 4)
-        .replace(',', '')
-        .replace(/\s/g, '')
-    )
+    const value =
+      checkInvalidBalanceFilter(asset.balance) * Math.pow(10, -1 * DECIMALS)
+
     return calculateExactUsdFromToken(
       value,
-      $store.getters['fiat/getCurrentBSXValue']
+      Number(fiatStore.getCurrentBSXValue)
     )
   }
   return 0
@@ -130,20 +126,27 @@ watch(
 )
 
 onMounted(async () => {
-  $store.dispatch('fiat/fetchFiatPrice')
+  fiatStore.fetchFiatPrice()
 })
 </script>
 <style lang="scss" scoped>
 @import '@/styles/abstracts/variables';
+
 table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   border-radius: 0.25rem;
   overflow: hidden;
+
   th {
-    color: $k-grey;
+    @include ktheme() {
+      @include ktheme() {
+        color: theme('k-grey');
+      }
+    }
   }
+
   tr:last-child {
     border-bottom: none;
   }

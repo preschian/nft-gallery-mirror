@@ -70,7 +70,7 @@
         field="timestamp"
         :label="$t('tabs.tabActivity.date')">
         <o-tooltip :label="parseDate(props.row.timestamp)" position="left">
-          {{ formatToNow(props.row.timestamp) }}
+          <span class="no-wrap">{{ formatToNow(props.row.timestamp) }}</span>
         </o-tooltip>
       </o-table-column>
     </o-table>
@@ -90,6 +90,7 @@ import formatBalance from '@/utils/format/balance'
 import { parseDate } from '@/utils/datetime'
 
 import type { Interaction } from '@/components/rmrk/service/scheme'
+import useSubscriptionGraphql from '@/composables/useSubscriptionGraphql'
 
 const dprops = defineProps<{
   nftId: string
@@ -99,14 +100,34 @@ const dprops = defineProps<{
 const { decimals, unit } = useChain()
 const { urlPrefix, tokenId, assets } = usePrefix()
 
-const { data, loading } = useGraphql({
+const interaction =
+  urlPrefix.value === 'rmrk2'
+    ? dprops.interactions.filter((i) => i !== 'MINTNFT' && i !== 'CONSUME')
+    : dprops.interactions
+
+const { data, loading, refetch } = useGraphql({
   queryName: 'itemEvents',
   clientName: urlPrefix.value,
   variables: {
     id: dprops.nftId,
-    interaction: dprops.interactions,
+    interaction,
     limit: 100,
   },
+})
+
+useSubscriptionGraphql({
+  query: `
+  events (
+    where: { nft: { id_eq: "${dprops.nftId}" }, interaction_in: [${interaction}] }
+    orderBy: timestamp_DESC
+    limit: 5
+  ) {
+    id
+    interaction
+    timestamp
+    meta
+  }`,
+  onChange: refetch,
 })
 
 interface ItemEvents {
@@ -125,7 +146,9 @@ watchEffect(() => {
 
 const formatPrice = (price) => {
   const { symbol } = assets(tokenId.value)
-  const tokenSymbol = urlPrefix.value === 'rmrk' ? unit.value : symbol
+  const tokenSymbol = ['rmrk', 'rmrk2'].includes(urlPrefix.value)
+    ? unit.value
+    : symbol
 
   return formatBalance(price, decimals.value, tokenSymbol)
 }

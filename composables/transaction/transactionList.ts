@@ -1,7 +1,7 @@
 import { Interaction, createInteraction } from '@kodadot1/minimark'
 
 import { bsxParamResolver, getApiCall } from '@/utils/gallery/abstractCalls'
-import { dangerMessage } from '@/utils/notification'
+import { warningMessage } from '@/utils/notification'
 
 import type { ActionList } from './types'
 
@@ -9,7 +9,7 @@ function isListTxValid(item: ActionList) {
   const meta = Number(item.price)
 
   if (Math.sign(meta) === -1) {
-    dangerMessage('Price is not valid')
+    warningMessage('Price is not valid')
     return false
   }
 
@@ -22,10 +22,11 @@ export function execListTx(item: ActionList, api, executeTransaction) {
     return
   }
 
-  if (item.urlPrefix === 'rmrk') {
+  if (item.urlPrefix === 'rmrk' || item.urlPrefix === 'rmrk2') {
+    const version = item.urlPrefix === 'rmrk' ? '1.0.0' : '2.0.0'
     executeTransaction({
       cb: api.tx.system.remark,
-      arg: [createInteraction(Interaction.LIST, '1.0.0', item.nftId, meta)],
+      arg: [createInteraction(Interaction.LIST, version, item.nftId, meta)],
       successMessage: item.successMessage,
       errorMessage: item.errorMessage,
     })
