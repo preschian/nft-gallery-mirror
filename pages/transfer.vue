@@ -168,7 +168,11 @@ import TransactionMixin from '@/utils/mixins/txMixin'
 import UseApiMixin from '@/utils/mixins/useApiMixin'
 import { useFiatStore } from '@/stores/fiat'
 
-import { getExplorer, hasExplorer } from '@/components/rmrk/Profile/utils'
+import { getExplorer, hasExplorer } from '@kodadot1/static'
+import { emptyObject } from '@kodadot1/minimark'
+
+type Target = 'target' | `target${number}`
+type TargetMap = Record<Target, string>
 
 @Component({
   components: {
@@ -194,7 +198,7 @@ export default class Transfer extends mixins(
   protected transactionValue = ''
   protected price = 0
   protected usdValue = 0
-  protected targets = {}
+  protected targets = emptyObject<TargetMap>()
 
   layout() {
     return 'centered-half-layout'
@@ -248,8 +252,7 @@ export default class Transfer extends mixins(
   }
 
   protected created() {
-    this.fiatStore.fetchFiatPrice()
-    this.checkQueryParams()
+    this.fiatStore.fetchFiatPrice().then(this.checkQueryParams)
     onApiConnect(this.apiUrl, async (api) => {
       this.$store.commit('setApiConnected', api.isConnected)
     })
@@ -304,7 +307,7 @@ export default class Transfer extends mixins(
 
     if (query.usdamount) {
       this.usdValue = Number(query.usdamount)
-      // getting ksm value from the usd value
+
       this.price = calculateKsmFromUsd(
         Number(this.fiatStore.getCurrentKSMValue),
         this.usdValue
@@ -374,7 +377,7 @@ export default class Transfer extends mixins(
       )
     } catch (e: any) {
       if (e.message === 'Cancelled') {
-        showNotification(e.message, notificationTypes.danger)
+        showNotification(e.message, notificationTypes.warn)
         this.isLoading = false
         return
       }
@@ -396,7 +399,7 @@ export default class Transfer extends mixins(
       } else {
         this.$consola.error('[ERR: TRANSFER SUBMIT]', e)
         if (e instanceof Error) {
-          showNotification(e.message, notificationTypes.danger)
+          showNotification(e.message, notificationTypes.warn)
         }
       }
     }
@@ -409,12 +412,12 @@ export default class Transfer extends mixins(
       const { docs, name, section } = decoded
       showNotification(
         `[ERR] ${section}.${name}: ${docs.join(' ')}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     } else {
       showNotification(
         `[ERR] ${dispatchError.toString()}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     }
 
@@ -457,7 +460,7 @@ export default class Transfer extends mixins(
           ...object,
           [`target${i == 0 ? '' : i}`]: address,
         }),
-        {}
+        {} as TargetMap
       )
     this.targets = targets
     this.$router.replace({ query: { ...targets, usdamount } }).catch(() => null) // null to further not throw navigation errors

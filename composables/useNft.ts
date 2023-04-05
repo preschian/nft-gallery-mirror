@@ -1,33 +1,40 @@
 import type { NFT, NFTMetadata } from '@/components/rmrk/service/scheme'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { processSingleMetadata } from '@/utils/cachingStrategy'
+import { getMimeType } from '@/utils/gallery/media'
 
-type RMRK2Resources = {
-  resources: {
-    src: string
-    thumb: string
+export type ItemResources = {
+  mediaUri?: string
+  resources?: {
+    src?: string
+    thumb?: string
   }[]
 }
 
 export type NFTWithMetadata = NFT &
-  NFTMetadata & { meta: NFTMetadata } & RMRK2Resources
+  NFTMetadata & { meta: NFTMetadata } & ItemResources
 
 function getGeneralMetadata(nft: NFTWithMetadata) {
   return {
     ...nft,
-    name: nft.name || nft.id,
+    name: nft.name || nft.meta.name || nft.id,
+    description: nft.description || nft.meta.description || '',
     image: sanitizeIpfsUrl(nft.meta.image),
     animation_url: sanitizeIpfsUrl(nft.meta.animation_url || ''),
     type: nft.meta.type || '',
   }
 }
 
-function getRmrk2Resources(nft: NFTWithMetadata) {
-  const { src, thumb } = nft.resources[0]
+async function getRmrk2Resources(nft: NFTWithMetadata) {
+  const thumb = nft.resources && nft.resources[0].thumb
+  const src = nft.resources && nft.resources[0].src
+  const image = sanitizeIpfsUrl(thumb || src || '')
+  const type = await getMimeType(image)
 
   return {
-    ...nft,
-    image: sanitizeIpfsUrl(thumb || src || ''),
+    ...getGeneralMetadata(nft),
+    image,
+    type,
   }
 }
 
@@ -41,21 +48,22 @@ async function getProcessMetadata(nft: NFTWithMetadata) {
   return {
     ...nft,
     name: nft.name || metadata.name || nft.id,
+    description: nft.description || metadata.description || '',
     image,
     animation_url,
     type: metadata.type || '',
   }
 }
 
-async function getNftMetadata(nft: NFTWithMetadata, prefix: string) {
+export async function getNftMetadata(nft: NFTWithMetadata, prefix: string) {
   // if subsquid already give us the metadata, we don't need to fetch it again
   if (nft.meta && nft.meta.image) {
     return getGeneralMetadata(nft)
   }
 
   // if it's rmrk2, we need to check `resources` field
-  if (prefix === 'rmrk2' && nft.resources.length) {
-    return getRmrk2Resources(nft)
+  if (prefix === 'rmrk2' && nft.resources?.length) {
+    return await getRmrk2Resources(nft)
   }
 
   return await getProcessMetadata(nft)
