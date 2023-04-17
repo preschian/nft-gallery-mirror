@@ -39,6 +39,8 @@
   "multipleNFTS": "Multiple NFT's",
   "about": "About",
   "ambassador program": "Ambassador Program",
+  "artist ambassador": "Artist Ambassador",
+  "merchshop": "MerchShop",
   "press kit": "Press Kit",
   "careers": "Careers",
   "contribute": "Contribute",
@@ -540,15 +542,7 @@
     }
   },
   "sort": {
-    "EMOTES_COUNT_DESC": "Most reacted",
-    "BLOCK_NUMBER_DESC": "Recently Created",
-    "BLOCK_NUMBER_ASC": "Oldest",
-    "UPDATED_AT_DESC": "Recently Interacted",
-    "UPDATED_AT_ASC": "Unpopular",
-    "PRICE_DESC": "Price: High to Low",
-    "PRICE_ASC": "Price: Low to High",
-    "SN_ASC": "Serial Number Ascending",
-    "blockNumber_DESC": "Recently Created",
+    "blockNumber_DESC": "Newest",
     "blockNumber_ASC": "Oldest",
     "updatedAt_DESC": "Recently Interacted",
     "updatedAt_ASC": "Unpopular",
@@ -559,8 +553,8 @@
     "own": "Own",
     "clearAll": "Clear All",
     "collection": {
-      "blockNumber_DESC": "New first",
-      "blockNumber_ASC": "Old first",
+      "blockNumber_DESC": "Newest",
+      "blockNumber_ASC": "Oldest",
       "updatedAt_DESC": "Recently Interacted",
       "updatedAt_ASC": "Unpopular",
       "supply_DESC": "Most Supply",
@@ -569,15 +563,7 @@
       "price_ASC": "Price: Low to High",
       "sn_ASC": "Serial Number Ascending",
       "listed": "Buy now",
-      "sortBy": "Sort By",
-      "EMOTES_COUNT_DESC": "Most reacted",
-      "BLOCK_NUMBER_DESC": "Recently Created",
-      "BLOCK_NUMBER_ASC": "Oldest",
-      "UPDATED_AT_DESC": "Recently Interacted",
-      "UPDATED_AT_ASC": "Unpopular",
-      "PRICE_DESC": "Price: High to Low",
-      "PRICE_ASC": "Price: Low to High",
-      "SN_ASC": "Serial Number Ascending"
+      "sortBy": "Sort By"
     }
   },
   "query": {
@@ -852,7 +838,7 @@
   },
   "hot": {
     "label": "Hot",
-    "title": "Recently KUSAMA Sales In One Week",
+    "title": "Recent KUSAMA Sales In One Week",
     "subtitle": "Featuring the recently sold NFTs on Kusama"
   },
   "spotlight": {
@@ -929,7 +915,10 @@
       "from": "From",
       "to": "To",
       "time": "Time"
-    }
+    },
+    "noResults": "Looks Like There's Nothing Here Yet",
+    "noFlips": "Looks like it's quiet in here",
+    "noResultsSub": "Check back later or reset your filters"
   },
   "profileStats": {
     "listed": "Listed",
@@ -1199,6 +1188,7 @@
       "contractAddress": "Contract Address",
       "creator": "Creator",
       "blockchain": "Blockchain",
+      "version": "Version",
       "tokenStandard": "Token Standard",
       "royalties": "Royalties",
       "media": "Media",
@@ -1288,17 +1278,30 @@
     "uploadDesc": "Upload Description File (Optional)"
   },
   "filters": {
+    "buy": "Buy",
     "sale": "Sale",
     "offer": "Offer",
+    "acceptedOffer": "Accepted offer",
     "listing": "Listing",
     "mint": "Mint",
     "transfer": "Transfer"
   },
-  "redirect":{
-    "title":"Leaving Kodadot",
-    "leavingTips":"You are going outside KodaDot to external website",
-    "safetyTips":"Be sure that it's safe!",
-    "continue":"Continue",
-    "stay":"Stay"
+  "redirect": {
+    "title": "Leaving Kodadot",
+    "leavingTips": "You are going outside KodaDot to external website",
+    "safetyTips": "Be sure that it's safe!",
+    "continue": "Continue",
+    "stay": "Stay"
+  },
+  "notification": {
+    "notifications": "Notifications",
+    "filters": "Filters",
+    "add": "Add",
+    "done": "Done",
+    "byCollection": "By collection",
+    "byEvent": "By event",
+    "emptyTipLine1": "Don't wait for notifications,",
+    "emptyTipLine2": "make your own buzz with your art.",
+    "loadingTip": "Loading Your Notifications..."
   }
 }

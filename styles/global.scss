@@ -57,6 +57,10 @@ body {
     }
   }
 
+  .taginput-container.is-focusable {
+    height: auto !important;
+  }
+
   .select {
     &:not(.is-multiple):not(.is-loading)::after {
       @include ktheme() {
@@ -302,6 +306,11 @@ hr {
 .border-top {
   @include ktheme() {
     border-top: 1px solid theme('border-color');
+  }
+}
+.border-left {
+  @include ktheme() {
+    border-left: 1px solid theme('border-color');
   }
 }
 .border {
