@@ -7,7 +7,7 @@
     fixed-top
     mobile-burger
     spaced
-    wrapper-class="container is-fluid">
+    :wrapper-class="{ container: true, 'is-fluid': !isMobile }">
     <template #brand>
       <b-navbar-item :to="{ path: '/' }" class="logo" tag="nuxt-link">
         <img
@@ -66,17 +66,23 @@
         data-cy="create"
         :is-mobile="isMobile"
         :chain="urlPrefix" />
-      <StatsDropdown
+
+      <!-- commenting as part of #5889-->
+      <!-- <StatsDropdown
         class="navbar-stats custom-navbar-item"
         data-cy="stats"
         :is-mobile="isMobile"
-        :chain="urlPrefix" />
+        :chain="urlPrefix" /> -->
 
       <ChainSelectDropdown
         v-if="!isMobile"
         id="NavChainSelect"
         class="navbar-chain custom-navbar-item"
         data-cy="chain-select" />
+      <NotificationBoxButton
+        v-if="account"
+        :show-label="isMobile"
+        @closeBurgerMenu="closeBurgerMenu" />
       <template v-if="isMobile">
         <MobileLanguageOption v-if="!account" />
         <MobileExpandableSection
@@ -111,9 +117,9 @@
           @click.stop="openWalletConnectModal">
           <span>
             {{ $t('wallet') }}
-            <b-icon icon="wallet" />
+            <NeoIcon icon="wallet" />
           </span>
-          <b-icon class="icon--right" icon="chevron-right" pack="fas" />
+          <NeoIcon class="icon--right" icon="chevron-right" pack="fas" />
         </div>
         <ColorModeButton class="navbar-item" />
 
@@ -147,12 +153,13 @@ import ColorModeButton from '~/components/common/ColorModeButton.vue'
 import MobileLanguageOption from '~/components/navbar/MobileLanguageOption.vue'
 import { createVisible } from '@/utils/config/permision.config'
 import ChainSelectDropdown from '~/components/navbar/ChainSelectDropdown.vue'
-import StatsDropdown from '~/components/navbar/StatsDropdown.vue'
 import MobileNavbarProfile from '~/components/navbar/MobileNavbarProfile.vue'
 import ConnectWalletButton from '~/components/shared/ConnectWalletButton.vue'
+import NotificationBoxButton from '~/components/navbar/NotificationBoxButton.vue'
 import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
 import { BModalConfig } from 'buefy/types/components'
 import type Vue from 'vue'
+import { NeoIcon } from '@kodadot1/brick'
 
 const { $store, $buefy, $nextTick } = useNuxtApp()
 const root = ref<Vue<Record<string, string>>>()

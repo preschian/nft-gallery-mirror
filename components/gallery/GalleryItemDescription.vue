@@ -12,7 +12,7 @@
         </nuxt-link>
       </div>
 
-      <vue-markdown
+      <Markdown
         :source="nftMetadata?.description?.replaceAll('\n', '  \n') || ''"
         class="gallery-item-desc-markdown" />
     </o-tab-item>
@@ -55,6 +55,10 @@
         <p>{{ $t('tabs.tabDetails.blockchain') }}</p>
         <p>{{ urlPrefix }}</p>
       </div>
+      <div v-if="version" class="is-flex is-justify-content-space-between">
+        <p>{{ $t('tabs.tabDetails.version') }}</p>
+        <p>{{ version }}</p>
+      </div>
       <!-- <div class="is-flex is-justify-content-space-between">
         <p>Token Standard</p>
         <p>--</p>
@@ -87,6 +91,29 @@
         >
       </div>
     </o-tab-item>
+
+    <!-- parent tab -->
+    <div v-if="parent">
+      <o-tab-item value="3" :label="$t('tabs.parent')" class="p-5">
+        <nuxt-link :to="parentNftUrl">
+          <MediaItem
+            :key="parent?.nftImage"
+            :class="{
+              'is-flex is-align-items-center is-justify-content-center h-audio':
+                resolveMedia(parent?.nftMimeType.value) == MediaType.AUDIO,
+            }"
+            class="gallery-parent-item"
+            :src="parent?.nftImage.value"
+            :animation-src="parent?.nftAnimation.value"
+            :mime-type="parent?.nftMimeType.value"
+            :title="parent?.nftMetadata?.value?.name"
+            is-detail />
+          <p class="gallery-parent-item__name">
+            {{ parent?.nftMetadata?.value?.name }}
+          </p>
+        </nuxt-link>
+      </o-tab-item>
+    </div>
   </o-tabs>
 </template>
 
@@ -94,19 +121,47 @@
 import { OTabItem, OTable, OTableColumn, OTabs } from '@oruga-ui/oruga'
 import Identity from '@/components/identity/IdentityIndex.vue'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
-import VueMarkdown from 'vue-markdown-render'
-import { DisablableTab } from '@kodadot1/brick'
+
+import { DisablableTab, MediaItem } from '@kodadot1/brick'
 
 import { useGalleryItem } from './useGalleryItem'
+import { useRedirectModal } from '@/components/redirect/useRedirectModal'
+
+import { MediaType } from '@/components/rmrk/types'
+import { resolveMedia } from '@/utils/gallery/media'
 
 const { urlPrefix } = usePrefix()
 const { nft, nftMimeType, nftMetadata, nftImage, nftAnimation } =
   useGalleryItem()
 const activeTab = ref('0')
+const { version } = useRmrkVersion()
+
+const parent = computed(() => {
+  if (nft.value?.parent?.id) {
+    return useGalleryItem(nft.value?.parent?.id)
+  }
+})
+const isLewd = computed(() => {
+  return Boolean(
+    properties.value?.find((item) => {
+      return item.trait_type === 'NSFW'
+    })
+  )
+})
+
+defineExpose({ isLewd })
+
+const parentNftUrl = computed(() => {
+  if (parent.value) {
+    const url = inject('itemUrl', 'gallery') as string
+
+    return `/${urlPrefix.value}/${url}/${parent.value?.nft.value?.id}`
+  }
+})
 
 const properties = computed(() => {
   // we have different format between rmrk2 and the other chains
-  if (urlPrefix.value === 'rmrk2') {
+  if (urlPrefix.value === 'ksm') {
     return Object.entries(nftMetadata.value?.properties || {}).map(
       ([key, value]) => {
         return {
@@ -117,7 +172,15 @@ const properties = computed(() => {
     )
   }
 
-  return nftMetadata.value?.attributes
+  const attributes = (nftMetadata.value?.attributes ||
+    nftMetadata.value?.meta.attributes ||
+    []) as Array<{ trait_type: string; value: string; key?: string }>
+  return attributes.map((attr) => {
+    return {
+      trait_type: attr.trait_type || attr.key,
+      value: attr.value,
+    }
+  })
 })
 
 const propertiesTabDisabled = computed(() => {
@@ -130,6 +193,10 @@ const propertiesTabDisabled = computed(() => {
 
 const metadataMimeType = ref('application/json')
 const metadataURL = ref('')
+
+onMounted(() => {
+  useRedirectModal('.gallery-item-desc-markdown')
+})
 
 watchEffect(async () => {
   if (nft.value?.metadata) {

@@ -1,14 +1,19 @@
 <template>
-  <o-tabs v-model="activeTab" expanded content-class="o-tabs__content--fixed">
+  <o-tabs
+    v-model="activeTab"
+    expanded
+    data-cy="gallery-item-tabs"
+    content-class="o-tabs__content--fixed gallery-item-tab-panel">
     <!-- offers -->
     <DisablableTab
       value="0"
+      data-cy="offer-list"
       :disabled="offersDisabled"
       :label="$t('tabs.offers')"
       :disabled-tooltip="$t('tabs.offersDisabled')">
       <GalleryItemOffers
         v-if="
-          !['rmrk', 'rmrk2'].includes(urlPrefix) &&
+          !['rmrk', 'ksm'].includes(urlPrefix) &&
           nft?.collection.id &&
           nft?.id &&
           nft.currentOwner
@@ -19,7 +24,7 @@
     </DisablableTab>
 
     <!-- activity -->
-    <o-tab-item value="1" :label="$t('tabs.activity')">
+    <o-tab-item value="1" :label="$t('tabs.activity')" data-cy="offer-activity">
       <GalleryItemActivity v-if="nft?.id" :nft-id="nft?.id" />
     </o-tab-item>
 
@@ -65,3 +70,13 @@ watchEffect(() => {
   collectionId.value = nft.value?.collection.id || ''
 })
 </script>
+
+<style lang="scss">
+@import '@/styles/abstracts/variables';
+
+.o-tabs__content--fixed.gallery-item-tab-panel {
+  @include mobile {
+    height: 28rem;
+  }
+}
+</style>

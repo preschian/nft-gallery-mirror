@@ -239,6 +239,7 @@
 <script lang="ts">
 import { Component, Ref, Watch, mixins } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
+import { getExplorer, hasExplorer } from '@kodadot1/static'
 
 import {
   CollectionWithMeta,
@@ -273,9 +274,8 @@ import nftListSold from '@/queries/subsquid/general/nftListSold.graphql'
 import offerListUser from '@/queries/subsquid/bsx/offerListUser.graphql'
 import recentSalesForCreator from '@/queries/rmrk/subsquid/recentSalesForCreator.graphql'
 
-import { getExplorer, hasExplorer } from './utils'
 import { NftHolderEvent } from '../Gallery/Holder/Holder.vue'
-import { exist } from '@/components/search/exist'
+import { exist } from '@/utils/exist'
 
 const tabNameWithoutCollections = ['holdings', 'gains']
 

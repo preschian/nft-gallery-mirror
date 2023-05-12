@@ -5,11 +5,11 @@
         activeWrapper && hasWrapper ? { maxHeight: `${rowHeight}px` } : null,
       ]"
       :class="{ 'description-wrapper': activeWrapper && hasWrapper }">
-      <VueMarkdown :source="text" />
+      <Markdown :source="text" />
     </div>
     <div class="has-text-centered">
-      <a @click.prevent="toggleDescription" v-if="hasWrapper">
-        <b-icon :icon="activeWrapper ? 'chevron-down' : 'chevron-up'"></b-icon>
+      <a v-if="hasWrapper" @click.prevent="toggleDescription">
+        <NeoIcon :icon="activeWrapper ? 'chevron-down' : 'chevron-up'" />
       </a>
     </div>
   </div>
@@ -18,9 +18,12 @@
 <script lang="ts">
 import { Component, Prop, mixins } from 'nuxt-property-decorator'
 import KeyboardEventsMixin from '~/utils/mixins/keyboardEventsMixin'
+import Markdown from '@/components/shared/Markdown'
+import { NeoIcon } from '@kodadot1/brick'
 
 const components = {
-  VueMarkdown: () => import('vue-markdown-render'),
+  Markdown,
+  NeoIcon,
 }
 
 @Component({ components })
@@ -34,6 +37,10 @@ export default class DescriptionWrapper extends mixins(KeyboardEventsMixin) {
     this.initKeyboardEventHandler({
       e: this.bindExpandEvents,
     })
+  }
+
+  public mounted() {
+    useRedirectModal('.markdown-wrapper')
   }
 
   private bindExpandEvents(event) {

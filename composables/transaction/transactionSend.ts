@@ -1,9 +1,13 @@
 import { checkAddress, isAddress } from '@polkadot/util-crypto'
-import { Interaction, createInteraction } from '@kodadot1/minimark'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import {
+  Interaction as NewInteraction,
+  createInteraction as createNewInteraction,
+} from '@kodadot1/minimark/v2'
 
 import { ss58Of } from '@/utils/config/chain.config'
 import correctFormat from '@/utils/ss58Format'
-import { dangerMessage } from '@/utils/notification'
+import { warningMessage } from '@/utils/notification'
 import { tokenIdToRoute } from '@/components/unique/utils'
 
 import type { ActionSend } from './types'
@@ -15,12 +19,12 @@ function checkTsxSend(item: ActionSend) {
   )
 
   if (!isAddress(item.address)) {
-    dangerMessage('Invalid address')
+    warningMessage('Invalid address')
     return false
   }
 
   if (err) {
-    dangerMessage(err)
+    warningMessage(err)
     return false
   }
 
@@ -28,12 +32,16 @@ function checkTsxSend(item: ActionSend) {
 }
 
 function execSendRmrk(item: ActionSend, api, executeTransaction) {
-  const version = item.urlPrefix === 'rmrk' ? '1.0.0' : '2.0.0'
+  const interaction =
+    item.urlPrefix === 'rmrk'
+      ? createInteraction(Interaction.SEND, item.nftId, item.address)
+      : createNewInteraction({
+          action: NewInteraction.SEND,
+          payload: { id: item.nftId, recipient: item.address },
+        })
   executeTransaction({
     cb: api.tx.system.remark,
-    arg: [
-      createInteraction(Interaction.SEND, version, item.nftId, item.address),
-    ],
+    arg: [interaction],
     successMessage: item.successMessage,
     errorMessage: item.errorMessage,
   })
@@ -60,7 +68,7 @@ export function execSendTx(item: ActionSend, api, executeTransaction) {
     return
   }
 
-  if (item.urlPrefix === 'rmrk' || item.urlPrefix === 'rmrk2') {
+  if (item.urlPrefix === 'rmrk' || item.urlPrefix === 'ksm') {
     execSendRmrk(item, api, executeTransaction)
   }
 

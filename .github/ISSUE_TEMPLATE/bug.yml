@@ -1,4 +1,4 @@
-name: Bug Report
+name: 🐞 Bug Report
 description: Create a report to help us improve KodaDot
 title: "Be descriptive and short"
 labels: ["bug"]
@@ -51,6 +51,7 @@ body:
       label: At which address did you encounter bug?
       multiple: true
       options:
+        - canary.kodadot.xyz
         - beta.kodadot.xyz
         - kodadot.xyz
   - type: dropdown

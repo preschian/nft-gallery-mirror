@@ -1,5 +1,5 @@
 // TODO: hacky, but works for now
-import { isEmpty } from '@kodadot1/minimark'
+import { isEmpty } from '@kodadot1/minimark/utils'
 import { fetchMetadata, getSanitizer } from '@/utils/ipfs'
 import { emptyObject } from './empty'
 import { fastExtract } from './ipfs'
@@ -52,20 +52,11 @@ export const getProperImageLink =
     )
   }
 
-export const flushIndexedDb = () => {
-  if (window.indexedDB) {
-    window.indexedDB.deleteDatabase('identity')
-    window.indexedDB.deleteDatabase('image')
-    window.indexedDB.deleteDatabase('keyval-store')
-  }
-}
-
 export const clearSession = () => {
   try {
     setTimeout(() => {
       window.sessionStorage.clear()
       window.localStorage.clear()
-      flushIndexedDb()
     }, 100)
   } catch (error) {
     console.error(error)

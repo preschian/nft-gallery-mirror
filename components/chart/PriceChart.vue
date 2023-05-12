@@ -4,7 +4,10 @@
       >Price ({{ chainSymbol }})
     </span>
     <NeoDropdown class="py-0">
-      <NeoButton :label="selectedTimeRange.label" class="time-range-button" />
+      <NeoButton
+        :label="selectedTimeRange.label"
+        class="time-range-button"
+        no-shadow />
 
       <template #items>
         <NeoDropdownItem
@@ -13,13 +16,15 @@
           class="is-flex is-justify-content-center px-0"
           :active="selectedTimeRange.value === range.value"
           :value="selectedTimeRange"
-          @click.native="setTimeRange(range)">
+          @click.native="
+            setTimeRange({ value: range.value, label: range.label })
+          ">
           {{ range.label }}
         </NeoDropdownItem>
       </template>
     </NeoDropdown>
 
-    <div class="content">
+    <div :class="{ content: !chartHeight }" :style="heightStyle">
       <canvas id="priceChart" />
     </div>
   </div>
@@ -66,7 +71,12 @@ const setTimeRange = (value: { value: number; label: string }) => {
 
 const props = defineProps<{
   priceChartData?: [Date, number][][]
+  chartHeight?: string
 }>()
+
+const heightStyle = computed(() =>
+  props.chartHeight ? `height: ${props.chartHeight}` : ''
+)
 let Chart: ChartJS<'line', any, unknown>
 
 onMounted(() => {
@@ -85,6 +95,9 @@ const lineColor = computed(() => {
     return '#181717'
   }
 })
+
+const gridColor = computed(() => (isDarkMode.value ? '#6b6b6b' : '#cccccc'))
+
 const displayChartData = computed(() => {
   if (props.priceChartData) {
     const timeRangeValue = selectedTimeRange.value.value
@@ -124,14 +137,15 @@ const getPriceChartData = () => {
     )?.getContext('2d')
     if (ctx) {
       const commonStyle = {
-        tension: 0,
+        tension: 0.2,
         pointRadius: 6,
         pointHoverRadius: 6,
         pointHoverBackgroundColor: isDarkMode.value ? '#181717' : 'white',
-        borderJoinStyle: 'miter' as const,
+        borderJoinStyle: 'round' as const,
         radius: 0,
         pointStyle: 'rect',
         borderWidth: 1,
+        lineTension: 0,
       }
       const chart = new ChartJS(ctx, {
         type: 'line',
@@ -157,6 +171,15 @@ const getPriceChartData = () => {
         },
         options: {
           maintainAspectRatio: false,
+          responsive: true,
+          responsiveAnimationDuration: 0,
+          transitions: {
+            resize: {
+              animation: {
+                duration: 0,
+              },
+            },
+          },
           plugins: {
             customCanvasBackgroundColor: {
               color: isDarkMode.value ? '#181717' : 'white',
@@ -206,7 +229,7 @@ const getPriceChartData = () => {
               grid: {
                 drawOnChartArea: false,
                 borderColor: lineColor.value,
-                color: lineColor.value,
+                color: gridColor.value,
               },
               ticks: {
                 callback: (value) => {
@@ -225,12 +248,12 @@ const getPriceChartData = () => {
                 callback: (value) => {
                   return `${Number(value).toFixed(2)}  `
                 },
-                maxTicksLimit: 7,
+                stepSize: 3,
                 color: lineColor.value,
               },
               grid: {
                 drawTicks: false,
-                color: '#ccc',
+                color: gridColor.value,
                 borderColor: lineColor.value,
               },
             },

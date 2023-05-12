@@ -5,10 +5,41 @@
         v-if="key === 'search'"
         :key="key"
         class="control"
-        @close="removeSearch">
+        :is-blue-tag="isCollectionSearchMode"
+        @close="removeBread('search')">
         {{ `${$t('general.search')}: ${value}` }}
       </NeoTag>
-      <NeoTag v-else :key="key" class="control" @close="closeTag(String(key))">
+      <NeoTag
+        v-else-if="key === 'min'"
+        :key="key"
+        class="control"
+        @close="removeBread('min')">
+        {{ `${$t('Min')}:` }}
+        <CommonTokenMoney :value="value" />
+      </NeoTag>
+      <NeoTag
+        v-else-if="key === 'max'"
+        :key="key"
+        class="control"
+        @close="removeBread('max')">
+        {{ `${$t('Max')}:` }}
+        <CommonTokenMoney :value="value" />
+      </NeoTag>
+      <template v-else-if="key === 'collections'">
+        <NeoTag
+          v-for="item in collections"
+          :key="`${key}-${item.id}`"
+          class="control"
+          @close="removeCollection(item.id)">
+          {{ item.meta.name }}
+        </NeoTag>
+      </template>
+
+      <NeoTag
+        v-else
+        :key="key"
+        class="control d"
+        @close="closeTag(String(key))">
         {{ queryMapTranslation[String(key)] }}
       </NeoTag>
     </template>
@@ -22,22 +53,44 @@
 </template>
 
 <script lang="ts" setup>
-import useReplaceUrl from '@/components/explore/filters/useReplaceUrl'
 import NeoTag from '@/components/shared/gallery/NeoTag.vue'
+import CommonTokenMoney from '@/components/shared/CommonTokenMoney.vue'
+import {
+  Collection,
+  collectionArray,
+} from '@/components/shared/filters/modules/usePopularCollections'
+import useActiveRouterFilters from '@/composables/useActiveRouterFilters'
+import { useCollectionSearch } from '../search/utils/useCollectionSearch'
 
 const route = useRoute()
-const { replaceUrl } = useReplaceUrl()
+const isCollectionActivityTab = computed(
+  () => route.name === 'prefix-collection-id-activity'
+)
+const { replaceUrl } = useReplaceUrl({
+  resetPage: !isCollectionActivityTab.value,
+})
 const { $i18n } = useNuxtApp()
 const isItemsExplore = computed(() => route.path.includes('/explore/items'))
 
-const breads = computed(() => {
-  const query = { ...route.query, redesign: undefined }
+const breads = useActiveRouterFilters()
 
-  const activeFilters = Object.entries(query).filter(
-    ([key, value]) => (key === 'search' && Boolean(value)) || value === 'true'
+const collectionIdList = computed(
+  () => breads.value.collections?.split(',') || []
+)
+
+const collections = computed<Collection[]>(() =>
+  collectionArray.value?.filter((collection) =>
+    collectionIdList.value?.find((id) => collection.id === id)
   )
-  return Object.fromEntries(activeFilters)
-})
+)
+
+const { isCollectionSearchMode } = useCollectionSearch()
+const removeCollection = (id: string) => {
+  const ids = collections.value
+    .filter((collection) => collection.id !== id)
+    .map((collection) => collection.id)
+  replaceUrl({ collections: ids.join(',') })
+}
 
 const isAnyFilterActive = computed(() =>
   Boolean(Object.keys(breads.value).length)
@@ -45,10 +98,10 @@ const isAnyFilterActive = computed(() =>
 
 const clearAllFilters = () => {
   const clearedFilters = Object.keys(breads.value).reduce((filters, key) => {
-    if (key === 'search') {
+    if (['search', 'min', 'max'].includes(key)) {
       return { ...filters, [key]: undefined }
     }
-    return { ...filters, [key]: 'false' }
+    return { ...filters, [key]: isCollectionActivityTab ? undefined : 'false' }
   }, {})
 
   replaceUrl(clearedFilters)
@@ -57,6 +110,11 @@ const clearAllFilters = () => {
 const queryMapTranslation = {
   listed: $i18n.t('sort.listed'),
   owned: $i18n.t('sort.own'),
+  sale: $i18n.t('filters.sale'),
+  offer: $i18n.t('filters.offer'),
+  listing: $i18n.t('filters.listing'),
+  mint: $i18n.t('filters.mint'),
+  transfer: $i18n.t('filters.transfer'),
 }
 
 onMounted(() => {
@@ -69,8 +127,8 @@ const closeTag = (key: string) => {
   replaceUrl({ [key]: false })
 }
 
-const removeSearch = () => {
-  replaceUrl({ search: undefined })
+const removeBread = (key: string) => {
+  replaceUrl({ [key]: undefined })
 }
 </script>
 

@@ -1,9 +1,9 @@
-# One Stop Shop for your Polkadot NFTs 
+# One Stop Shop for your Polkadot NFTs
 
 ![](https://github.com/kodadot/kodadot-presskit/blob/main/v3/KODA_v3.png?raw=true)
 
 # Contributing
-[![Lint, Build & Test workflow](https://github.com/kodadot/nft-gallery/actions/workflows/build.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/build.yml) [![cypress](https://github.com/kodadot/nft-gallery/actions/workflows/e2e.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/e2e.yml) [![Reviewdog](https://github.com/kodadot/nft-gallery/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/reviewdog.yml)
+[![Test & Build app](https://github.com/kodadot/nft-gallery/actions/workflows/build.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/build.yml) [![cypress](https://github.com/kodadot/nft-gallery/actions/workflows/e2e.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/e2e.yml) [![Reviewdog](https://github.com/kodadot/nft-gallery/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/kodadot/nft-gallery/actions/workflows/reviewdog.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/7d14fab327c632d5f0ce/maintainability)](https://codeclimate.com/github/kodadot/nft-gallery/maintainability)
 
 ![image](https://user-images.githubusercontent.com/5887929/217076362-464e1293-8a2d-43ee-829f-fba17408e4c3.png)
 
@@ -39,6 +39,6 @@ You'll find our goals for KodaDot upcoming future!
 #### Feel free to donate to our [KodaDot_Guild_Rewards](https://beta.kodadot.xyz/transfer?target=G29NScLSew5zqwmJAPupvJWDCDkpxKUhDnMeVdD2BBcnHar&usdamount=1000&donation=true) which already funded over $200k ([~1740 $KSM](https://dotscanner.com/Kusama/account/G29NScLSew5zqwmJAPupvJWDCDkpxKUhDnMeVdD2BBcnHar)) to notable contributing members
 
 # Stay Tuned for Updates!
-- Follow us on [Twitter](https://twitter.com/KodaDot), [Instagram](https://instagram.com/kodadot.xyz), [Youtube](https://www.youtube.com/channel/UCEULduld5NrqOL49k1KVjoA), [SubStack](https://kodadot.substack.com/) and [Medium](https://medium.com/kodadot)
-- Join our [Discord](https://discord.gg/u6ymnbz4PR)
-- Love our merchandise designs and haven't been on our physical events? You can now order it to [your home at our K-shop](https://shop.kodadot.xyz) and support us!
+- Follow us on [Twitter](https://twitter.com/KodaDot), [Youtube](https://www.youtube.com/channel/UCEULduld5NrqOL49k1KVjoA), [SubStack](https://kodadot.substack.com/) and [Medium](https://blog.kodadot.xyz), [Instagram](https://instagram.com/kodadot.xyz),
+- Join our [Telegram KodaDot Ecosystem](https://t.me/kodadot_eco), [Discord](https://discord.gg/u6ymnbz4PR)
+- [Pick your T-shirt in KodaDot Swag Shop](https://shop.kodadot.xyz), use voucher `readme100` to get 100% OFF, first 10 redemptions only. 

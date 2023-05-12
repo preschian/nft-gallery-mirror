@@ -1,4 +1,6 @@
+import path from 'path'
 import SentryWebpackPlugin from '@sentry/webpack-plugin'
+import { manifestIcons } from './utils/config/pwa'
 
 import { apolloClientConfig } from './utils/constants'
 
@@ -37,8 +39,8 @@ export default defineNuxtConfig({
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'KodaDot - NFT Market Explorer',
-    titleTemplate: '%s | Low Carbon NFTs',
+    title: 'KodaDot - One Stop Shop for Polkadot NFTs',
+    titleTemplate: '%s | One Stop Shop for Polkadot NFTs',
     htmlAttrs: {
       lang: 'en',
     },
@@ -107,7 +109,6 @@ export default defineNuxtConfig({
       },
       { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' },
       { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' },
-      { rel: 'manifest', href: '/site.webmanifest' },
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@600;700&display=swap',
@@ -137,10 +138,10 @@ export default defineNuxtConfig({
     { src: '~/plugins/endpoint', mode: 'client' },
     { src: '~/plugins/seoMetaGenerator', mode: 'client' },
     { src: '~/plugins/keyboardEvents', mode: 'client' },
-    { src: '~/plugins/userBalance', mode: 'client' },
     { src: '~/plugins/icons', mode: 'client' },
     { src: '~/plugins/consola', mode: 'client' },
     { src: '~/plugins/assets', mode: 'client' },
+    { src: '~/plugins/piniaPersistedState', mode: 'client' },
     '~/plugins/filters',
     '~/plugins/globalVariables',
     '~/plugins/pwa',
@@ -246,20 +247,17 @@ export default defineNuxtConfig({
     manifest: {
       name: 'KodaDot - Polkadot NFT explorer',
       short_name: 'KodaDot',
-      background_color: '#181717',
-      theme_color: '#181717',
+      background_color: '#ffffff',
+      theme_color: '#ffffff',
+      start_url: '/',
+      icons: manifestIcons,
     },
     workbox: {
       // enabled: true, // enable this to use workbox in localhost
       autoRegister: true,
       workboxVersion: '6.5.4',
     },
-
-    // according to Google using purpose ['any', 'maskable'] is discouraged
-    icon: {
-      source: 'static/icon.png',
-      purpose: ['any'],
-    },
+    icon: false,
   },
 
   i18n: {
@@ -365,15 +363,20 @@ export default defineNuxtConfig({
       })
 
       config.module.rules.push({
-        test: /node_modules\/@substrate\/smoldot-light\/dist\/mjs\/.+\.js$/,
+        test: /\.mjs$/,
         loader: require.resolve('babel-loader'),
         query: { compact: true },
       })
 
       config.module.rules.push({
         test: /\.js$/,
-        loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+        include: [path.resolve(__dirname, 'node_modules')],
+        use: [
+          { loader: require.resolve('@open-wc/webpack-import-meta-loader') },
+          { loader: require.resolve('babel-loader') },
+        ],
       })
+
       config.resolve.alias['vue$'] = 'vue/dist/vue.esm.js'
       config.node = {
         fs: 'empty',

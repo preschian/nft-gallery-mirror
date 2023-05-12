@@ -13,6 +13,7 @@
             size="large"
             variant="k-blue"
             class="full-width-action-button"
+            data-cy="make-offer"
             no-shadow
             @click.native="toggleActive" />
         </template>
@@ -20,6 +21,7 @@
           <NeoTooltip
             v-if="active && !confirm"
             :active="insufficientBalance || offerPriceInvalid"
+            append-to-body
             :label="
               insufficientBalance
                 ? $t('tooltip.notEnoughBalance')
@@ -82,7 +84,7 @@
 <script setup lang="ts">
 import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 import { onClickOutside } from '@vueuse/core'
-import { dangerMessage } from '@/utils/notification'
+import { warningMessage } from '@/utils/notification'
 import { ShoppingActions } from '@/utils/shoppingActions'
 import { simpleDivision } from '@/utils/balance'
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
@@ -112,7 +114,7 @@ const root = ref<Vue<Record<string, string>>>()
 const connected = computed(() => Boolean(accountId.value))
 
 const balance = computed<string>(() => {
-  if (urlPrefix.value == 'rmrk' || urlPrefix.value == 'rmrk2') {
+  if (urlPrefix.value == 'rmrk' || urlPrefix.value == 'ksm') {
     return $store.getters.getAuthBalance
   }
   return $store.getters.getTokenBalanceOf(tokenId.value)
@@ -175,7 +177,7 @@ async function confirm2() {
       errorMessage: $i18n.t('transaction.item.error') as string,
     })
   } catch (error) {
-    dangerMessage(error)
+    warningMessage(error)
   } finally {
     active.value = false
     confirm.value = false

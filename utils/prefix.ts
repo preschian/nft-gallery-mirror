@@ -3,7 +3,7 @@ import { bsxDenyList, denyList, statemineDenyList } from '@/utils/constants'
 export function getDenyList(prefix: string): string[] | undefined {
   switch (prefix) {
     case 'rmrk':
-    case 'rmrk2':
+    case 'ksm':
       return denyList
     case 'bsx':
     case 'snek':
@@ -18,20 +18,6 @@ export function getDenyList(prefix: string): string[] | undefined {
 
 export function isRemark(prefix: string): boolean {
   return prefix === 'rmrk'
-}
-
-export function getSupportedClient(prefix: string): 'subquery' | 'subsquid' {
-  switch (prefix) {
-    case 'statemine':
-    case 'westmint':
-    case 'rmrk':
-      return 'subquery'
-    case 'bsx':
-    case 'snek':
-      return 'subsquid'
-    default:
-      return 'subsquid'
-  }
 }
 
 export function prefixBuildOnText(prefix: string): string {

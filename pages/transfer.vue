@@ -5,7 +5,7 @@
       v-if="$route.query.target"
       :to="`/${urlPrefix}/u/${correctAddress}`"
       class="pl-4 is-flex is-align-items-center">
-      <b-icon icon="chevron-left" size="is-small" class="mr-2" />
+      <NeoIcon icon="chevron-left" class="mr-2" />
       {{ $t('teleport.artistProfile') }}
     </nuxt-link>
     <p class="title is-size-3">
@@ -108,7 +108,7 @@
         v-clipboard:copy="getUrl()"
         type="is-primary"
         @click="toast($t('toast.urlCopy'))">
-        <b-icon size="is-small" pack="fas" icon="link" />
+        <NeoIcon pack="fas" icon="link" />
       </b-button>
       <b-button
         v-if="hasAddress"
@@ -168,8 +168,9 @@ import TransactionMixin from '@/utils/mixins/txMixin'
 import UseApiMixin from '@/utils/mixins/useApiMixin'
 import { useFiatStore } from '@/stores/fiat'
 
-import { getExplorer, hasExplorer } from '@/components/rmrk/Profile/utils'
-import { emptyObject } from '@kodadot1/minimark'
+import { getExplorer, hasExplorer } from '@kodadot1/static'
+import { emptyObject } from '@kodadot1/minimark/utils'
+import { NeoIcon } from '@kodadot1/brick'
 
 type Target = 'target' | `target${number}`
 type TargetMap = Record<Target, string>
@@ -185,6 +186,7 @@ type TargetMap = Record<Target, string>
     AddressInput: () => import('@/components/shared/AddressInput.vue'),
     Money: () => import('@/components/shared/format/Money.vue'),
     DisabledInput: () => import('@/components/shared/DisabledInput.vue'),
+    NeoIcon,
   },
 })
 export default class Transfer extends mixins(
@@ -377,7 +379,7 @@ export default class Transfer extends mixins(
       )
     } catch (e: any) {
       if (e.message === 'Cancelled') {
-        showNotification(e.message, notificationTypes.danger)
+        showNotification(e.message, notificationTypes.warn)
         this.isLoading = false
         return
       }
@@ -399,7 +401,7 @@ export default class Transfer extends mixins(
       } else {
         this.$consola.error('[ERR: TRANSFER SUBMIT]', e)
         if (e instanceof Error) {
-          showNotification(e.message, notificationTypes.danger)
+          showNotification(e.message, notificationTypes.warn)
         }
       }
     }
@@ -412,12 +414,12 @@ export default class Transfer extends mixins(
       const { docs, name, section } = decoded
       showNotification(
         `[ERR] ${section}.${name}: ${docs.join(' ')}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     } else {
       showNotification(
         `[ERR] ${dispatchError.toString()}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     }
 

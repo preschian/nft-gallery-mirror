@@ -4,7 +4,7 @@
     :style="{ backgroundImage: `url(${collectionAvatar})` }">
     <div class="collection-banner-shadow"></div>
 
-    <section class="h-full py-6">
+    <section class="h-full py-8">
       <div class="container is-fluid collection-banner-content">
         <div class="is-flex is-flex-direction-column is-align-items-start">
           <div class="collection-banner-avatar">
@@ -12,7 +12,7 @@
               v-if="collectionAvatar"
               :src="collectionAvatar"
               :alt="collectionName" />
-            <img v-else src="/placeholder.webp" />
+            <img v-else :src="placeholder" />
           </div>
           <h1 class="collection-banner-name">{{ collectionName }}</h1>
         </div>
@@ -27,7 +27,10 @@ import type { NFTMetadata } from '@/components/rmrk/service/scheme'
 import { processSingleMetadata } from '@/utils/cachingStrategy'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import HeroButtons from '@/components/collection/HeroButtons.vue'
+import { generateCollectionImage } from '@/utils/seoImageGenerator'
 
+const { $seoMeta } = useNuxtApp()
+const { placeholder } = useTheme()
 const route = useRoute()
 const { data } = useGraphql({
   queryName: 'collectionById',
@@ -61,6 +64,24 @@ watchEffect(async () => {
       collectionAvatar.value = metaImage
     }
   }
+})
+
+const meta = computed(() => {
+  return $seoMeta({
+    title: collectionName.value,
+    type: 'profile',
+    description: data.value?.collectionEntity.meta?.description,
+    url: route.path,
+    image: generateCollectionImage(
+      collectionName.value,
+      data.value?.nftEntitiesConnection.totalCount,
+      collectionAvatar.value
+    ),
+  })
+})
+useNuxt2Meta({
+  title: collectionName,
+  meta,
 })
 </script>
 

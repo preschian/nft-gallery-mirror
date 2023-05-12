@@ -16,6 +16,7 @@
           <NeoTooltip
             v-if="!active"
             :active="disabled"
+            append-to-body
             :label="$t('tooltip.notEnoughBalance')">
             <NeoButton
               :label="label"
@@ -61,15 +62,16 @@ import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
 import { onClickOutside } from '@vueuse/core'
 import {
-  dangerMessage,
   notificationTypes,
   showNotification,
+  warningMessage,
 } from '@/utils/notification'
 import { getKusamaAssetId } from '@/utils/api/bsx/query'
 import { tokenIdToRoute } from '@/components/unique/utils'
 import nftByIdMinimal from '@/queries/rmrk/subsquid/nftByIdMinimal.graphql'
 import { ShoppingActions } from '@/utils/shoppingActions'
 import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import { usePreferencesStore } from '@/stores/preferences'
 
 import Vue from 'vue'
 
@@ -79,12 +81,16 @@ const props = withDefaults(
     currentOwner?: string
     collectionId?: string
     nftPrice?: string
+    royalty?: number
+    recipient?: string
   }>(),
   {
     nftId: '',
     currentOwner: '',
     collectionId: '',
     nftPrice: '',
+    royalty: 0,
+    recipient: '',
   }
 )
 
@@ -92,6 +98,8 @@ const { urlPrefix, client } = usePrefix()
 const { accountId } = useAuth()
 const root = ref<Vue<Record<string, string>>>()
 const { $store, $apollo, $i18n, $buefy, $route } = useNuxtApp()
+const preferencesStore = usePreferencesStore()
+
 const emit = defineEmits(['buy-success'])
 const actionLabel = $i18n.t('nft.action.buy')
 
@@ -99,11 +107,15 @@ const { transaction, status, isLoading } = useTransaction()
 const connected = computed(() => Boolean(accountId.value))
 const active = ref(false)
 const label = computed(() =>
-  active.value ? $i18n.t('nft.action.confirm') : $i18n.t('nft.action.buy')
+  active.value
+    ? $i18n.t('nft.action.confirm')
+    : $i18n.t(
+        preferencesStore.getReplaceBuyNowWithYolo ? 'YOLO' : 'nft.action.buy'
+      )
 )
 
 const balance = computed<string>(() => {
-  if (urlPrefix.value == 'rmrk') {
+  if (['rmrk', 'ksm'].includes(urlPrefix.value)) {
     return $store.getters.getAuthBalance
   }
   return $store.getters.getTokenBalanceOf(getKusamaAssetId(urlPrefix.value))
@@ -184,11 +196,13 @@ const handleBuy = async () => {
       nftId: $route.params.id,
       tokenId: $route.params.id,
       urlPrefix: urlPrefix.value,
+      recipient: props.recipient,
+      royalty: props.royalty,
       successMessage: $i18n.t('mint.successNewNfts'),
       errorMessage: $i18n.t('transaction.buy.error'),
     })
   } catch (error) {
-    dangerMessage(error)
+    warningMessage(error)
   } finally {
     showNotification(`[${actionLabel}] ${itemId}`, notificationTypes.success)
     emit('buy-success')

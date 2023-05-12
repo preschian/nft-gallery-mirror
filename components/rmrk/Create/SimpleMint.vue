@@ -160,7 +160,7 @@
       </b-button>
     </b-field>
     <b-field>
-      <b-icon icon="calculator" />
+      <NeoIcon icon="calculator" />
       <span class="pr-2">{{ $t('mint.estimated') }}</span>
       <Money :value="estimated" inline data-cy="fee" />
       <span class="pl-2"> ({{ getUsdFromKsm().toFixed(2) }} USD) </span>
@@ -205,15 +205,11 @@ import exec, {
   execResultValue,
   txCb,
 } from '@/utils/transactionExecutor'
-import {
-  Attribute,
-  Interaction,
-  createInteraction,
-  createMetadata,
-  findUniqueSymbol,
-  mapAsSystemRemark,
-  unSanitizeIpfsUrl,
-} from '@kodadot1/minimark'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import { Attribute, mapAsSystemRemark } from '@kodadot1/minimark/common'
+import { createMetadata, unSanitizeIpfsUrl } from '@kodadot1/minimark/utils'
+
+import { findUniqueSymbol } from '@kodadot1/minimark/shared'
 import { DispatchError } from '@polkadot/types/interfaces'
 import { formatBalance } from '@polkadot/util'
 import { encodeAddress, isAddress } from '@polkadot/util-crypto'
@@ -228,6 +224,7 @@ import AuthMixin from '~/utils/mixins/authMixin'
 import { useFiatStore } from '@/stores/fiat'
 import { usePinningStore } from '@/stores/pinning'
 import { usePreferencesStore } from '@/stores/preferences'
+import { NeoIcon } from '@kodadot1/brick'
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
@@ -237,13 +234,14 @@ const components = {
   Support,
   AttributeTagInput: () => import('./AttributeTagInput.vue'),
   BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
-  Money: () => import('@/components/shared/format/Money.vue'),
+  Money: () => import('@/components/shared/format/BasicMoney.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
   CollapseWrapper: () =>
     import('@/components/shared/collapse/CollapseWrapper.vue'),
   BasicSwitch: () => import('@/components/shared/form/BasicSwitch.vue'),
   BasicSlider: () => import('@/components/shared/form/BasicSlider.vue'),
   BasicInput: () => import('@/components/shared/form/BasicInput.vue'),
+  NeoIcon,
 }
 
 @Component<SimpleMint>({
@@ -563,7 +561,7 @@ export default class SimpleMint extends mixins(
       )
     } catch (e) {
       if (e instanceof Error) {
-        showNotification(e.toString(), notificationTypes.danger)
+        showNotification(e.toString(), notificationTypes.warn)
         this.isLoading = false
       }
     }
@@ -580,7 +578,8 @@ export default class SimpleMint extends mixins(
     originalBlockNumber: string
   ): Promise<void> {
     try {
-      const { version, price } = this
+      // TODO: WORK WITH V2
+      const { price } = this
       const addresses = this.parseAddresses
       showNotification(`[APP] Sending NFTs to ${addresses.length} adresses`)
 
@@ -592,7 +591,7 @@ export default class SimpleMint extends mixins(
       // )
 
       if (!onlyNfts.length) {
-        showNotification('Can not send empty NFTs', notificationTypes.danger)
+        showNotification('Can not send empty NFTs', notificationTypes.warn)
         return
       }
 
@@ -611,12 +610,7 @@ export default class SimpleMint extends mixins(
           ? onlyNfts
               .slice(outOfTheNamesForTheRemarks.length)
               .map((nft) =>
-                createInteraction(
-                  Interaction.LIST,
-                  version,
-                  nft.id,
-                  String(price)
-                )
+                createInteraction(Interaction.LIST, nft.id, String(price))
               )
           : []
 
@@ -668,7 +662,7 @@ export default class SimpleMint extends mixins(
       )
     } catch (e) {
       if (e instanceof Error) {
-        showNotification(e.message, notificationTypes.danger)
+        showNotification(e.message, notificationTypes.warn)
         this.isLoading = false
       }
     }
@@ -681,12 +675,12 @@ export default class SimpleMint extends mixins(
       const { docs, name, section } = decoded
       showNotification(
         `[ERR] ${section}.${name}: ${docs.join(' ')}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     } else {
       showNotification(
         `[ERR] ${dispatchError.toString()}`,
-        notificationTypes.danger
+        notificationTypes.warn
       )
     }
 
@@ -711,7 +705,7 @@ export default class SimpleMint extends mixins(
         )
 
       if (!onlyNfts.length) {
-        showNotification('Can not list empty NFTs', notificationTypes.danger)
+        showNotification('Can not list empty NFTs', notificationTypes.warn)
         return
       }
 
@@ -759,7 +753,7 @@ export default class SimpleMint extends mixins(
       )
     } catch (e) {
       if (e instanceof Error) {
-        showNotification(e.message, notificationTypes.danger)
+        showNotification(e.message, notificationTypes.warn)
         this.isLoading = false
       }
     }

@@ -1,16 +1,19 @@
 html {
   height: 100%;
+  background-color: $white;
+  &.dark-mode {
+    background-color: $scheme-main;
+  }
 }
+
 body,
 div#__nuxt,
 div#__layout,
 main {
-  //without this, footer image is above main contents
+  // without this, footer image is above main contents
   // block hover, click events
   z-index: 100;
-  @include ktheme() {
-    background: theme('background-color');
-  }
+  height: 100%;
 }
 
 main {
@@ -27,7 +30,7 @@ body {
     }
     &:hover {
       @include ktheme() {
-        color: theme('k-hovergrey');
+        color: theme('link-hover');
       }
     }
   }
@@ -52,6 +55,18 @@ body {
         color: theme('placeholder-color') !important;
       }
     }
+  }
+
+  .field {
+    .input,
+    select,
+    textarea {
+      border-color: #dbdbdb;
+    }
+  }
+
+  .taginput-container.is-focusable {
+    height: auto !important;
   }
 
   .select {
@@ -94,7 +109,7 @@ body {
   }
 
   .message.is-primary .message-body {
-    color: $light-text;
+    color: $primary;
   }
 
   .b-steps .steps .step-items .step-item .step-details .step-title {
@@ -221,6 +236,9 @@ body {
   height: 100%;
 }
 
+.w-full {
+  width: 100%;
+}
 hr {
   height: 1px;
   @include ktheme() {
@@ -249,8 +267,12 @@ hr {
 
 .snackbar {
   @include ktheme() {
+    border-radius: 0;
     color: theme('text-color');
     background: theme('background-color');
+    box-shadow: theme('primary-shadow');
+    border: 1px solid theme('border-color');
+
     .button {
       background-color: theme('k-accentlight2') !important;
       color: theme('text-color') !important;
@@ -293,4 +315,117 @@ hr {
   @include ktheme() {
     border-top: 1px solid theme('border-color');
   }
+}
+.border-left {
+  @include ktheme() {
+    border-left: 1px solid theme('border-color');
+  }
+}
+.border-right {
+  @include ktheme() {
+    border-right: 1px solid theme('border-color');
+  }
+}
+.border {
+  @include ktheme() {
+    border: 1px solid theme('border-color');
+  }
+}
+
+//colors
+
+.has-text-k-green {
+  @include ktheme() {
+    color: theme('k-green');
+  }
+}
+.has-text-k-red {
+  @include ktheme() {
+    color: theme('k-red');
+  }
+}
+
+.has-text-k-orange {
+  @include ktheme() {
+    color: theme('k-orange');
+  }
+}
+
+.has-text-k-blue {
+  @include ktheme() {
+    color: theme('k-blue');
+  }
+  &:hover {
+    @include ktheme() {
+      color: theme('k-blue-hover');
+    }
+  }
+}
+
+.k-pink {
+  @include ktheme() {
+    background-color: theme('k-pink');
+  }
+}
+.k-greenaccent {
+  @include ktheme() {
+    background-color: theme('k-greenaccent');
+  }
+}
+
+.k-yellow {
+  @include ktheme() {
+    background-color: theme('k-yellow');
+  }
+}
+
+.k-green {
+  @include ktheme() {
+    background-color: theme('k-green');
+  }
+}
+.k-red {
+  @include ktheme() {
+    background-color: theme('k-red');
+  }
+}
+.k-redaccent {
+  @include ktheme() {
+    background-color: theme('k-redaccent');
+  }
+}
+.theme-background-color {
+  @include ktheme() {
+    background-color: theme('background-color');
+  }
+}
+
+.k-blueaccent {
+  @include ktheme() {
+    background-color: theme('k-blueaccent');
+  }
+}
+
+//hover
+
+.is-hoverable-item {
+  @include ktheme() {
+    &:hover {
+      background-color: theme('k-accentlight2');
+    }
+  }
+}
+
+//shadow
+
+.k-shadow {
+  @include ktheme() {
+    box-shadow: theme('primary-shadow');
+  }
+}
+
+// flex helper - makes flex items equal width
+
+.is-flex-1 {
+  flex: 1;
 }

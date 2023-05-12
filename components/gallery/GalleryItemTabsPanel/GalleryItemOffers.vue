@@ -3,7 +3,10 @@
     <Loader v-model="isLoading" :status="status" />
     <o-table v-if="offers?.length" :data="offers" hoverable>
       <!-- token price -->
-      <o-table-column v-slot="props" field="id" :label="$t('offer.price')">
+      <o-table-column
+        v-slot="props"
+        field="id"
+        :label="`${$t(`offer.price`)} (${chainSymbol})`">
         {{ getOffersDetails(props.row.id).token }}
       </o-table-column>
 
@@ -55,15 +58,14 @@
       <o-table-column v-slot="props" field="action">
         <NeoSecondaryButton
           v-if="
-            (props.row.caller === accountId || isOwner) &&
-            props.row.status === OfferStatusType.ACTIVE
+            (props.row.caller === accountId || isOwner) && isActive(props.row)
           "
           variant="primary"
           @click.native="onWithdrawOffer(props.row.caller)"
           >Cancel</NeoSecondaryButton
         >
         <NeoSecondaryButton
-          v-if="isOwner && props.row.status === OfferStatusType.ACTIVE"
+          v-if="isOwner && isActive(props.row)"
           variant="info"
           @click.native="onAcceptOffer(props.row.caller)"
           >Accept</NeoSecondaryButton
@@ -92,8 +94,8 @@ import { ShoppingActions } from '@/utils/shoppingActions'
 const { $i18n, $consola } = useNuxtApp()
 
 const { apiInstance } = useApi()
-const { urlPrefix, tokenId, assets } = usePrefix()
-const { decimals } = useChain()
+const { urlPrefix } = usePrefix()
+const { decimals, chainSymbol } = useChain()
 
 const { transaction, status, isLoading } = useTransaction()
 
@@ -105,9 +107,13 @@ const dprops = defineProps<{
 
 const isOwner = computed(() => checkOwner(dprops.account, accountId.value))
 
+const isActive = (row) =>
+  row.status === OfferStatusType.ACTIVE &&
+  expirationTime(row.expiration) !== 'Expired'
+
 const { accountId } = useAuth()
 
-const { data, refetch } = useGraphql({
+const { data } = useGraphql({
   queryName: 'offerListByNftId',
   queryPrefix: 'chain-bsx',
   variables: {
@@ -179,11 +185,11 @@ const formatOfferStatus = (status: OfferStatusType, expiration: number) => {
 }
 
 const onWithdrawOffer = async (caller: string) => {
-  await submit(caller, ShoppingActions.WITHDRAW_OFFER, refetch)
+  await submit(caller, ShoppingActions.WITHDRAW_OFFER)
 }
 
 const onAcceptOffer = async (caller: string) => {
-  await submit(caller, ShoppingActions.ACCEPT_OFFER, refetch)
+  await submit(caller, ShoppingActions.ACCEPT_OFFER)
 }
 
 onMounted(async () => {
@@ -196,8 +202,7 @@ const submit = async (
   maker: string,
   interaction:
     | typeof ShoppingActions.WITHDRAW_OFFER
-    | typeof ShoppingActions.ACCEPT_OFFER,
-  onSuccess?: () => void
+    | typeof ShoppingActions.ACCEPT_OFFER
 ) => {
   try {
     await transaction({
@@ -208,7 +213,7 @@ const submit = async (
       errorMessage: $i18n.t('transaction.item.error') as string,
     })
   } catch (e: any) {
-    showNotification(`[OFFER::ERR] ${e}`, notificationTypes.danger)
+    showNotification(`[OFFER::ERR] ${e}`, notificationTypes.warn)
     $consola.error(e)
   }
 }
@@ -229,9 +234,8 @@ watch(
 
       offersData.offers.map((offer) => {
         const price = formatPrice(offer.price)
-        const { symbol } = assets(tokenId.value)
 
-        const token = `${price} ${symbol}`
+        const token = price
         const usd = `$${Math.round(Number(price) * ksmPrice)}`
         const floorDifference = getPercentage(Number(price), Number(floorPrice))
 

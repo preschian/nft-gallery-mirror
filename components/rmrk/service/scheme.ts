@@ -1,6 +1,7 @@
-import { Attribute, CreatedNFT } from '@kodadot1/minimark'
+import { CreatedNFT } from '@kodadot1/minimark/v1'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { ItemResources } from '@/composables/useNft'
+import { Attribute } from '@kodadot1/minimark/common'
 
 export interface CompletePack extends BasePack {
   collections: Collection[]
@@ -54,6 +55,8 @@ export interface Metadata {
   image?: string
   image_data?: string
   type?: string
+  thumbnailUri?: string
+  mediaUri?: string
 }
 
 export interface NFTMetadata extends Metadata, ItemResources {
@@ -65,6 +68,7 @@ export interface NFTMetadata extends Metadata, ItemResources {
   type?: string
   image_ar?: string
   properties?: Record<string, { value: string; type: string }>
+  unlockable?: boolean
 }
 
 export type CollectionMetadata = Metadata
@@ -168,7 +172,9 @@ export interface NFT extends ItemResources {
   emoteCount?: number
   emotes?: Emote[]
   royalty?: number
+  recipient?: string
   meta?: NFTMetadata
+  parent?: NFT
 }
 
 export type EntityWithId = {
@@ -176,13 +182,18 @@ export type EntityWithId = {
   name: string
 }
 
-export interface Interaction {
-  blockNumber: string | number
-  caller: string
-  currentOwner: string
+interface BaseInteraction {
   id: string
   interaction: string
   meta: string
+}
+export interface ActivityInteraction extends BaseInteraction {
+  timestamp: number
+}
+export interface Interaction extends BaseInteraction {
+  blockNumber: string | number
+  caller: string
+  currentOwner: string
   timestamp: string
 }
 

@@ -9,17 +9,16 @@
     data-cy="type-image"
     @error="onImageError">
     <template #placeholder>
-      <b-skeleton
-        class="skeleton-placeholder"
-        height="100%"
-        :circle="rounded" />
+      <NeoSkeleton full-size no-margin :circle="rounded" />
     </template>
   </b-image>
 </template>
 
 <script lang="ts" setup>
+import { NeoSkeleton } from '@kodadot1/brick'
+
 const { $consola } = useNuxtApp()
-const { isDarkMode } = useTheme()
+const { placeholder } = useTheme()
 defineProps({
   src: { type: String, default: '' },
   alt: { type: String, default: 'KodaDot NFT minted multimedia' },
@@ -27,20 +26,7 @@ defineProps({
   rounded: Boolean,
 })
 
-const placeholder = computed(() => {
-  return isDarkMode.value ? '/placeholder.webp' : '/placeholder-white.webp'
-})
-
 function onImageError(ev: Event, src: string) {
   $consola.error('[BasicImage] to load:', src, ev)
 }
 </script>
-
-<style scoped>
-.b-skeleton {
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-</style>

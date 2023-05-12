@@ -71,6 +71,25 @@
     }
   }
 
+  &--icon {
+    @include ktheme() {
+      border: none;
+      padding: 0;
+      height: min-content;
+      &:hover {
+        background: transparent;
+        color: theme('link-hover');
+      }
+    }
+    &.o-btn--disabled {
+      opacity: unset;
+
+      @include ktheme() {
+        color: theme('k-grey');
+      }
+    }
+  }
+
   &--connect-dropdown {
     width: 120px;
     height: 40px;
@@ -81,6 +100,19 @@
         background-color: theme('k-accentHover');
         color: theme('black');
         border: 1px solid theme('border-color');
+      }
+    }
+  }
+
+  &.is-text {
+    border: none !important;
+    width: min-content;
+    @include ktheme() {
+      color: theme('k-grey');
+      text-underline-offset: 0.25rem;
+      &:hover {
+        color: theme('text-color');
+        background: none;
       }
     }
   }

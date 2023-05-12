@@ -1,3 +1,4 @@
+import { getCollectionIds } from '@/utils/queryParams'
 // search items by keywords
 function useSearchKeywords() {
   const route = useRoute()
@@ -66,6 +67,33 @@ function useSearchByCollectionId() {
   }
 }
 
+function useSearchByCollections() {
+  const route = useRoute()
+
+  return {
+    collections: computed(() => {
+      if (route.query.collections) {
+        return [
+          {
+            collection: {
+              id_in: getCollectionIds(),
+            },
+          },
+        ]
+      } else if (route.query.collectionId) {
+        return [
+          {
+            collection: {
+              id_eq: route.query.collectionId,
+            },
+          },
+        ]
+      }
+      return []
+    }),
+  }
+}
+
 // search items by user id
 function useSearchByUserId() {
   const route = useRoute()
@@ -85,6 +113,7 @@ export function useSearchParams() {
   const { owner } = useSearchOwner()
   const { collectionId } = useSearchByCollectionId()
   const { userId } = useSearchByUserId()
+  const { collections } = useSearchByCollections()
 
   const searchParams = computed(() => {
     return [
@@ -93,6 +122,7 @@ export function useSearchParams() {
       ...owner.value,
       ...collectionId.value,
       ...userId.value,
+      ...collections.value,
     ]
   })
 

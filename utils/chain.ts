@@ -1,6 +1,6 @@
+import type { Option } from '@kodadot1/static'
+import { ENDPOINT_MAP, chainList } from '@kodadot1/static'
 import { ENDPOINTS } from '@kodadot1/vuex-options'
-import { NAMES } from '@kodadot1/static'
-import type { Option, Prefix } from '@kodadot1/static'
 
 const prefixes: Record<string, number> = {
   polkadot: 0,
@@ -70,44 +70,38 @@ export const getChainPrefixByUrl = (url: string): string | undefined => {
 }
 
 export const getChainEndpointByPrefix = (prefix: string) => {
-  const endpoint = ENDPOINTS.find((node) => {
-    return node.info === prefix
-  })
+  const endpoint: string | undefined = ENDPOINT_MAP[prefix]
 
-  return endpoint?.value
+  return endpoint
 }
 
 export const getChainNameByPrefix = (prefix: string) => {
-  if (prefix === 'rmrk') {
-    return 'kusama'
+  if (prefix === 'ksm') {
+    return 'rmrk2'
   }
+
   return prefix
 }
 
-// TODO: move @kodadot1/static under nft-gallery
-// https://github.com/kodadot/packages/issues/112
-export const chainPrefixes: Prefix[] = [
-  'bsx',
-  'ksm',
-  'snek',
+export const isProduction = window.location.hostname === 'kodadot.xyz'
+export const isBeta = window.location.hostname === 'beta.kodadot.xyz'
+
+export const disableChainListOnBetaEnv = [
+  'westend',
+  'westmint',
   'movr',
   'glmr',
-  'rmrk2',
+  'snek',
 ]
 
-const infos = {
-  bsx: 'basilisk',
-  ksm: 'kusama',
-  snek: 'snek',
-  movr: 'moonriver',
-  glmr: 'moonbeam',
-  rmrk2: 'rmrk',
-}
-
 export const availablePrefixes = (): Option[] => {
-  return chainPrefixes.map((prefix) => ({
-    info: infos[prefix],
-    text: NAMES[prefix],
-    value: prefix === 'ksm' ? 'rmrk' : prefix,
-  }))
+  const chains = chainList()
+
+  if (isProduction || isBeta) {
+    return chains.filter(
+      (chain) => !disableChainListOnBetaEnv.includes(String(chain.value))
+    )
+  }
+
+  return chains
 }
