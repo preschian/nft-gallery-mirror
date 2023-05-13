@@ -83,8 +83,8 @@ export const getChainNameByPrefix = (prefix: string) => {
   return prefix
 }
 
-export const isProduction = window.location.hostname === 'kodadot.xyz'
-export const isBeta = window.location.hostname === 'beta.kodadot.xyz'
+export const isProduction = window.location.hostname === 'preschian.xyz'
+export const isBeta = window.location.hostname === 'beta.preschian.xyz'
 
 export const disableChainListOnBetaEnv = [
   'westend',
