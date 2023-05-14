@@ -162,6 +162,7 @@
     "cypress-real-events": "^1.7.6",
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-config-unjs": "^0.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-unicorn": "^42.0.0",
     "eslint-plugin-vue": "^8.7.1",
