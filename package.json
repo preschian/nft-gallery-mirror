@@ -36,7 +36,7 @@
     "test:e2e-gui": "cypress open --project tests",
     "test:watch": "vitest --reporter verbose",
     "test:coverage": "vitest run --coverage",
-    "prepare": "nuxi prepare && pnpm -F static build && husky install"
+    "prepare": "nuxi prepare && pnpm -F @kodadot1/static build && husky install"
   },
   "husky": {
     "hooks": {
