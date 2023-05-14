@@ -78,14 +78,14 @@ import {
   mixins,
 } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
-import { exist, existArray } from './exist'
+import { exist, existArray } from '@/utils/exist'
 import { SearchQuery } from './types'
 import PrefixMixin from '~/utils/mixins/prefixMixin'
 import KeyboardEventsMixin from '~/utils/mixins/keyboardEventsMixin'
 import { NFT_SQUID_SORT_CONDITION_LIST } from '@/utils/constants'
 import ChainMixin from '~/utils/mixins/chainMixin'
 import { usePreferencesStore } from '@/stores/preferences'
-
+import { useCollectionSearch } from '@/components/search/utils/useCollectionSearch'
 const SearchPageRoutePathList = ['collectibles', 'items']
 
 @Component({
@@ -310,14 +310,13 @@ export default class Search extends mixins(
     if (pathName && pathName !== this.$route.path) {
       return
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { page, ...restQuery } = this.$route.query
     this.$router
       .replace({
-        path: this.isExplorePage
-          ? String(this.$route.path)
-          : `/${this.urlPrefix}/explore/items`,
+        path: this.$route.path,
         query: {
-          page: '1',
-          ...this.$route.query,
+          ...restQuery,
           search: this.searchQuery || this.$route.query.search || undefined,
           ...queryCondition,
         },
@@ -328,7 +327,8 @@ export default class Search extends mixins(
   }
 
   redirectToGalleryPageIfNeed(params?: Record<string, string>) {
-    if (!this.isExplorePage) {
+    const { isCollectionSearchMode } = useCollectionSearch()
+    if (!this.isExplorePage && !isCollectionSearchMode.value) {
       this.$router.push({
         path: `/${this.urlPrefix}/explore/items`,
         query: {

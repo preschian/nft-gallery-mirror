@@ -1,22 +1,35 @@
-import { Interaction, createInteraction } from '@kodadot1/minimark'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import {
+  Interaction as NewInteraction,
+  createInteraction as createNewInteraction,
+} from '@kodadot1/minimark/v2'
 
-import { bsxParamResolver, getApiCall } from '@/utils/gallery/abstractCalls'
+import {
+  bsxParamResolver,
+  getApiCall,
+  uniqueParamResolver,
+} from '@/utils/gallery/abstractCalls'
 import type { ActionConsume } from './types'
 
 export function execBurnTx(item: ActionConsume, api, executeTransaction) {
   if (item.urlPrefix === 'rmrk') {
     executeTransaction({
       cb: api.tx.system.remark,
-      arg: [createInteraction(Interaction.CONSUME, '1.0.0', item.nftId, '')],
+      arg: [createInteraction(Interaction.CONSUME, item.nftId, '')],
       successMessage: item.successMessage,
       errorMessage: item.errorMessage,
     })
   }
 
-  if (item.urlPrefix === 'rmrk2') {
+  if (item.urlPrefix === 'ksm') {
     executeTransaction({
       cb: api.tx.system.remark,
-      arg: [createInteraction('BURN' as any, '2.0.0', item.nftId, '')],
+      arg: [
+        createNewInteraction({
+          action: NewInteraction.BURN,
+          payload: { id: item.nftId },
+        }),
+      ],
       successMessage: item.successMessage,
       errorMessage: item.errorMessage,
     })
@@ -49,7 +62,7 @@ export function execBurnTx(item: ActionConsume, api, executeTransaction) {
         }
       )
       const cb = hasOffers.value
-        ? api.tx.utility.batchAll
+        ? api.tx.utility.batch
         : getApiCall(api, item.urlPrefix, Interaction.CONSUME)
       const arg = hasOffers.value
         ? [[...offerWithdrawArgs, api.tx.nft.burn(collectionId, tokenId)]]
@@ -61,6 +74,15 @@ export function execBurnTx(item: ActionConsume, api, executeTransaction) {
         successMessage: item.successMessage,
         errorMessage: item.errorMessage,
       })
+    })
+  }
+
+  if (item.urlPrefix === 'stmn') {
+    executeTransaction({
+      cb: getApiCall(api, item.urlPrefix, Interaction.CONSUME),
+      arg: uniqueParamResolver(item.nftId, Interaction.CONSUME, ''),
+      successMessage: item.successMessage,
+      errorMessage: item.errorMessage,
     })
   }
 }

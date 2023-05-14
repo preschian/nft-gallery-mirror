@@ -8,6 +8,7 @@ export const denyList = [
   'Go6QNymw2HicMi64uiQSPyiXy68wM7dvujwR8bDJ13exPTM', // 18+ manga porn
   'DinoPQrFS2u4NgEk18v6W5QH1SBmHKYUPJGjZUV4JLPj2rd', // Guardians DINO
   'EfPxwVvLpSV4VG5sNZUacTE3UJgcgBHtuWuHxuJkPmmkwTe', // Malicious activity
+  'H1scXqBBis6xobc9tSWjqAiHAe8X71xcgkbau8xgWm2xc2a', // AI NSFW
 ]
 
 export const statemineDenyList = [
@@ -38,14 +39,15 @@ export const URLS = {
     directUpload: 'https://direct-upload.kodadot.workers.dev/',
     estuary: 'https://pinning.kodadot.workers.dev/',
     nftStorage: 'https://nft-storage.kodadot.workers.dev/',
+    keywise: 'https://keywise.kodadot.workers.dev/',
     netlify: 'https://beta.kodadot.xyz/.netlify/functions/',
     seoCard: 'https://og-image-green-seven.vercel.app/',
     rubick: 'https://squid.subsquid.io/rubick/graphql',
-    snek: 'https://squid.subsquid.io/snekk/v/005/graphql',
+    snek: 'https://squid.subsquid.io/snekk/graphql',
     snekRococo: 'https://squid.subsquid.io/snekk/v/004/graphql',
     click: 'https://squid.subsquid.io/click/v/002/graphql',
     antick: 'https://squid.subsquid.io/antick/v/001-rc0/graphql',
-    rmrk: 'https://squid.subsquid.io/rubick/v/009-rc0/graphql',
+    marck: 'https://squid.subsquid.io/marck/graphql',
     replicate: 'https://replicate.kodadot.workers.dev/',
   },
   providers: {
@@ -63,6 +65,7 @@ export const apolloClientConfig = {
   movr: toApolloEndpoint(URLS.koda.click),
   snek: toApolloEndpoint(URLS.koda.snekRococo),
   glmr: toApolloEndpoint(URLS.koda.antick),
+  rmrk2: toApolloEndpoint(URLS.koda.marck),
 }
 
 export const NFT_SQUID_SORT_CONDITION_LIST: string[] = [
@@ -70,9 +73,9 @@ export const NFT_SQUID_SORT_CONDITION_LIST: string[] = [
   'blockNumber_ASC',
   'updatedAt_DESC',
   'updatedAt_ASC',
-  'price_DESC',
   'price_ASC',
-  'sn_ASC',
+  'price_DESC',
+  // 'sn_ASC',
 ]
 
 export const NFT_SQUID_SORT_CONDITION_LIST_FOR_MOONRIVER: string[] = [
@@ -84,29 +87,14 @@ export const NFT_SQUID_SORT_CONDITION_LIST_FOR_MOONRIVER: string[] = [
 ]
 
 export const NFT_SQUID_SORT_COLLECTIONS: string[] = [
-  'blockNumber_ASC',
   'blockNumber_DESC',
-  'updatedAt_ASC',
+  'blockNumber_ASC',
   'updatedAt_DESC',
-  'supply_ASC',
+  'updatedAt_ASC',
   'supply_DESC',
+  'supply_ASC',
 ]
-
-export const disableChainListOnProductionEnv = [
-  'westend',
-  'westmint',
-  'movr',
-  'glmr',
-  'snek',
-  'rmrk2',
-]
-
-export const chainTestList = ['westend', 'westmint']
-
-export const getChainTestList = () => {
-  return window.location.hostname === 'kodadot.xyz'
-    ? disableChainListOnProductionEnv
-    : chainTestList
-}
 
 export const MIN_OFFER_PRICE = 0.01
+
+export const EXTERNAL_LINK_WHITELIST = ['*.kodadot.xyz']

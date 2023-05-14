@@ -1,72 +1,61 @@
 <template>
-  <div class="mb-5">
-    <div class="is-flex">
+  <div class="mb-6 is-flex is-flex-direction-column gap-10px">
+    <div class="is-flex height-70px line-height-1">
       <nuxt-link :to="`/${urlPrefix}/gallery/${event.nft.id}`">
         <div class="mr-5">
-          <img
-            v-if="avatar"
-            :src="avatar"
-            :alt="event.nft.name"
-            width="50"
-            height="50"
-            class="border image-size" />
-          <img
-            v-else
-            src="/placeholder.webp"
-            class="border image-size"
-            width="50"
-            height="50" />
+          <NeoAvatar
+            :avatar="avatar"
+            :placeholder="placeholder"
+            :name="event.nft.name"
+            :size="70" />
         </div>
       </nuxt-link>
-      <div class="is-flex is-flex-direction-column is-flex-grow-1">
-        <div class="is-flex is-justify-content-space-between mb-2">
-          <nuxt-link :to="`/${urlPrefix}/gallery/${event.nft.id}`">
-            <div class="has-text-weight-bold is-clipped elipsis">
-              {{ event.nft.name }}
-            </div>
-          </nuxt-link>
-          <div v-if="amount === blank">
-            {{ blank }}
-          </div>
-          <Money v-else :value="amount" />
-        </div>
-        <div class="is-flex is-justify-content-space-between">
-          <div
-            class="border is-size-7 is-justify-content-center py-1 is-flex is-align-items-center fixed-width fixed-height"
-            :class="getInteractionColor(event.interaction)">
-            {{ interactionName }}
-          </div>
-          <div>
-            {{ timeAgo(event.timestamp) }}
-          </div>
+      <div
+        class="is-flex is-flex-direction-column is-justify-content-center gap-10px is-flex-grow-1">
+        <nuxt-link
+          class="is-ellipsis is-inline-block mobile-fixed-width"
+          :to="`/${urlPrefix}/gallery/${event.nft.id}`">
+          <span class="has-text-weight-bold">
+            {{ event.nft.name }}
+          </span>
+        </nuxt-link>
+
+        <div
+          class="border is-size-7 is-justify-content-center is-flex is-align-items-center fixed-width fixed-height"
+          :class="getInteractionColor(event.interaction)">
+          {{ interactionName }}
         </div>
       </div>
     </div>
-    <div class="is-flex mt-4 gap">
-      <div class="is-flex is-align-items-center">
+    <div class="is-flex">
+      <div class="is-flex is-justify-content-space-between is-flex-grow-1">
+        <CommonTokenMoney v-if="amount !== blank" :value="amount" />
+        <span v-else>
+          {{ blank }}
+        </span>
+        <span>
+          {{ timeAgo(event.timestamp) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="is-flex gap">
+      <div v-if="fromAddress !== blank" class="is-flex is-align-items-center">
         <span class="is-size-7 mr-3">{{ $t('activity.event.from') }}:</span>
         <nuxt-link
-          v-if="fromAddress !== blank"
           :to="`/${urlPrefix}/u/${fromAddress}`"
-          class="has-text-link">
+          class="has-text-link is-ellipsis">
           <IdentityIndex ref="identity" :address="fromAddress" show-clipboard />
         </nuxt-link>
-        <div v-else>
-          {{ blank }}
-        </div>
       </div>
 
-      <div class="is-flex is-align-items-center">
+      <div v-if="toAddress !== blank" class="is-flex is-align-items-center">
         <span class="is-size-7 mr-3">{{ $t('activity.event.to') }}:</span>
         <nuxt-link
-          v-if="toAddress !== blank"
           :to="`/${urlPrefix}/u/${toAddress}`"
-          class="has-text-link">
+          class="has-text-link is-ellipsis">
           <IdentityIndex ref="identity" :address="toAddress" show-clipboard />
         </nuxt-link>
-        <div v-else>
-          {{ blank }}
-        </div>
       </div>
     </div>
   </div>
@@ -77,7 +66,6 @@ import {
   InteractionWithNFT,
   Offer,
 } from '@/composables/collectionActivity/types'
-import Money from '@/components/shared/format/ChainMoney.vue'
 import IdentityIndex from '@/components/identity/IdentityIndex.vue'
 import { timeAgo } from '@/components/collection/utils/timeAgo'
 import {
@@ -89,6 +77,7 @@ import {
   getToAddress,
   interactionNameMap,
 } from './common'
+import { NeoAvatar } from '@kodadot1/brick'
 
 const { urlPrefix } = usePrefix()
 const props = defineProps<{
@@ -96,7 +85,7 @@ const props = defineProps<{
 }>()
 
 const avatar = ref<string>()
-
+const { placeholder } = useTheme()
 const interactionName = computed(
   () => interactionNameMap[props.event.interaction] || props.event.interaction
 )
@@ -118,15 +107,28 @@ const getAvatar = async () => {
 </script>
 
 <style scoped lang="scss">
+@import '@/styles/abstracts/variables';
+
 .fixed-width {
   width: 66px;
+}
+.mobile-fixed-width {
+  @include mobile {
+    width: 240px;
+  }
 }
 .fixed-height {
   height: 22px;
 }
-.image-size {
-  width: 50px !important;
-  height: 50px !important;
+.height-70px {
+  height: 70px;
+}
+.line-height-1 {
+  line-height: 1;
+}
+
+.gap-10px {
+  gap: 10px;
 }
 
 .gap {

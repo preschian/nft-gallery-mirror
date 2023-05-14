@@ -6,20 +6,33 @@
       'is-detail': isDetail,
     }">
     <img
-      class="is-block image-media__image"
       :src="src"
+      class="is-block image-media__image"
       :alt="alt"
-      data-cy="type-image" />
+      data-cy="type-image"
+      @error="onError" />
   </figure>
 </template>
 
 <script lang="ts" setup>
-defineProps<{
+import consola from 'consola'
+
+const props = defineProps<{
   src?: string
   alt?: string
   original: boolean
+  placeholder: string
   isDetail?: boolean
+  isDarkMode?: boolean
 }>()
+
+const onError = (e: Event) => {
+  const target = e.target as HTMLImageElement
+  if (target) {
+    consola.log('[KODADOT::IMAGE] unable to load', e)
+    target.src = props.placeholder
+  }
+}
 </script>
 
 <style>

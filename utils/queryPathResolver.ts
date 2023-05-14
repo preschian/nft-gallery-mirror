@@ -8,39 +8,17 @@ function resolveQueryPath(
 
 function getPath(prefix: string) {
   switch (prefix) {
-    case 'rmrk':
-      return ''
-    case 'bsx':
-    case 'movr':
-    case 'glmr':
-    case 'snek':
-    case 'subsquid':
-    case 'rmrk2':
-      return 'subsquid/general/'
-    case 'statemine':
     case 'westmint':
       return 'unique/'
     case 'chain-bsx':
       return 'subsquid/bsx/'
     case 'chain-rmrk':
       return 'subsquid/rmrk/'
-    case 'chain-rmrk2':
-      return 'subsquid/rmrk2/'
+    case 'chain-ksm':
+      return 'subsquid/ksm/'
     default:
-      return ''
+      return 'subsquid/general/'
   }
 }
-
-// const queryPaths: Record<string, { subsquid: string, subquery: string | undefined }> = {
-//   'rmrk': {
-//     subsquid: 'subsquid/general/',
-//     subquery: '',
-//   },
-//   'bsx': {
-//     subsquid: 'subsquid/general/',
-//     subquery: undefined,
-//   }
-
-// }
 
 export default resolveQueryPath

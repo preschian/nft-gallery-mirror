@@ -1,8 +1,6 @@
-import { ENDPOINTS } from '@kodadot1/vuex-options'
-import { chainList } from '@kodadot1/static'
-import { disableChainListOnProductionEnv } from './constants'
-
 import type { Option } from '@kodadot1/static'
+import { ENDPOINT_MAP, chainList } from '@kodadot1/static'
+import { ENDPOINTS } from '@kodadot1/vuex-options'
 
 const prefixes: Record<string, number> = {
   polkadot: 0,
@@ -72,26 +70,36 @@ export const getChainPrefixByUrl = (url: string): string | undefined => {
 }
 
 export const getChainEndpointByPrefix = (prefix: string) => {
-  const endpoint = ENDPOINTS.find((node) => {
-    return node.info === prefix
-  })
+  const endpoint: string | undefined = ENDPOINT_MAP[prefix]
 
-  return endpoint?.value
+  return endpoint
 }
 
 export const getChainNameByPrefix = (prefix: string) => {
-  if (prefix === 'rmrk') {
-    return 'kusama'
+  if (prefix === 'ksm') {
+    return 'rmrk2'
   }
+
   return prefix
 }
+
+export const isProduction = window.location.hostname === 'kodadot.xyz'
+export const isBeta = window.location.hostname === 'beta.kodadot.xyz'
+
+export const disableChainListOnBetaEnv = [
+  'westend',
+  'westmint',
+  'movr',
+  'glmr',
+  'snek',
+]
 
 export const availablePrefixes = (): Option[] => {
   const chains = chainList()
 
-  if (window.location.hostname === 'kodadot.xyz') {
+  if (isProduction || isBeta) {
     return chains.filter(
-      (chain) => !disableChainListOnProductionEnv.includes(String(chain.value))
+      (chain) => !disableChainListOnBetaEnv.includes(String(chain.value))
     )
   }
 

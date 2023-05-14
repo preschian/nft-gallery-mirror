@@ -1,12 +1,12 @@
 <template>
   <div>
     <Loader v-model="isLoading" :status="status" />
-    <div class="is-flex is-justify-content-space-between">
-      <div>&nbsp;</div>
+    <div class="is-flex gallery-item-transfer">
       <GalleryItemActionSlides ref="actionRef" :active="active">
         <template #action>
           <NeoTooltip
             :active="isTransferButtonDisabled"
+            append-to-body
             position="bottom"
             :label="$t('tooltip.emptyAddress')">
             <NeoButton
@@ -38,7 +38,7 @@ import { onClickOutside } from '@vueuse/core'
 import { NeoButton, NeoTooltip } from '@kodadot1/brick'
 
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
-import { Interaction } from '@kodadot1/minimark'
+import { Interaction } from '@kodadot1/minimark/v1'
 
 const { transaction, status, isLoading } = useTransaction()
 const { $route, $i18n } = useNuxtApp()
@@ -75,4 +75,15 @@ const actionRef = ref(null)
 onClickOutside(actionRef, () => (active.value = false))
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import '@/styles/abstracts/variables';
+.gallery-item-transfer {
+  justify-content: flex-end;
+}
+@include until-widescreen {
+  .gallery-item-transfer {
+    margin-top: 0.5rem;
+    justify-content: flex-start;
+  }
+}
+</style>

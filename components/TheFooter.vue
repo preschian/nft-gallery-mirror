@@ -26,11 +26,11 @@
         </div>
       </div>
       <div class="footer-container-info is-flex is-flex-direction-column">
-        <h4 class="subtitle is-5">KodaDot</h4>
+        <h4 class="subtitle is-5">Marketplace</h4>
         <div>
-          <ul class="footer-container-info-list">
+          <ul class="">
             <li
-              v-for="item in menu"
+              v-for="item in menuMarketplace"
               :key="item.url"
               class="footer-container-info-list-item">
               <a
@@ -40,8 +40,7 @@
                 rel="noopener noreferrer"
                 class="is-flex is-align-items-center">
                 {{ item.name }}
-                <b-icon icon="external-link-alt" class="ml-1" size="is-small">
-                </b-icon>
+                <NeoIcon icon="external-link-alt" class="ml-1" pack="fas" />
               </a>
               <nuxt-link v-else :to="item.url">
                 {{ item.name }}
@@ -50,6 +49,31 @@
           </ul>
         </div>
       </div>
+      <div class="footer-container-info is-flex is-flex-direction-column">
+        <h4 class="subtitle is-5">KodaDot</h4>
+        <div>
+          <ul>
+            <li
+              v-for="item in menuKodadot"
+              :key="item.url"
+              class="footer-container-info-list-item">
+              <a
+                v-if="item.external"
+                :href="item.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="is-flex is-align-items-center">
+                {{ item.name }}
+                <NeoIcon icon="external-link-alt" class="ml-1" pack="fas" />
+              </a>
+              <nuxt-link v-else :to="item.url">
+                {{ item.name }}
+              </nuxt-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="footer-container-socials is-flex is-flex-direction-column">
         <h4 class="subtitle is-5">
           {{ $t('footer.join') }}
@@ -61,14 +85,35 @@
             class="footer-container-socials-list-item is-flex is-align-items-center is-justify-content-center mr-2"
             @click="goToSocials(item.url)">
             <a
-              class="is-flex"
+              class="is-flex icon"
               rel="noopener noreferrer"
               :aria-label="item.name">
-              <b-icon
+              <!-- substack doesnt have a font awesome icon -->
+              <svg
+                v-if="item.icon === 'substack'"
+                width="16"
+                height="16"
+                viewBox="0 0 448 512"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_6104_83750)">
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M0 0H448V62.804H0V0ZM0 229.083H448V511.471L223.954 385.808L0 511.471V229.083ZM0 114.541H448V177.345H0V114.541Z"
+                    fill="currentColor" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_6104_83750">
+                    <rect width="448" height="511.471" fill="currentColor" />
+                  </clipPath>
+                </defs>
+              </svg>
+
+              <NeoIcon
+                v-else
                 :pack="item.name == 'Swag' ? 'fas' : 'fab'"
-                :icon="item.icon"
-                size="is-small"
-                :type="isDarkMode ? 'is-white' : 'is-black'" />
+                :icon="item.icon" />
             </a>
           </li>
         </ul>
@@ -80,6 +125,7 @@
 
 <script lang="ts" setup>
 import { TranslateResult } from 'vue-i18n/types'
+import { NeoIcon } from '@kodadot1/brick'
 
 interface Menu {
   name: TranslateResult
@@ -88,28 +134,11 @@ interface Menu {
 }
 
 const { $i18n } = useNuxtApp()
-const { isDarkMode } = useTheme()
 
-const menu: Menu[] = [
+const menuMarketplace: Menu[] = [
   {
-    name: $i18n.t('about'),
-    url: '/about',
-  },
-  {
-    name: $i18n.t('faq.page'),
-    url: '/rmrk/faq',
-  },
-  {
-    name: $i18n.t('careers'),
-    url: '/jobs',
-  },
-  {
-    name: $i18n.t('contribute'),
-    url: '/contribute',
-  },
-  {
-    name: $i18n.t('referralProgram'),
-    url: 'https://docs.kodadot.xyz/referral-program.html',
+    name: $i18n.t('faq'),
+    url: 'https://hello.kodadot.xyz/ecosystem/faq',
     external: true,
   },
   {
@@ -118,52 +147,93 @@ const menu: Menu[] = [
     external: true,
   },
   {
+    name: $i18n.t('contribute'),
+    url: 'https://hello.kodadot.xyz/be-part-of-kodadot/join-as-a-developer',
+    external: true,
+  },
+  {
+    name: $i18n.t('tutorial'),
+    url: 'https://hello.kodadot.xyz/tutorial/',
+    external: true,
+  },
+]
+
+const menuKodadot: Menu[] = [
+  {
+    name: $i18n.t('about'),
+    url: 'https://hello.kodadot.xyz/about-us/who-are-we',
+    external: true,
+  },
+  {
+    name: $i18n.t('careers'),
+    url: '/jobs',
+  },
+  {
+    name: $i18n.t('merchshop'),
+    url: 'https://shop.kodadot.xyz',
+    external: true,
+  },
+
+  {
+    name: $i18n.t('referralProgram'),
+    url: 'https://hello.kodadot.xyz/be-part-of-kodadot/kodadots-programs/artist-referral-program',
+    external: true,
+  },
+  {
     name: $i18n.t('press kit'),
     url: 'https://github.com/kodadot/kodadot-presskit/tree/main/v3',
     external: true,
   },
+
+  {
+    name: $i18n.t('artist ambassador'),
+    url: 'https://hello.kodadot.xyz/be-part-of-kodadot/kodadots-programs/artist-ambassador-program',
+    external: true,
+  },
+
   {
     name: $i18n.t('ambassador program'),
-    url: 'https://docs.kodadot.xyz/ambassador-program/ambassador-intro.html#the-opportunity',
+    url: 'https://hello.kodadot.xyz/be-part-of-kodadot/kodadots-programs/ambassador-program',
     external: true,
   },
 ]
 
 const socials = [
   {
-    name: 'Discord',
-    url: 'https://discord.gg/u6ymnbz4PR',
-    icon: 'discord',
-  },
-  {
-    name: 'Reddit',
-    url: 'https://www.reddit.com/r/KodaDot',
-    icon: 'reddit-alien',
-  },
-  {
     name: 'Twitter',
     url: 'https://twitter.com/KodaDot',
     icon: 'twitter',
   },
   {
-    name: 'Instagram',
-    url: 'https://instagram.com/kodadot.xyz',
-    icon: 'instagram',
+    name: 'Discord',
+    url: 'https://discord.gg/u6ymnbz4PR',
+    icon: 'discord',
   },
   {
-    name: 'Swag',
-    url: 'https://shop.kodadot.xyz',
-    icon: 'shop',
+    name: 'Substack',
+    url: 'https://kodadot.substack.com',
+    icon: 'substack',
+  },
+  {
+    name: 'Medium',
+    url: 'https://medium.com/kodadot',
+    icon: 'medium',
   },
   {
     name: 'Youtube',
     url: 'https://www.youtube.com/channel/UCEULduld5NrqOL49k1KVjoA/',
     icon: 'youtube',
   },
+
   {
-    name: 'Medium',
-    url: 'https://medium.com/kodadot',
-    icon: 'medium',
+    name: 'Instagram',
+    url: 'https://instagram.com/kodadot.xyz',
+    icon: 'instagram',
+  },
+  {
+    name: 'Reddit',
+    url: 'https://www.reddit.com/r/KodaDot',
+    icon: 'reddit-alien',
   },
 ]
 const goToSocials = (url): void => {

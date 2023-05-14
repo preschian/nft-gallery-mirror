@@ -6,6 +6,7 @@
         <template #action>
           <NeoTooltip
             :active="isListDisabled"
+            append-to-body
             :label="$t('tooltip.emptyListAmount')">
             <NeoButton
               :label="
@@ -47,7 +48,7 @@ import { calculateBalance } from '@/utils/format/balance'
 
 import GalleryItemPriceSection from '../GalleryItemActionSection.vue'
 import GalleryItemActionSlides from '../GalleryItemActionSlides.vue'
-import { Interaction } from '@kodadot1/minimark'
+import { Interaction } from '@kodadot1/minimark/v1'
 
 const { transaction, status, isLoading } = useTransaction()
 const { urlPrefix } = usePrefix()

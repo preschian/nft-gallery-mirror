@@ -160,7 +160,7 @@
       </b-button>
     </b-field>
     <b-field>
-      <b-icon icon="calculator" />
+      <NeoIcon icon="calculator" />
       <span class="pr-2">{{ $t('mint.estimated') }}</span>
       <Money :value="estimated" inline data-cy="fee" />
       <span class="pl-2"> ({{ getUsdFromKsm().toFixed(2) }} USD) </span>
@@ -205,15 +205,11 @@ import exec, {
   execResultValue,
   txCb,
 } from '@/utils/transactionExecutor'
-import {
-  Attribute,
-  Interaction,
-  createInteraction,
-  createMetadata,
-  findUniqueSymbol,
-  mapAsSystemRemark,
-  unSanitizeIpfsUrl,
-} from '@kodadot1/minimark'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import { Attribute, mapAsSystemRemark } from '@kodadot1/minimark/common'
+import { createMetadata, unSanitizeIpfsUrl } from '@kodadot1/minimark/utils'
+
+import { findUniqueSymbol } from '@kodadot1/minimark/shared'
 import { DispatchError } from '@polkadot/types/interfaces'
 import { formatBalance } from '@polkadot/util'
 import { encodeAddress, isAddress } from '@polkadot/util-crypto'
@@ -228,6 +224,8 @@ import AuthMixin from '~/utils/mixins/authMixin'
 import { useFiatStore } from '@/stores/fiat'
 import { usePinningStore } from '@/stores/pinning'
 import { usePreferencesStore } from '@/stores/preferences'
+import { useIdentityStore } from '@/stores/identity'
+import { NeoIcon } from '@kodadot1/brick'
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
@@ -237,13 +235,14 @@ const components = {
   Support,
   AttributeTagInput: () => import('./AttributeTagInput.vue'),
   BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
-  Money: () => import('@/components/shared/format/Money.vue'),
+  Money: () => import('@/components/shared/format/BasicMoney.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
   CollapseWrapper: () =>
     import('@/components/shared/collapse/CollapseWrapper.vue'),
   BasicSwitch: () => import('@/components/shared/form/BasicSwitch.vue'),
   BasicSlider: () => import('@/components/shared/form/BasicSlider.vue'),
   BasicInput: () => import('@/components/shared/form/BasicInput.vue'),
+  NeoIcon,
 }
 
 @Component<SimpleMint>({
@@ -280,16 +279,28 @@ export default class SimpleMint extends mixins(
   protected balanceNotEnough = false
   protected haveNoToS = false
 
-  private fiatStore = useFiatStore()
-  private pinningStore = usePinningStore()
-  private preferencesStore = usePreferencesStore()
-
   @Ref('nftUpload') readonly nftUpload
   @Ref('nftNameInput') readonly nftNameInput
   @Ref('nftSymbolInput') readonly nftSymbolInput
 
   layout() {
     return 'centered-half-layout'
+  }
+
+  get fiatStore() {
+    return useFiatStore()
+  }
+
+  get pinningStore() {
+    return usePinningStore()
+  }
+
+  get preferencesStore() {
+    return usePreferencesStore()
+  }
+
+  get identityStore() {
+    return useIdentityStore()
   }
 
   get balanceNotEnoughMessage() {
@@ -467,7 +478,7 @@ export default class SimpleMint extends mixins(
   }
 
   get balance(): string {
-    return this.$store.getters.getAuthBalance
+    return this.identityStore.getAuthBalance
   }
 
   get isMintDisabled(): boolean {
@@ -580,7 +591,8 @@ export default class SimpleMint extends mixins(
     originalBlockNumber: string
   ): Promise<void> {
     try {
-      const { version, price } = this
+      // TODO: WORK WITH V2
+      const { price } = this
       const addresses = this.parseAddresses
       showNotification(`[APP] Sending NFTs to ${addresses.length} adresses`)
 
@@ -611,12 +623,7 @@ export default class SimpleMint extends mixins(
           ? onlyNfts
               .slice(outOfTheNamesForTheRemarks.length)
               .map((nft) =>
-                createInteraction(
-                  Interaction.LIST,
-                  version,
-                  nft.id,
-                  String(price)
-                )
+                createInteraction(Interaction.LIST, nft.id, String(price))
               )
           : []
 

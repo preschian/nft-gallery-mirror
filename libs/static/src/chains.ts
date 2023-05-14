@@ -1,11 +1,5 @@
 import { NAMES } from './names'
-import type {
-  BackwardPrefix,
-  ChainProperties,
-  Config,
-  Option,
-  Prefix,
-} from './types'
+import type { ChainProperties, Config, Option, Prefix } from './types'
 
 export const toChainProperty = (
   ss58Format: number,
@@ -29,8 +23,8 @@ const DEFAULT_CHAIN_PROPERTIES: ChainProperties = toChainProperty(
 )
 
 export const CHAINS: Config<ChainProperties> = {
+  rmrk: DEFAULT_CHAIN_PROPERTIES,
   ksm: DEFAULT_CHAIN_PROPERTIES,
-  rmrk2: DEFAULT_CHAIN_PROPERTIES,
   bsx: toChainProperty(10_041, 12, 'BSX', 'https://basilisk.subscan.io/'),
   snek: toChainProperty(
     10_041,
@@ -40,33 +34,35 @@ export const CHAINS: Config<ChainProperties> = {
   ),
   movr: toChainProperty(1285, 18, 'MOVR', 'https://moonriver.subscan.io/'),
   glmr: toChainProperty(1284, 18, 'GLMR', 'https://moonbeam.subscan.io/'),
+  stmn: toChainProperty(2, 12, 'KSM', 'https://statemine.subscan.io/'),
 }
+
+export const DEFAULT_PREFIX: Prefix = 'ksm'
 
 export const chainPrefixes: Prefix[] = [
   'bsx',
-  'ksm',
+  'rmrk',
   'snek',
   'movr',
   'glmr',
-  'rmrk2',
+  'ksm',
+  'stmn',
 ]
 
-export const chainInfo = {
+export const chainInfo: Record<Prefix, string> = {
   bsx: 'basilisk',
-  ksm: 'kusama',
+  rmrk: 'kusama',
   snek: 'snek',
   movr: 'moonriver',
   glmr: 'moonbeam',
-  rmrk2: 'rmrk',
+  ksm: 'rmrk',
+  stmn: 'statemine',
 }
 
 export const chainList = (): Option[] => {
   return chainPrefixes.map((prefix) => ({
     info: chainInfo[prefix],
     text: NAMES[prefix],
-    value: prefix === 'ksm' ? 'rmrk' : prefix,
+    value: prefix,
   }))
 }
-
-export const oldKsm = (prefix: BackwardPrefix): Prefix =>
-  prefix === 'rmrk' ? 'ksm' : prefix

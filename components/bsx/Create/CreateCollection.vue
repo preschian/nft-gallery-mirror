@@ -20,8 +20,7 @@
           </p>
         </b-field>
         <b-field>
-          <AccountBalance
-            :token-id="feesToken === 'KSM' ? tokenId : undefined" />
+          <AccountBalance />
         </b-field>
         <b-field>
           <MultiPaymentFeeButton :account-id="accountId" :prefix="urlPrefix" />
@@ -53,7 +52,7 @@ import PrefixMixin from '@/utils/mixins/prefixMixin'
 import ApiUrlMixin from '@/utils/mixins/apiUrlMixin'
 import { notificationTypes, showNotification } from '@/utils/notification'
 import { estimate } from '@/utils/transactionExecutor'
-import { Interaction } from '@kodadot1/minimark'
+import { Interaction } from '@kodadot1/minimark/v1'
 import { Component, Ref, Watch, mixins } from 'nuxt-property-decorator'
 import { ApiFactory, onApiConnect } from '@kodadot1/sub-api'
 import { dummyIpfsCid } from '@/utils/ipfs'

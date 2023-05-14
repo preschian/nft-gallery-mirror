@@ -5,8 +5,20 @@
       :src="properSrc"
       :animation-src="animationSrc"
       :alt="title"
+      :placeholder="placeholder"
       :original="original"
+      :is-lewd="isLewd"
       :is-detail="isDetail" />
+    <div
+      v-if="isLewd && isLewdBlurredLayer"
+      class="nsfw-blur is-flex is-align-items-center is-justify-content-center is-flex-direction-column">
+      <NeoIcon icon="eye-slash" class="mb-3" />
+      <span class="heading-nsfw"> {{ $t('lewd.explicit') }} </span>
+      <span class="nsfw-desc">{{ $t('lewd.explicitDesc') }}</span>
+      <span class="nsfw-content" @click="showContent()">{{
+        $t('lewd.showContent')
+      }}</span>
+    </div>
   </div>
 </template>
 
@@ -14,16 +26,19 @@
 import { defineAsyncComponent } from 'vue'
 
 import { getMimeType, resolveMedia } from '@/utils/gallery/media'
-import placeholder from '@/static/placeholder.webp'
+import NeoIcon from './../NeoIcon/NeoIcon.vue'
 
 const SUFFIX = 'Media'
 
 export default {
+  components: {
+    NeoIcon,
+  },
   props: {
     src: {
       // for mimeType image please use this props
       type: String,
-      default: placeholder,
+      default: '',
     },
     animationSrc: {
       // other than image please use this props instead
@@ -43,9 +58,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    isLewd: {
+      type: Boolean,
+      default: false,
+    },
     isDetail: {
       type: Boolean,
       default: false,
+    },
+    placeholder: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -65,6 +88,7 @@ export default {
         ),
         Media: defineAsyncComponent(() => import('./type/UnknownMedia.vue')),
       },
+      isLewdBlurredLayer: true,
     }
   },
   computed: {
@@ -73,7 +97,7 @@ export default {
       return this.components[resolveMedia(type) + SUFFIX]
     },
     properSrc() {
-      return this.src || placeholder
+      return this.src || this.placeholder
     },
   },
   watch: {
@@ -90,6 +114,35 @@ export default {
         this.defaultMimeType = await getMimeType(this.animationSrc)
       }
     },
+    showContent() {
+      this.isLewdBlurredLayer = false
+    },
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.nsfw-blur {
+  backdrop-filter: blur(60px);
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  color: #fff;
+  text-transform: capitalize;
+
+  .heading-nsfw {
+    font-weight: 700;
+  }
+  .nsfw-desc {
+    max-width: 18.75rem;
+    text-align: center;
+  }
+
+  .nsfw-content {
+    cursor: pointer;
+    bottom: 3.125rem;
+    position: absolute;
+  }
+}
+</style>

@@ -1,10 +1,10 @@
 export type Prefix =
   | 'rmrk'
   | 'bsx'
-  | 'statemine'
+  | 'stmn'
   | 'westmint'
   | 'movr'
   | 'snek'
   | 'glmr'
-  | 'rmrk2'
+  | 'ksm'
 export type Config<T = boolean> = Record<Prefix, T>
