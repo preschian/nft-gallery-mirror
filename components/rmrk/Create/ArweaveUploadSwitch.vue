@@ -1,20 +1,21 @@
 <template>
-  <b-field>
-    <b-switch v-model="checkedValue" :rounded="false">
+  <NeoField>
+    <NeoSwitch v-model="checkedValue" :rounded="false">
       <div class="is-flex is-align-items-center">
         <span class="mr-2">
           {{ checkedValue ? $t('arweave.uploadYes') : $t('arweave.uploadNo') }}
         </span>
         <slot name="tooltip" />
       </div>
-    </b-switch>
-  </b-field>
+    </NeoSwitch>
+  </NeoField>
 </template>
 
 <script lang="ts">
-import { Component, Vue, ModelSync } from 'nuxt-property-decorator'
+import { Component, ModelSync, Vue } from 'nuxt-property-decorator'
+import { NeoField, NeoSwitch } from '@kodadot1/brick'
 
-@Component({})
+@Component({ components: { NeoSwitch, NeoField } })
 export default class ArweaveUploadSwitch extends Vue {
   @ModelSync('value', 'input', { type: Boolean })
   readonly checkedValue!: boolean

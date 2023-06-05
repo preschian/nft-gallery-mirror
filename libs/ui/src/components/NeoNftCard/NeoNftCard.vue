@@ -1,6 +1,9 @@
 <template>
-  <div class="nft-card">
-    <component :is="link" :[bindKey]="`/${prefix}/gallery/${nft.id}`">
+  <div class="nft-card" :class="{ loading: isLoading }">
+    <component
+      :is="link"
+      v-if="!isLoading && nft"
+      :[bindKey]="`/${prefix}/gallery/${nft.id}`">
       <img
         v-if="unlockable && unloackableIcon"
         class="unloackable-icon"
@@ -18,9 +21,12 @@
         class="nft-media-info is-flex is-flex-direction-column"
         :class="`nft-media-info__${variant}`">
         <div class="is-flex is-flex-direction-column">
-          <span class="is-ellipsis has-text-weight-bold" data-cy="nft-name">{{
-            nft.name || '--'
-          }}</span>
+          <span
+            class="is-ellipsis has-text-weight-bold"
+            data-cy="nft-name"
+            :title="name"
+            >{{ nft.name || '--' }}</span
+          >
 
           <CollectionDetailsPopover
             v-if="
@@ -60,6 +66,27 @@
         </div>
       </div>
     </component>
+
+    <template v-else>
+      <div class="media-object nft-media">
+        <div class="is-square image">
+          <NeoSkeleton :rounded="false" full-size no-margin />
+        </div>
+      </div>
+      <div class="nft-media-info" :class="`nft-media-info__${variant}`">
+        <NeoSkeleton size="medium" no-margin />
+        <div v-if="variant !== 'minimal'" class="is-flex mt-2">
+          <NeoSkeleton
+            size="small"
+            position="centered"
+            no-margin
+            width="150px" />
+        </div>
+        <div class="is-flex mt-4">
+          <NeoSkeleton size="small" no-margin width="100px" />
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -68,16 +95,17 @@ import MediaItem from '../MediaItem/MediaItem.vue'
 import CommonTokenMoney from '@/components/shared/CommonTokenMoney.vue'
 import type { NFT } from '@/components/rmrk/service/scheme'
 import { getChainNameByPrefix } from '@/utils/chain'
-import { NftCardVariant } from '@kodadot1/brick'
+import { NeoSkeleton, NftCardVariant } from '@kodadot1/brick'
 
 withDefaults(
   defineProps<{
-    nft: NFT
-    prefix: string
-    showPrice: boolean
+    isLoading?: boolean
+    nft?: NFT
+    prefix?: string
+    showPrice?: boolean
     collectionPopoverShowDelay?: number
     variant?: NftCardVariant
-    placeholder: string
+    placeholder?: string
     unlockable?: boolean
     unloackableIcon?: string
     link?: string

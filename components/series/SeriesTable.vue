@@ -1,57 +1,16 @@
 <template>
   <div>
     <Loader :value="isLoading" />
-    <b-field grouped>
-      <!-- <b-field class="mb-0" position="is-left">
-        <div class="control is-flex">
-          <b-switch
-            v-if="isLogIn"
-            class="gallery-switch"
-            v-model="hasPassionFeed"
-            :rounded="false">
-            {{ $t('passion') }}
-          </b-switch>
-        </div>
-      </b-field> -->
-
-      <!-- <b-field
-        position="is-left"
-        expanded
-      >
-        <b-radio-button
-          v-model="nbDays"
-          native-value="24"
-          type="is-outlined"
-        >
-          24h
-        </b-radio-button>
-
-        <b-radio-button
-          v-model="nbDays"
-          native-value="7"
-          type="is-outlined"
-        >
-          7d
-        </b-radio-button>
-
-        <b-radio-button
-          v-model="nbDays"
-          native-value="30"
-          type="is-outlined"
-        >
-          30d
-        </b-radio-button>
-      </b-field> -->
-
-      <b-field class="has-text-right" expanded>
+    <NeoField grouped>
+      <NeoField class="has-text-right" expanded>
         <b-select v-model="nbRows">
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="50">50</option>
           <option value="100">100</option>
         </b-select>
-      </b-field>
-    </b-field>
+      </NeoField>
+    </NeoField>
 
     <b-table
       sticky-header
@@ -77,13 +36,7 @@
         header-class="front-stack-layer"
         cell-class="is-vcentered">
         <div class="image is-48x48 mb-2">
-          <b-image
-            v-if="!isLoading"
-            :src="props.row.image"
-            :alt="props.row.name"
-            ratio="1by1"
-            rounded />
-          <NeoSkeleton :active="isLoading" circle width="48px" height="48px" />
+          <BasicImage :src="props.row.image" :alt="props.row.name" rounded />
         </div>
       </b-table-column>
 
@@ -366,11 +319,14 @@ import {
   toSort,
   today,
 } from './utils'
+import { NeoField } from '@kodadot1/brick'
 
 const components = {
   Identity: () => import('@/components/identity/IdentityIndex.vue'),
   Money: () => import('@/components/shared/format/Money.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
+  NeoField,
+  BasicImage: () => import('@/components/shared/view/BasicImage.vue'),
 }
 
 @Component({ components })

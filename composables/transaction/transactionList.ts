@@ -4,9 +4,14 @@ import {
   createInteraction as createNewInteraction,
 } from '@kodadot1/minimark/v2'
 
-import { bsxParamResolver, getApiCall } from '@/utils/gallery/abstractCalls'
+import {
+  assetHubParamResolver,
+  bsxParamResolver,
+  getApiCall,
+} from '@/utils/gallery/abstractCalls'
 import { warningMessage } from '@/utils/notification'
 
+import { isLegacy } from '@/components/unique/utils'
 import type { ActionList } from './types'
 
 function isListTxValid(item: ActionList) {
@@ -46,6 +51,17 @@ export function execListTx(item: ActionList, api, executeTransaction) {
     executeTransaction({
       cb: getApiCall(api, item.urlPrefix, Interaction.LIST),
       arg: bsxParamResolver(item.nftId, Interaction.LIST, meta),
+      successMessage: item.successMessage,
+      errorMessage: item.errorMessage,
+    })
+  }
+
+  if (item.urlPrefix === 'stmn' || item.urlPrefix === 'stt') {
+    const legacy = isLegacy(item.nftId)
+    const paramResolver = assetHubParamResolver(legacy)
+    executeTransaction({
+      cb: getApiCall(api, item.urlPrefix, Interaction.LIST),
+      arg: paramResolver(item.nftId, Interaction.LIST, meta),
       successMessage: item.successMessage,
       errorMessage: item.errorMessage,
     })

@@ -8,7 +8,7 @@
         @error="hasError = true" />
     </div>
     <div class="field">
-      <b-field class="file is-primary">
+      <NeoField class="file is-primary">
         <b-upload
           ref="upload"
           v-model="file"
@@ -38,7 +38,7 @@
             </div>
           </section>
         </b-upload>
-      </b-field>
+      </NeoField>
       <transition v-if="fileSizeFailed" name="fade">
         <div class="help is-danger">
           {{ $t('tooltip.failedMaxSize') }}
@@ -55,15 +55,14 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Ref, Vue } from 'nuxt-property-decorator'
-import Tooltip from '@/components/shared/Tooltip.vue'
 import MediaResolver from '@/components/media/MediaResolver.vue'
 import { MAX_UPLOADED_FILE_SIZE } from '@/utils/constants'
-import { NeoIcon } from '@kodadot1/brick'
+import { NeoField, NeoIcon } from '@kodadot1/brick'
 
 @Component({
   components: {
-    Tooltip,
     MediaResolver,
+    NeoField,
     NeoIcon,
   },
 })

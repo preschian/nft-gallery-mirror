@@ -4,11 +4,12 @@
     <form>
       <p class="title is-size-3">
         {{ $i18n.t('identity.set') }}
-        <b-tooltip
+        <NeoTooltip
           :label="$i18n.t('identity.fundsReserve')"
-          position="is-bottom">
+          position="bottom"
+          multiline>
           <NeoIcon icon="info-circle" pack="fas" />
-        </b-tooltip>
+        </NeoTooltip>
       </p>
 
       <p v-if="accountId" class="subtitle is-size-6">
@@ -17,15 +18,14 @@
         <Money :value="balance" inline />
       </p>
 
-      <b-field label="Handle">
-        <b-input
+      <NeoField label="Handle">
+        <NeoInput
           v-model="identity.display"
           :placeholder="$i18n.t('identity.onChainPlaceholder')"
           :maxlength="inputLengthLimit"
           required
-          :validation-message="$i18n.t('identity.handleRequired')">
-        </b-input>
-      </b-field>
+          :validation-message="$i18n.t('identity.handleRequired')" />
+      </NeoField>
 
       <BasicInput
         v-model="identity.legal"
@@ -38,7 +38,7 @@
         v-model="identity.email"
         type="email"
         :maxlength="inputLengthLimit"
-        :label="$i18n.t('email')"
+        :label="$i18n.t('Email')"
         placeholder="somebody@example.com"
         expanded />
 
@@ -89,7 +89,7 @@ import { notificationTypes, showNotification } from '@/utils/notification'
 import { onApiConnect } from '@kodadot1/sub-api'
 import { hexToString, isHex } from '@polkadot/util'
 import { Data } from '@polkadot/types'
-import { NeoIcon } from '@kodadot1/brick'
+import { NeoField, NeoIcon, NeoInput, NeoTooltip } from '@kodadot1/brick'
 
 const Auth = defineAsyncComponent(() => import('@/components/shared/Auth.vue'))
 const BasicInput = defineAsyncComponent(
