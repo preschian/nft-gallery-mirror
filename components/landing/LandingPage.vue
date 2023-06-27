@@ -13,30 +13,30 @@
       </section>
 
       <!-- top collections -->
-      <section
+      <!-- <section
         v-if="urlPrefix !== 'ksm' && urlPrefix !== 'stmn'"
         class="py-8 instance">
         <div class="container is-fluid">
           <LazyTopCollections class="my-5" />
         </div>
-      </section>
+      </section> -->
 
       <section class="py-8 instance">
         <div class="container is-fluid">
           <!-- new listings -->
-          <LazyCarouselTypeNewestList />
+          <!-- <LazyCarouselTypeNewestList /> -->
 
           <!-- latest sales -->
-          <LazyCarouselTypeLatestSales class="mt-8" />
+          <!-- <LazyCarouselTypeLatestSales class="mt-8" /> -->
         </div>
       </section>
     </template>
 
-    <section class="py-8 instance instance-accent">
+    <!-- <section class="py-8 instance instance-accent">
       <div class="container is-fluid footer-landing-container">
         <LazyFeaturedArticles />
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 
