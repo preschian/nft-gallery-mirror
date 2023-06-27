@@ -1,6 +1,6 @@
 <template>
   <div class="wallet-modal-container is-flex is-flex-direction-column">
-    <header class="modal-card-head mb-4">
+    <header class="modal-card-head">
       <b-button
         v-show="hasSelectedWalletProvider"
         type="is-text"
@@ -8,14 +8,18 @@
         icon-left="chevron-left"
         @click="hasSelectedWalletProvider = !hasSelectedWalletProvider" />
       <span class="modal-card-title is-size-6 has-text-weight-bold">
-        {{ headerTitle }}
+        {{
+          showAccount
+            ? $i18n.t('profile.page')
+            : $i18n.t('walletConnect.walletHeading')
+        }}
       </span>
       <a class="is-flex is-align-items-center" @click="emit('close')">
         <NeoIcon icon="close" />
       </a>
     </header>
     <section v-if="showAccount">
-      <WalletAsset @back="setForceWalletSelect" />
+      <WalletAsset />
     </section>
     <section v-else-if="hasUserWalletAuth" class="modal-card-body">
       <div class="buttons m-0">
@@ -48,7 +52,7 @@
       <div class="mb-5">
         {{ $i18n.t('walletConnect.authText') }}
       </div>
-      <b-field>
+      <NeoField>
         <NeoButton
           size="medium"
           variant="k-accent"
@@ -59,7 +63,7 @@
             <NeoIcon class="ml-2" icon="chevron-right" />
           </span>
         </NeoButton>
-      </b-field>
+      </NeoField>
     </section>
 
     <footer v-if="!showAccount" class="px-5 py-4">
@@ -71,7 +75,7 @@
         class="is-size-7 has-text-link is-flex is-align-items-center"
         href="https://docs.kodadot.xyz/tutorial-overview.html"
         target="_blank"
-        rel="noopener noreferrer">
+        rel="nofollow noopener noreferrer">
         <NeoIcon class="mr-2" icon="circle-info" />
         {{ $i18n.t('walletConnect.walletLink') }}
       </a>
@@ -79,38 +83,37 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { SupportedWallets } from '@/utils/config/wallets'
 import { BaseDotsamaWallet } from '@/utils/config/wallets/BaseDotsamaWallet'
 import { NeoButton, NeoIcon } from '@kodadot1/brick'
-import WalletMenuItem from '@/components/common/ConnectWallet/WalletMenuItem'
-import WalletAsset from '@/components/common/ConnectWallet/WalletAsset'
+import { Auth, useIdentityStore } from '@/stores/identity'
+import { NeoField } from '@kodadot1/brick'
+import WalletMenuItem from '@/components/common/ConnectWallet/WalletMenuItem.vue'
+import WalletAsset from '@/components/common/ConnectWallet/WalletAsset.vue'
 
-const { $store, $i18n } = useNuxtApp()
+const { $i18n } = useNuxtApp()
 const selectedWalletProvider = ref<BaseDotsamaWallet>()
 const hasSelectedWalletProvider = ref(false)
-const account = ref<string>($store.getters.getAuthAddress)
 const forceWalletSelect = ref(false)
+const identityStore = useIdentityStore()
+const { urlPrefix } = usePrefix()
 
-const setForceWalletSelect = () => {
-  forceWalletSelect.value = true
-}
-
-const showAccount = computed(() => account.value && !forceWalletSelect.value)
+const account = computed(() => identityStore.auth.address)
+const showAccount = computed(() => account.value)
 
 const wallets = SupportedWallets()
-const headerTitle = computed(() =>
-  $i18n.t(
-    account.value
-      ? 'walletConnect.walletDetails'
-      : hasUserWalletAuth
-      ? 'walletConnect.walletHeading'
-      : 'walletConnect.warning'
-  )
-)
-const setAccount = (addr: string) => {
+const setAccount = (account: Auth) => {
   forceWalletSelect.value = false
-  account.value = addr
+  identityStore.setAuth(account)
+
+  if (selectedWalletProvider.value) {
+    localStorage.setItem('wallet', selectedWalletProvider.value.extensionName)
+  }
+}
+const setUserAuthValue = () => {
+  hasUserWalletAuth.value = true
+  localStorage.setItem('user_auth_wallet_add', true.toString())
 }
 const installedWallet = computed(() => {
   return wallets.filter((wallet) => wallet.installed)
@@ -127,17 +130,12 @@ const emit = defineEmits(['close'])
 const toggleShowUninstalledWallet = () => {
   showUninstalledWallet.value = !showUninstalledWallet.value
 }
+
 watch(account, (account) => {
-  forceWalletSelect.value = false
-  $store.dispatch('setAuth', { address: account })
-  localStorage.setItem('kodaauth', account)
-  if (selectedWalletProvider.value) {
-    localStorage.setItem('wallet', selectedWalletProvider.value.extensionName)
-  }
+  setAccount({ address: account })
 })
 
-const setUserAuthValue = () => {
-  localStorage.setItem('user_auth_wallet_add', true.toString())
-  hasUserWalletAuth.value = true
-}
+watch([urlPrefix], () => {
+  emit('close')
+})
 </script>

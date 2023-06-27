@@ -1,10 +1,18 @@
+import {
+  assetHubParamResolver,
+  getApiCall,
+} from '@/utils/gallery/abstractCalls'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import {
+  Interaction as NewInteraction,
+  createInteraction as createNewInteraction,
+} from '@kodadot1/minimark/v2'
 import { checkAddress, isAddress } from '@polkadot/util-crypto'
-import { Interaction, createInteraction } from '@kodadot1/minimark'
 
+import { isLegacy, tokenIdToRoute } from '@/components/unique/utils'
 import { ss58Of } from '@/utils/config/chain.config'
-import correctFormat from '@/utils/ss58Format'
 import { warningMessage } from '@/utils/notification'
-import { tokenIdToRoute } from '@/components/unique/utils'
+import correctFormat from '@/utils/ss58Format'
 
 import type { ActionSend } from './types'
 
@@ -28,12 +36,16 @@ function checkTsxSend(item: ActionSend) {
 }
 
 function execSendRmrk(item: ActionSend, api, executeTransaction) {
-  const version = item.urlPrefix === 'rmrk' ? '1.0.0' : '2.0.0'
+  const interaction =
+    item.urlPrefix === 'rmrk'
+      ? createInteraction(Interaction.SEND, item.nftId, item.address)
+      : createNewInteraction({
+          action: NewInteraction.SEND,
+          payload: { id: item.nftId, recipient: item.address },
+        })
   executeTransaction({
     cb: api.tx.system.remark,
-    arg: [
-      createInteraction(Interaction.SEND, version, item.nftId, item.address),
-    ],
+    arg: [interaction],
     successMessage: item.successMessage,
     errorMessage: item.errorMessage,
   })
@@ -55,16 +67,34 @@ function execSendBasilisk(item: ActionSend, api, executeTransaction) {
   })
 }
 
+// note: price is automatically set to 0
+// https://github.com/paritytech/substrate/blob/e6a13b807a88d25aa1cd0d320edb9412c3692c67/frame/uniques/src/functions.rs#LL58C2-L58C51
+function execSendStatemine(item: ActionSend, api, executeTransaction) {
+  const legacy = isLegacy(item.nftId)
+  const paramResolver = assetHubParamResolver(legacy)
+
+  executeTransaction({
+    cb: getApiCall(api, item.urlPrefix, Interaction.SEND),
+    arg: paramResolver(item.nftId, Interaction.SEND, item.address),
+    successMessage: item.successMessage,
+    errorMessage: item.errorMessage,
+  })
+}
+
 export function execSendTx(item: ActionSend, api, executeTransaction) {
   if (!checkTsxSend(item)) {
     return
   }
 
-  if (item.urlPrefix === 'rmrk' || item.urlPrefix === 'rmrk2') {
+  if (item.urlPrefix === 'rmrk' || item.urlPrefix === 'ksm') {
     execSendRmrk(item, api, executeTransaction)
   }
 
   if (item.urlPrefix === 'snek' || item.urlPrefix === 'bsx') {
     execSendBasilisk(item, api, executeTransaction)
+  }
+
+  if (item.urlPrefix === 'stmn' || item.urlPrefix === 'stt') {
+    execSendStatemine(item, api, executeTransaction)
   }
 }

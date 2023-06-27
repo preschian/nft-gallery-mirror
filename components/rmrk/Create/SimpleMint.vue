@@ -1,26 +1,20 @@
 <template>
   <section>
-    <br />
     <Loader v-model="isLoading" :status="status" />
-    <h2 class="title is-size-3">
-      <!-- {{ $t('mint.context') }} -->
-      Create NFT Collectibles
-    </h2>
+    <h1 class="title is-size-3">Create NFT Collectibles</h1>
     <p class="subtitle is-size-7">{{ $t('general.using') }} {{ version }}</p>
-    <b-field>
-      <div>
-        {{ $t('computed id') }}: <b>{{ rmrkId }}</b>
-      </div>
-    </b-field>
-    <b-field>
-      <Auth />
-    </b-field>
+
+    <div class="py-2">
+      {{ $t('computed id') }}: <b>{{ rmrkId }}</b>
+    </div>
+
+    <Auth />
 
     <MetadataUpload
       ref="nftUpload"
       v-model="file"
       required
-      :label="$t('mint.nft.simpleDrop')"
+      :label="$t('mint.nft.drop')"
       expanded
       preview
       data-cy="input-upload" />
@@ -60,13 +54,14 @@
       :placeholder="$t('mint.nft.description.placeholder')"
       data-cy="input-description" />
 
-    <b-field :label="$t('Edition')" class="mt-5" data-cy="input-edition">
-      <b-numberinput
+    <NeoField :label="$t('Edition')" class="mt-5" data-cy="input-edition">
+      <NeoInput
         v-model="rmrkMint.max"
-        placeholder="1 is minumum"
+        type="number"
+        placeholder="1 is the minimum"
         expanded
-        :min="1"></b-numberinput>
-    </b-field>
+        :min="1" />
+    </NeoField>
 
     <MetadataUpload
       v-if="secondaryFileVisible"
@@ -88,19 +83,14 @@
       expanded
       data-cy="input-price"
       @input="updateMeta" />
+
     <div class="content mt-3">
       <p>
         Hint: Setting the price now requires making an additional transaction.
       </p>
     </div>
 
-    <b-field>
-      <PasswordInput
-        v-model="password"
-        :account="accountId"
-        data-cy="input-password" />
-    </b-field>
-    <b-field>
+    <NeoField>
       <CollapseWrapper
         v-if="rmrkMint.max > 1"
         visible="mint.expert.show"
@@ -112,19 +102,19 @@
         <p v-show="syncVisible" class="sub-title is-6 has-text-warning">
           {{ $t('mint.expert.countGlitch', [parseAddresses.length]) }}
         </p>
-        <b-field :label="$t('mint.expert.batchSend')">
-          <b-input
+        <NeoField :label="$t('mint.expert.batchSend')">
+          <NeoInput
             v-model="batchAdresses"
             type="textarea"
             :placeholder="'Distribute NFTs to multiple addresses like this:\n- HjshJ....3aJk\n- FswhJ....3aVC\n- HjW3J....9c3V'"
             spellcheck="true"
-            data-cy="input-batch-address"></b-input>
-        </b-field>
+            data-cy="input-batch-address" />
+        </NeoField>
         <BasicSlider
           v-model="distribution"
           label="action.distributionCount"
           data-cy="input-distribution" />
-        <b-field v-show="syncVisible">
+        <NeoField v-show="syncVisible">
           <b-button
             outlined
             icon-left="sync"
@@ -132,7 +122,7 @@
             @click="syncEdition"
             >{{ $t('mint.expert.sync', [actualDistribution]) }}</b-button
           >
-        </b-field>
+        </NeoField>
         <BasicSwitch
           v-model="random"
           label="action.random"
@@ -142,29 +132,29 @@
           label="mint.expert.postfix"
           data-cy="input-hashtag" />
       </CollapseWrapper>
-    </b-field>
+    </NeoField>
     <BasicSwitch v-model="nsfw" label="mint.nfsw" data-cy="input-nsfw" />
-    <b-field type="is-danger" :message="haveNoToSMessage">
-      <b-switch v-model="hasToS" :rounded="false" data-cy="input-tos">
+    <NeoField variant="danger" :message="haveNoToSMessage">
+      <NeoSwitch v-model="hasToS" :rounded="false" data-cy="input-tos">
         {{ $t('termOfService.accept') }}
-      </b-switch>
-    </b-field>
-    <b-field v-if="isLogIn" type="is-danger" :message="balanceNotEnoughMessage">
-      <b-button
-        type="is-primary"
-        icon-left="paper-plane"
+      </NeoSwitch>
+    </NeoField>
+    <NeoField
+      v-if="isLogIn"
+      type="is-danger"
+      :message="balanceNotEnoughMessage">
+      <SubmitButton
+        expanded
+        label="mint.submit"
         :loading="isLoading"
-        outlined
-        @click="sub">
-        {{ $t('mint.submit') }}
-      </b-button>
-    </b-field>
-    <b-field>
-      <b-icon icon="calculator" />
+        @click="sub()" />
+    </NeoField>
+    <NeoField>
+      <NeoIcon icon="calculator" />
       <span class="pr-2">{{ $t('mint.estimated') }}</span>
       <Money :value="estimated" inline data-cy="fee" />
       <span class="pl-2"> ({{ getUsdFromKsm().toFixed(2) }} USD) </span>
-    </b-field>
+    </NeoField>
   </section>
 </template>
 
@@ -205,15 +195,11 @@ import exec, {
   execResultValue,
   txCb,
 } from '@/utils/transactionExecutor'
-import {
-  Attribute,
-  Interaction,
-  createInteraction,
-  createMetadata,
-  findUniqueSymbol,
-  mapAsSystemRemark,
-  unSanitizeIpfsUrl,
-} from '@kodadot1/minimark'
+import { Interaction, createInteraction } from '@kodadot1/minimark/v1'
+import { Attribute, mapAsSystemRemark } from '@kodadot1/minimark/common'
+import { createMetadata, unSanitizeIpfsUrl } from '@kodadot1/minimark/utils'
+
+import { findUniqueSymbol } from '@kodadot1/minimark/shared'
 import { DispatchError } from '@polkadot/types/interfaces'
 import { formatBalance } from '@polkadot/util'
 import { encodeAddress, isAddress } from '@polkadot/util-crypto'
@@ -228,22 +214,27 @@ import AuthMixin from '~/utils/mixins/authMixin'
 import { useFiatStore } from '@/stores/fiat'
 import { usePinningStore } from '@/stores/pinning'
 import { usePreferencesStore } from '@/stores/preferences'
+import { NeoField, NeoIcon, NeoInput, NeoSwitch } from '@kodadot1/brick'
+import { useIdentityStore } from '@/stores/identity'
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
   MetadataUpload: () => import('./DropUpload.vue'),
-  PasswordInput: () => import('@/components/shared/PasswordInput.vue'),
-  Tooltip: () => import('@/components/shared/Tooltip.vue'),
   Support,
   AttributeTagInput: () => import('./AttributeTagInput.vue'),
   BalanceInput: () => import('@/components/shared/BalanceInput.vue'),
-  Money: () => import('@/components/shared/format/Money.vue'),
+  Money: () => import('@/components/shared/format/BasicMoney.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
   CollapseWrapper: () =>
     import('@/components/shared/collapse/CollapseWrapper.vue'),
   BasicSwitch: () => import('@/components/shared/form/BasicSwitch.vue'),
   BasicSlider: () => import('@/components/shared/form/BasicSlider.vue'),
   BasicInput: () => import('@/components/shared/form/BasicInput.vue'),
+  SubmitButton: () => import('@/components/base/SubmitButton.vue'),
+  NeoIcon,
+  NeoSwitch,
+  NeoField,
+  NeoInput,
 }
 
 @Component<SimpleMint>({
@@ -280,16 +271,28 @@ export default class SimpleMint extends mixins(
   protected balanceNotEnough = false
   protected haveNoToS = false
 
-  private fiatStore = useFiatStore()
-  private pinningStore = usePinningStore()
-  private preferencesStore = usePreferencesStore()
-
   @Ref('nftUpload') readonly nftUpload
   @Ref('nftNameInput') readonly nftNameInput
   @Ref('nftSymbolInput') readonly nftSymbolInput
 
   layout() {
     return 'centered-half-layout'
+  }
+
+  get fiatStore() {
+    return useFiatStore()
+  }
+
+  get pinningStore() {
+    return usePinningStore()
+  }
+
+  get preferencesStore() {
+    return usePreferencesStore()
+  }
+
+  get identityStore() {
+    return useIdentityStore()
   }
 
   get balanceNotEnoughMessage() {
@@ -467,7 +470,7 @@ export default class SimpleMint extends mixins(
   }
 
   get balance(): string {
-    return this.$store.getters.getAuthBalance
+    return this.identityStore.getAuthBalance
   }
 
   get isMintDisabled(): boolean {
@@ -580,7 +583,8 @@ export default class SimpleMint extends mixins(
     originalBlockNumber: string
   ): Promise<void> {
     try {
-      const { version, price } = this
+      // TODO: WORK WITH V2
+      const { price } = this
       const addresses = this.parseAddresses
       showNotification(`[APP] Sending NFTs to ${addresses.length} adresses`)
 
@@ -611,12 +615,7 @@ export default class SimpleMint extends mixins(
           ? onlyNfts
               .slice(outOfTheNamesForTheRemarks.length)
               .map((nft) =>
-                createInteraction(
-                  Interaction.LIST,
-                  version,
-                  nft.id,
-                  String(price)
-                )
+                createInteraction(Interaction.LIST, nft.id, String(price))
               )
           : []
 

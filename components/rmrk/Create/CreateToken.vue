@@ -7,10 +7,6 @@
       :collections="collections"
       :show-explainer-text="showExplainerText">
       <template #main>
-        <AttributeTagInput
-          key="tags"
-          v-model="tags"
-          placeholder="Get discovered easier through tags" />
         <BasicSwitch key="nsfw" v-model="nsfw" label="mint.nfsw" />
         <BasicSwitch key="listed" v-model="listed" label="mint.listForSale" />
 
@@ -25,19 +21,37 @@
           :step="0.1"
           class="mb-3"
           @input="updatePrice" />
-        <b-message
+
+        <div v-show="base.selectedCollection" key="attributes">
+          <CustomAttributeInput
+            v-model="tags"
+            :max="10"
+            class="mb-3"
+            visible="collapse.collection.attributes.show"
+            hidden="collapse.collection.attributes.hide" />
+        </div>
+
+        <NeoMessage
           v-if="hasPrice"
           key="message"
           type="is-primary"
           has-icon
           icon="exclamation-triangle">
           {{ $t('warning.newTransactionWhilePriceSet') }}
-        </b-message>
+        </NeoMessage>
+
+        <template v-if="version === '2.0.0'">
+          <BasicSwitch
+            key="hasRoyalty"
+            v-model="hasRoyalty"
+            label="mint.listWithRoyalty" />
+          <RoyaltyForm v-if="hasRoyalty" key="royalty" v-bind.sync="royalty" />
+        </template>
       </template>
       <template #footer>
-        <b-field key="advanced">
+        <NeoField key="advanced">
           <CollapseWrapper
-            v-if="base.edition > 1"
+            v-if="base.copies > 1"
             visible="mint.expert.show"
             hidden="mint.expert.hide"
             class="mt-3">
@@ -46,18 +60,18 @@
               class="mt-3"
               label="mint.expert.postfix" />
           </CollapseWrapper>
-        </b-field>
-        <b-field
+        </NeoField>
+        <NeoField
           v-if="isLogIn"
           key="submit"
-          type="is-danger"
+          variant="danger"
           :message="balanceNotEnoughMessage">
           <SubmitButton
             expanded
             label="mint.submit"
             :loading="isLoading"
             @click="submit()" />
-        </b-field>
+        </NeoField>
       </template>
     </BaseTokenForm>
   </div>
@@ -66,7 +80,7 @@
 <script lang="ts">
 import { BaseTokenType } from '@/components/base/types'
 import collectionForMint from '@/queries/subsquid/rmrk/collectionForMint.graphql'
-
+import { Location } from 'vue-router/types/router'
 import { DETAIL_TIMEOUT } from '@/utils/constants'
 import AuthMixin from '@/utils/mixins/authMixin'
 import ChainMixin from '@/utils/mixins/chainMixin'
@@ -80,24 +94,27 @@ import {
   warningMessage,
 } from '@/utils/notification'
 import shouldUpdate from '@/utils/shouldUpdate'
-import {
-  Attribute,
-  CreatedNFT,
-  Interaction,
-  asSystemRemark,
-  createInteraction,
-} from '@kodadot1/minimark'
+import { CreatedNFT, Interaction } from '@kodadot1/minimark/v1'
+import { CreatedNFT as CreatedNFTV2 } from '@kodadot1/minimark/v2'
+import { Attribute } from '@kodadot1/minimark/common'
 import { formatBalance } from '@polkadot/util'
 import { Component, Prop, Ref, Watch, mixins } from 'nuxt-property-decorator'
-import { unwrapSafe } from '~/utils/uniquery'
+import { unwrapSafe } from '@/utils/uniquery'
 import { toNFTId } from '../service/scheme'
 import { usePreferencesStore } from '@/stores/preferences'
 import { Ref as RefType } from 'vue'
-import { MintedCollectionKusama } from '@/composables/transaction/types'
+import { Royalty } from '@/utils/royalty'
+import {
+  MintedCollectionKusama,
+  TokenToList,
+} from '@/composables/transaction/types'
+import { NeoField, NeoMessage } from '@kodadot1/brick'
 
 const components = {
   AttributeTagInput: () =>
     import('@/components/rmrk/Create/AttributeTagInput.vue'),
+  CustomAttributeInput: () =>
+    import('@/components/rmrk/Create/CustomAttributeInput.vue'),
   CollapseWrapper: () =>
     import('@/components/shared/collapse/CollapseWrapper.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
@@ -106,6 +123,9 @@ const components = {
   BasicSwitch: () => import('@/components/shared/form/BasicSwitch.vue'),
   Money: () => import('@/components/shared/format/Money.vue'),
   SubmitButton: () => import('@/components/base/SubmitButton.vue'),
+  RoyaltyForm: () => import('@/components/bsx/Create/RoyaltyForm.vue'),
+  NeoMessage,
+  NeoField,
 }
 
 @Component({ components })
@@ -122,7 +142,7 @@ export default class CreateToken extends mixins(
     file: null,
     description: '',
     selectedCollection: null,
-    edition: 1,
+    copies: 1,
     secondFile: null,
   }
 
@@ -133,6 +153,12 @@ export default class CreateToken extends mixins(
   public listed = true
   public postfix = true
   public balanceNotEnough = false
+
+  public hasRoyalty = true
+  public royalty: Royalty = {
+    amount: 0.15,
+    address: '',
+  }
 
   private preferencesStore = usePreferencesStore()
 
@@ -228,10 +254,13 @@ export default class CreateToken extends mixins(
         urlPrefix: urlPrefix.value,
         token: {
           ...this.base,
+          copies: Number(this.base.copies),
           tags: this.tags,
           nsfw: this.nsfw,
           postfix: this.postfix,
           price: this.price.toString(),
+          royalty: this.royalty,
+          hasRoyalty: this.hasRoyalty,
         },
       })) as {
         createdNFTs: RefType<CreatedNFT[]>
@@ -258,44 +287,58 @@ export default class CreateToken extends mixins(
     }
   }
 
-  public async listForSale(remarks: CreatedNFT[], originalBlockNumber: string) {
+  public async listForSale(
+    createdNFT: CreatedNFT[] | CreatedNFTV2[],
+    originalBlockNumber: string
+  ) {
     try {
-      const api = await this.useApi()
+      const { transaction, status, isLoading, blockNumber } = useTransaction()
 
-      const { version, price } = this
-      const balance = formatBalance(price, {
+      watch([isLoading, status], () => {
+        this.isLoading = isLoading.value
+        if (Boolean(status.value)) {
+          this.status = status.value
+        }
+      })
+
+      const balance = formatBalance(this.price, {
         decimals: this.decimals,
         withUnit: this.unit,
       })
-      showNotification(`[💰] Listing NFT to sale for ${balance}`)
 
-      const onlyNfts = remarks
-        .map((nft) => toNFTId(nft, originalBlockNumber))
-        .map((id) =>
-          createInteraction(Interaction.LIST, version, id, String(price))
-        )
-
-      if (!onlyNfts.length) {
+      if (!createdNFT) {
         showNotification('Can not list empty NFTs', notificationTypes.warn)
         return
       }
 
-      const cb = api.tx.utility.batchAll
-      const args = onlyNfts.map((rmrk) => asSystemRemark(api, rmrk))
+      showNotification(`[💰] Listing NFT to sale for ${balance}`)
+      const list: TokenToList[] = createdNFT.map((nft) => ({
+        price: this.price.toString(),
+        nftId: toNFTId(nft, originalBlockNumber),
+      }))
 
+      const isSingle = list.length === 1
       this.isLoading = true
-      await this.howAboutToExecute(
-        this.accountId,
-        cb,
-        [args],
-        (blockNumber) => {
-          showNotification(
-            `[💰] Listed ${this.base.name} for ${balance} in block ${blockNumber}`,
-            notificationTypes.success
-          )
-          this.navigateToDetail(remarks[0], originalBlockNumber)
+      transaction({
+        interaction: Interaction.LIST,
+        urlPrefix: this.urlPrefix,
+        token: list,
+
+        successMessage: (blockNumber) =>
+          `[💰] Listed ${this.base.name} for ${balance} in block ${blockNumber}`,
+      })
+
+      watch([isLoading, blockNumber], () => {
+        if (!isLoading.value && blockNumber.value) {
+          this.navigateToDetail({
+            pageId: isSingle
+              ? list[0].nftId
+              : (this.base.selectedCollection?.id as string),
+            nftName: this.base.name,
+            toCollectionPage: !isSingle,
+          })
         }
-      )
+      })
     } catch (e) {
       showNotification((e as Error).message, notificationTypes.warn)
     }
@@ -305,15 +348,28 @@ export default class CreateToken extends mixins(
     // TODO: implement
   }
 
-  protected navigateToDetail(nft: CreatedNFT, blockNumber: string) {
+  protected navigateToDetail({
+    pageId,
+    nftName,
+    toCollectionPage,
+  }: {
+    pageId: string
+    nftName: string
+    toCollectionPage: boolean
+  }) {
     showNotification(
       `You will go to the detail in ${DETAIL_TIMEOUT / 1000} seconds`
     )
-    const go = () =>
-      this.$router.push({
-        path: `/rmrk/gallery/${toNFTId(nft, blockNumber)}`,
-        query: { congratsNft: nft.name },
-      })
+    const subPath = toCollectionPage ? 'collection' : 'gallery'
+    const go = () => {
+      const navigateTo: Location = {
+        path: `/${this.urlPrefix}/${subPath}/${pageId}`,
+      }
+      if (!toCollectionPage) {
+        navigateTo.query = { congratsNft: nftName }
+      }
+      return this.$router.push(navigateTo)
+    }
     setTimeout(go, DETAIL_TIMEOUT)
   }
 }

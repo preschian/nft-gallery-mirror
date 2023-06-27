@@ -8,6 +8,8 @@
       :nft-price="nft?.price"
       :collection-id="nft?.collection.id"
       :current-owner="nft?.currentOwner"
+      :royalty="nft?.royalty"
+      :recipient="nft?.recipient"
       @buy-success="emit('buy-success')" />
 
     <!-- highest offer -->
@@ -43,7 +45,7 @@ import GalleryItemPriceOffer from './GalleryItemActionType/GalleryItemOffer.vue'
 import GalleryItemPriceRelist from './GalleryItemActionType/GalleryItemRelist.vue'
 import GalleryItemPriceTransfer from './GalleryItemActionType/GalleryItemTransfer.vue'
 
-import { NFT } from '~~/components/rmrk/service/scheme'
+import { NFT } from '@/components/rmrk/service/scheme'
 const props = defineProps<{
   nft: NFT | undefined
 }>()

@@ -10,11 +10,10 @@
             {{ identity?.display || shortenedAddress }}</span
           >
         </nuxt-link>
-        <b-icon
+        <NeoIcon
           v-clipboard:copy="address"
           icon="copy"
-          size="is-small"
-          type="is-link is-clickable"
+          class="has-text-link is-clickable"
           data-cy="identity-clipboard"
           @click.native="toast('Copied to clipboard')" />
       </div>
@@ -22,15 +21,17 @@
         v-if="identity?.twitter"
         :href="`https://twitter.com/${identity?.twitter}`"
         target="_blank"
-        rel="noopener noreferrer"
+        rel="nofollow noopener noreferrer"
         data-cy="identity-twitter">
-        <b-icon pack="fab" icon="twitter" type="is-link" />
+        <NeoIcon pack="fab" icon="twitter" class="has-text-link" />
       </a>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { NeoIcon } from '@kodadot1/brick'
+
 const address = inject('address')
 const shortenedAddress = inject('shortenedAddress')
 

@@ -1,8 +1,13 @@
-
 @import '../../scss/theme';
+
 .o-icon--success {
-    @include ktheme() {
-      color: theme('k-green');
-    }
+  @include ktheme() {
+    color: theme('k-green');
   }
-  
+}
+.o-icon--primary {
+  @include ktheme() {
+    color: theme('k-primary');
+  }
+
+}

@@ -12,9 +12,7 @@
         </nuxt-link>
       </div>
 
-      <vue-markdown
-        :source="nftMetadata?.description?.replaceAll('\n', '  \n') || ''"
-        class="gallery-item-desc-markdown" />
+      <Markdown :source="descSource" class="gallery-item-desc-markdown" />
     </o-tab-item>
 
     <!-- properties tab -->
@@ -23,17 +21,17 @@
       :disabled="propertiesTabDisabled"
       :label="$t('tabs.properties')"
       :disabled-tooltip="$t('tabs.noPropertiesForNFT')">
-      <o-table v-if="properties?.length" :data="properties" hoverable>
-        <o-table-column
+      <NeoTable v-if="properties?.length" :data="properties" hoverable>
+        <NeoTableColumn
           v-slot="props"
           field="trait_type"
           :label="$t('tabs.tabProperties.section')">
           {{ props.row.trait_type }}
-        </o-table-column>
-        <o-table-column v-slot="props" field="value" label="Trait">
+        </NeoTableColumn>
+        <NeoTableColumn v-slot="props" field="value" label="Trait">
           {{ props.row.value }}
-        </o-table-column>
-      </o-table>
+        </NeoTableColumn>
+      </NeoTable>
     </DisablableTab>
 
     <!-- details tab -->
@@ -55,6 +53,10 @@
         <p>{{ $t('tabs.tabDetails.blockchain') }}</p>
         <p>{{ urlPrefix }}</p>
       </div>
+      <div v-if="version" class="is-flex is-justify-content-space-between">
+        <p>{{ $t('tabs.tabDetails.version') }}</p>
+        <p>{{ version }}</p>
+      </div>
       <!-- <div class="is-flex is-justify-content-space-between">
         <p>Token Standard</p>
         <p>--</p>
@@ -69,7 +71,7 @@
         <a
           :href="nftAnimation || nftImage"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="nofollow noopener noreferrer"
           class="has-text-link"
           data-cy="media-link"
           >{{ nftMimeType }}</a
@@ -81,51 +83,111 @@
           class="has-text-link"
           :href="metadataURL"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="nofollow noopener noreferrer"
           data-cy="metadata-link"
           >{{ metadataMimeType }}</a
         >
       </div>
     </o-tab-item>
+
+    <!-- parent tab -->
+    <div v-if="parent">
+      <o-tab-item value="3" :label="$t('tabs.parent')" class="p-5">
+        <nuxt-link :to="parentNftUrl">
+          <MediaItem
+            :key="parent?.nftImage"
+            :class="{
+              'is-flex is-align-items-center is-justify-content-center h-audio':
+                resolveMedia(parent?.nftMimeType.value) == MediaType.AUDIO,
+            }"
+            class="gallery-parent-item"
+            :src="parent?.nftImage.value"
+            :animation-src="parent?.nftAnimation.value"
+            :mime-type="parent?.nftMimeType.value"
+            :title="parent?.nftMetadata?.value?.name"
+            is-detail />
+          <p class="gallery-parent-item__name">
+            {{ parent?.nftMetadata?.value?.name }}
+          </p>
+        </nuxt-link>
+      </o-tab-item>
+    </div>
   </o-tabs>
 </template>
 
 <script setup lang="ts">
-import { OTabItem, OTable, OTableColumn, OTabs } from '@oruga-ui/oruga'
+import { OTabItem, OTabs } from '@oruga-ui/oruga'
+import {
+  DisablableTab,
+  MediaItem,
+  NeoTable,
+  NeoTableColumn,
+} from '@kodadot1/brick'
+
 import Identity from '@/components/identity/IdentityIndex.vue'
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
-import VueMarkdown from 'vue-markdown-render'
-import { DisablableTab } from '@kodadot1/brick'
 
-import { useGalleryItem } from './useGalleryItem'
+import { GalleryItem, useGalleryItem } from './useGalleryItem'
+
+import { MediaType } from '@/components/rmrk/types'
+import { resolveMedia } from '@/utils/gallery/media'
+
+import { replaceSingularCollectionUrlByText } from '@/utils/url'
 
 const { urlPrefix } = usePrefix()
-const { nft, nftMimeType, nftMetadata, nftImage, nftAnimation } =
-  useGalleryItem()
+
+const props = defineProps<{
+  galleryItem: GalleryItem
+}>()
+
+const getValue = (prop) => computed(() => props.galleryItem[prop].value)
+
+const nft = getValue('nft')
+const nftMetadata = getValue('nftMetadata')
+const nftMimeType = getValue('nftMimeType')
+const nftImage = getValue('nftImage')
+const nftAnimation = getValue('nftAnimation')
+
 const activeTab = ref('0')
+const { version } = useRmrkVersion()
+
+const descSource = computed(() => {
+  return replaceSingularCollectionUrlByText(
+    nftMetadata.value?.description?.replaceAll('\n', '  \n') || ''
+  )
+})
+const parent = computed(() => {
+  if (nft.value?.parent?.id) {
+    return useGalleryItem(nft.value?.parent?.id)
+  }
+})
+const isLewd = computed(() => {
+  return Boolean(
+    properties.value?.find((item) => {
+      return item.trait_type === 'NSFW'
+    })
+  )
+})
+
+defineExpose({ isLewd })
+
+const parentNftUrl = computed(() => {
+  if (parent.value) {
+    const url = inject('itemUrl', 'gallery') as string
+
+    return `/${urlPrefix.value}/${url}/${parent.value?.nft.value?.id}`
+  }
+})
 
 const properties = computed(() => {
-  // we have different format between rmrk2 and the other chains
-  if (urlPrefix.value === 'rmrk2') {
-    return Object.entries(nftMetadata.value?.properties || {}).map(
-      ([key, value]) => {
-        return {
-          trait_type: key,
-          value: value.value,
-        }
-      }
-    )
-  }
-
   const attributes = (nftMetadata.value?.attributes ||
     nftMetadata.value?.meta.attributes ||
     []) as Array<{ trait_type: string; value: string; key?: string }>
-  return attributes.map((attr) => {
-    return {
-      trait_type: attr.trait_type || attr.key,
-      value: attr.value,
-    }
-  })
+
+  return attributes.map(({ trait_type, key, value }) => ({
+    trait_type: trait_type || key,
+    value,
+  }))
 })
 
 const propertiesTabDisabled = computed(() => {

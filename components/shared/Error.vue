@@ -7,7 +7,7 @@
       If you think this should't happen, report us by
       <a
         target="_blank"
-        rel="noopener noreferrer"
+        rel="nofollow noopener noreferrer"
         href="https://github.com/kodadot/nft-gallery/issues/new?assignees=&labels=bug&template=bug_report.md&title="
         >creating bug issue with steps to reproduce and screenshot.</a
       >

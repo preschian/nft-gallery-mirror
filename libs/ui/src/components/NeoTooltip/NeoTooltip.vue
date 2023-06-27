@@ -1,11 +1,18 @@
 <template>
   <o-tooltip
     v-if="active"
-    append-to-body
+    :append-to-body="appendToBody"
+    :multiline="multiline"
     class="neo-tooltip"
+    :style="{
+      '--font-size': fontSize,
+      '--multiline-width': multilineWidth,
+      width: fullWidth ? '100%' : 'auto',
+    }"
     :position="position"
     :label="label"
-    @click.native.stop>
+    :delay="delay"
+    @click.native="handleClick">
     <slot>
       <div />
     </slot>
@@ -24,11 +31,45 @@ export interface Props {
   label: string | LocaleMessage
   position?: 'top' | 'bottom' | 'left' | 'right'
   active?: boolean
+  multiline?: boolean
+  appendToBody?: boolean
+  delay?: number
+  fontSize?: string | number
+  multilineWidth?: string | number
+  fullWidth?: boolean
+  stopEvents?: boolean
 }
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   position: 'top',
   active: true,
+  multiline: false,
+  appendToBody: false,
+  delay: undefined,
+  fullWidth: false,
+  fontSize: '1rem',
+  multilineWidth: '10rem',
+  stopEvents: false,
 })
+
+const fontSize = computed(() => {
+  if (typeof props.fontSize === 'number') {
+    return `${props.fontSize}px`
+  }
+  return props.fontSize
+})
+
+const multilineWidth = computed(() => {
+  if (typeof props.multilineWidth === 'number') {
+    return `${props.multilineWidth}px`
+  }
+  return props.multilineWidth
+})
+
+const handleClick = (event: MouseEvent) => {
+  if (props.stopEvents) {
+    event.stopPropagation()
+  }
+}
 </script>
 
 <style lang="scss">

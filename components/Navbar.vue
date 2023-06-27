@@ -7,7 +7,7 @@
     fixed-top
     mobile-burger
     spaced
-    wrapper-class="container is-fluid">
+    :wrapper-class="{ container: true, 'is-fluid': !isMobile }">
     <template #brand>
       <b-navbar-item :to="{ path: '/' }" class="logo" tag="nuxt-link">
         <img
@@ -52,70 +52,81 @@
       </div>
     </template>
     <template #end>
-      <ExploreDropdown
-        v-if="!isMobile"
-        class="navbar-explore custom-navbar-item"
-        data-cy="explore" />
-      <MobileExpandableSection v-if="isMobile" :title="$t('explore')">
-        <NavbarExploreOptions />
-      </MobileExpandableSection>
+      <nuxt-link to="/stmn/drops/free-drop" rel="nofollow">
+        <div class="navbar-item" data-cy="drops">
+          {{ $t('drops') }}
 
+          <NeoIcon
+            class="ml-1"
+            icon="fire-flame-curved"
+            custom-size="fa-solid"
+            pack="fa-sharp"
+            variant="primary" />
+        </div>
+      </nuxt-link>
+      <template v-if="isExploreVisible">
+        <MobileExpandableSection v-if="isMobile" :title="$t('explore')">
+          <NavbarExploreOptions />
+        </MobileExpandableSection>
+
+        <ExploreDropdown
+          v-else
+          class="navbar-explore custom-navbar-item"
+          data-cy="explore" />
+      </template>
+
+      <a
+        href="https://hello.kodadot.xyz"
+        rel="nofollow"
+        target="_blank"
+        class="navbar-item"
+        data-cy="learn">
+        {{ $t('learn') }}
+      </a>
       <CreateDropdown
         v-show="isCreateVisible"
         class="navbar-create custom-navbar-item ml-0"
         data-cy="create"
         :is-mobile="isMobile"
         :chain="urlPrefix" />
-      <StatsDropdown
+
+      <!-- commenting as part of #5889-->
+      <!-- <StatsDropdown
         class="navbar-stats custom-navbar-item"
         data-cy="stats"
         :is-mobile="isMobile"
-        :chain="urlPrefix" />
+        :chain="urlPrefix" /> -->
+
+      <MobileExpandableSection
+        v-if="isMobile"
+        no-padding
+        :title="$t('chainSelect', [chainName])">
+        <NavbarChainOptions />
+      </MobileExpandableSection>
 
       <ChainSelectDropdown
-        v-if="!isMobile"
+        v-else
         id="NavChainSelect"
         class="navbar-chain custom-navbar-item"
         data-cy="chain-select" />
+
+      <NotificationBoxButton
+        v-if="account"
+        :show-label="isMobile"
+        @closeBurgerMenu="closeBurgerMenu" />
       <template v-if="isMobile">
         <MobileLanguageOption v-if="!account" />
-        <MobileExpandableSection
-          v-if="account"
-          :no-padding="true"
-          :title="$t('account')"
-          icon="user-circle"
-          icon-family="fa">
-          <b-navbar-item
-            :to="`/${urlPrefix}/u/${account}`"
-            data-cy="hot"
-            tag="nuxt-link">
-            {{ $t('profile.page') }}
-          </b-navbar-item>
-          <b-navbar-item
-            :to="{ name: 'identity' }"
-            data-cy="hot"
-            tag="nuxt-link">
-            {{ $t('identity.page') }}
-          </b-navbar-item>
-          <b-navbar-item data-cy="hot" tag="nuxt-link" to="/settings">
-            {{ $t('settings') }}
-          </b-navbar-item>
-          <MobileLanguageOption />
-          <MobileNavbarProfile
-            id="NavProfile"
-            @closeBurgerMenu="closeBurgerMenu" />
-        </MobileExpandableSection>
         <div
           v-if="account"
           class="navbar-item"
           @click.stop="openWalletConnectModal">
           <span>
-            {{ $t('wallet') }}
-            <b-icon icon="wallet" />
+            {{ $t('profile.page') }}
+            <NeoIcon icon="user-circle" />
           </span>
-          <b-icon class="icon--right" icon="chevron-right" pack="fas" />
+          <NeoIcon class="icon--right" icon="chevron-right" pack="fas" />
         </div>
-        <ColorModeButton class="navbar-item" />
+        <ColorModeButton v-if="!account" class="navbar-item" />
 
         <div v-if="!account" id="NavProfile">
           <ConnectWalletButton
@@ -135,26 +146,30 @@
 </template>
 
 <script lang="ts" setup>
-import MobileExpandableSection from '@/components/navbar/MobileExpandableSection.vue'
-import NavbarExploreOptions from '@/components/navbar/NavbarExploreOptions.vue'
-import ProfileDropdown from '~/components/navbar/ProfileDropdown.vue'
-import Search from '@/components/search/Search.vue'
-import ExploreDropdown from '~/components/navbar/ExploreDropdown.vue'
-import CreateDropdown from '~/components/navbar/CreateDropdown.vue'
-import KodaBetaDark from '@/assets/Koda_Beta_dark.svg'
-import KodaBeta from '@/assets/Koda_Beta.svg'
-import ColorModeButton from '~/components/common/ColorModeButton.vue'
-import MobileLanguageOption from '~/components/navbar/MobileLanguageOption.vue'
-import { createVisible } from '@/utils/config/permision.config'
-import ChainSelectDropdown from '~/components/navbar/ChainSelectDropdown.vue'
-import StatsDropdown from '~/components/navbar/StatsDropdown.vue'
-import MobileNavbarProfile from '~/components/navbar/MobileNavbarProfile.vue'
-import ConnectWalletButton from '~/components/shared/ConnectWalletButton.vue'
-import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import { NeoIcon } from '@kodadot1/brick'
 import { BModalConfig } from 'buefy/types/components'
 import type Vue from 'vue'
 
-const { $store, $buefy, $nextTick } = useNuxtApp()
+import KodaBeta from '@/assets/Koda_Beta.svg'
+import KodaBetaDark from '@/assets/Koda_Beta_dark.svg'
+import { ConnectWalletModalConfig } from '@/components/common/ConnectWallet/useConnectWallet'
+import ChainSelectDropdown from '@/components/navbar/ChainSelectDropdown.vue'
+import CreateDropdown from '@/components/navbar/CreateDropdown.vue'
+import ExploreDropdown from '@/components/navbar/ExploreDropdown.vue'
+import MobileExpandableSection from '@/components/navbar/MobileExpandableSection.vue'
+import MobileLanguageOption from '@/components/navbar/MobileLanguageOption.vue'
+import NavbarChainOptions from '@/components/navbar/NavbarChainOptions.vue'
+import NavbarExploreOptions from '@/components/navbar/NavbarExploreOptions.vue'
+import NotificationBoxButton from '@/components/navbar/NotificationBoxButton.vue'
+import ProfileDropdown from '@/components/navbar/ProfileDropdown.vue'
+import Search from '@/components/search/Search.vue'
+import ConnectWalletButton from '@/components/shared/ConnectWalletButton.vue'
+
+import { useIdentityStore } from '@/stores/identity'
+import { getChainNameByPrefix } from '@/utils/chain'
+import { createVisible, explorerVisible } from '@/utils/config/permision.config'
+
+const { $buefy, $nextTick } = useNuxtApp()
 const root = ref<Vue<Record<string, string>>>()
 const showTopNavbar = ref(true)
 const openMobileSearchBar = ref(false)
@@ -164,14 +179,16 @@ const isBurgerMenuOpened = ref(false)
 const isMobile = ref(window.innerWidth < 1024)
 const { urlPrefix } = usePrefix()
 const { isDarkMode } = useTheme()
+const identityStore = useIdentityStore()
 
 const mobilSearchRef = ref<{ focusInput: () => void } | null>(null)
 
 const route = useRoute()
 
-const account = computed(() => $store.getters.getAuthAddress)
+const account = computed(() => identityStore.getAuthAddress)
 
 const isCreateVisible = computed(() => createVisible(urlPrefix.value))
+const isExploreVisible = computed(() => explorerVisible(urlPrefix.value))
 const isLandingPage = computed(() => route.name === 'index')
 
 const logoSrc = computed(() => (isDarkMode.value ? KodaBetaDark : KodaBeta))
@@ -186,7 +203,7 @@ const openWalletConnectModal = (): void => {
   $buefy.modal.open({
     parent: root?.value,
     ...ConnectWalletModalConfig,
-  } as any as BModalConfig)
+  } as unknown as BModalConfig)
 }
 
 watch([isBurgerMenuOpened], () => {
@@ -245,6 +262,8 @@ const closeBurgerMenu = () => {
 const handleResize = () => {
   isMobile.value = window.innerWidth < 1024
 }
+
+const chainName = computed(() => getChainNameByPrefix(urlPrefix.value))
 
 onMounted(() => {
   window.addEventListener('scroll', onScroll)

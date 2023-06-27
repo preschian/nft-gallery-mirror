@@ -1,16 +1,19 @@
 html {
   height: 100%;
+  background-color: $white;
+  &.dark-mode {
+    background-color: $scheme-main;
+  }
 }
+
 body,
 div#__nuxt,
 div#__layout,
 main {
-  //without this, footer image is above main contents
+  // without this, footer image is above main contents
   // block hover, click events
   z-index: 100;
-  @include ktheme() {
-    background: theme('background-color');
-  }
+  height: 100%;
 }
 
 main {
@@ -27,7 +30,7 @@ body {
     }
     &:hover {
       @include ktheme() {
-        color: theme('k-hovergrey');
+        color: theme('link-hover');
       }
     }
   }
@@ -43,7 +46,6 @@ body {
 
   .input,
   select,
-  textarea,
   .taginput-container {
     @include ktheme() {
       background-color: theme('background-color') !important;
@@ -52,6 +54,25 @@ body {
         color: theme('placeholder-color') !important;
       }
     }
+  }
+
+  .field {
+    .input {
+      @include ktheme() {
+        border-radius: 0;
+        border: 1px solid theme('k-grey-fix');
+        background-color: theme('background-color');
+        color: theme('text-color');
+
+        &:focus {
+          border: 1px solid theme('text-color');
+        }
+      }
+    }
+  }
+
+  .taginput-container.is-focusable {
+    height: auto !important;
   }
 
   .select {
@@ -75,10 +96,6 @@ body {
     font-size: calc(1rem * 0.75);
   }
 
-  .loading-overlay .loading-background {
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
   .orientation {
     perspective: 30em;
   }
@@ -94,10 +111,6 @@ body {
   }
 
   .message.is-primary .message-body {
-    color: $light-text;
-  }
-
-  .b-steps .steps .step-items .step-item .step-details .step-title {
     color: $primary;
   }
 }
@@ -146,25 +159,6 @@ body {
 
 .w-100 {
   width: 100% !important;
-}
-
-.b-radio.radio.button.is-selected {
-  @include ktheme() {
-    background-color: theme('k-primary');
-  }
-}
-.b-radio.is-selected {
-  @include ktheme() {
-    background-color: theme('k-primary');
-    color: theme('black');
-  }
-}
-
-.collection-radio-btn .b-radio.radio.button {
-  border: none !important;
-  @include ktheme() {
-    border-top: 1px solid theme('k-primary') !important;
-  }
 }
 
 .short-identity__table {
@@ -227,7 +221,7 @@ body {
 hr {
   height: 1px;
   @include ktheme() {
-    background: theme('k-grey');
+    background: theme('k-shade');
   }
 }
 
@@ -250,10 +244,28 @@ hr {
   }
 }
 
+.has-text-inverse {
+  @include ktheme() {
+    color: theme('text-color-inverse');
+  }
+}
+
+a.has-text-grey {
+  @include ktheme() {
+    &:hover {
+      color: theme('text-color') !important;
+    }
+  }
+}
+
 .snackbar {
   @include ktheme() {
+    border-radius: 0;
     color: theme('text-color');
     background: theme('background-color');
+    box-shadow: theme('primary-shadow');
+    border: 1px solid theme('border-color');
+
     .button {
       background-color: theme('k-accentlight2') !important;
       color: theme('text-color') !important;
@@ -297,12 +309,21 @@ hr {
     border-top: 1px solid theme('border-color');
   }
 }
-.border {
+.border-left {
   @include ktheme() {
-    border: 1px solid theme('border-color')
+    border-left: 1px solid theme('border-color');
   }
 }
-
+.border-right {
+  @include ktheme() {
+    border-right: 1px solid theme('border-color');
+  }
+}
+.border {
+  @include ktheme() {
+    border: 1px solid theme('border-color');
+  }
+}
 
 //colors
 
@@ -317,6 +338,12 @@ hr {
   }
 }
 
+.has-text-k-orange {
+  @include ktheme() {
+    color: theme('k-orange');
+  }
+}
+
 .has-text-k-blue {
   @include ktheme() {
     color: theme('k-blue');
@@ -325,6 +352,13 @@ hr {
     @include ktheme() {
       color: theme('k-blue-hover');
     }
+  }
+}
+
+
+.has-background-inverse {
+  @include ktheme() {
+    background: theme('text-color');
   }
 }
 
@@ -342,6 +376,22 @@ hr {
 .k-yellow {
   @include ktheme() {
     background-color: theme('k-yellow');
+  }
+}
+
+.k-green {
+  @include ktheme() {
+    background-color: theme('k-green');
+  }
+}
+.k-red {
+  @include ktheme() {
+    background-color: theme('k-red');
+  }
+}
+.k-redaccent {
+  @include ktheme() {
+    background-color: theme('k-redaccent');
   }
 }
 .theme-background-color {
@@ -366,3 +416,20 @@ hr {
   }
 }
 
+//shadow
+
+.k-shadow {
+  @include ktheme() {
+    box-shadow: theme('primary-shadow');
+  }
+}
+
+// flex helper - makes flex items equal width
+
+.is-flex-1 {
+  flex: 1;
+}
+
+.has-z-index-1 {
+  z-index: 1;
+}

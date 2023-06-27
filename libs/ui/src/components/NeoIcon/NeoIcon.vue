@@ -1,22 +1,22 @@
 <template>
   <o-icon
-    :pack="iconPack"
+    :pack="pack || 'fas'"
     :icon="icon"
-    :size="size || 'medium'"
+    :size="size || 'small'"
+    :custom-size="customSize"
     :variant="variant" />
 </template>
 
 <script lang="ts" setup>
 import { OIcon } from '@oruga-ui/oruga'
 
-const props = defineProps<{
+defineProps<{
   size?: 'small' | 'medium' | 'large'
   icon?: string
-  iconPack?: string
-  variant?: 'success'
+  pack?: string
+  customSize?: string
+  variant?: 'success' | 'primary'
 }>()
-
-const iconPack = computed(() => props?.iconPack || 'fa-sharp')
 </script>
 
 <style lang="scss" scoped>

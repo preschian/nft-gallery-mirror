@@ -8,5 +8,8 @@ export type NeoButtonVariant =
   | 'k-blue'
   | 'connect'
   | 'connect-dropdown'
+  | 'icon'
+  | 'secondary'
+  | 'disabled-secondary'
 
 export type NftCardVariant = 'primary' | 'minimal'

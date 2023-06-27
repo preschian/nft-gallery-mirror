@@ -1,18 +1,12 @@
 <template>
   <div v-if="ready" class="">
-    <div
-      v-for="{ avatar, id, name, updatedAt } in nfts"
+    <nuxt-link
+      v-for="{ avatar, id, name, updatedAt } in displayedNFTs"
       :key="id"
-      class="is-flex pt-2 px-5 is-justify-content-start is-hoverable-item">
+      :to="`/${urlPrefix}/gallery/${id}`"
+      class="is-flex pt-2 px-5 is-justify-content-start is-hoverable-item hoverable-lable-color">
       <div class="mr-5">
-        <img
-          v-if="avatar"
-          :src="avatar"
-          :alt="name"
-          width="40"
-          height="40"
-          class="border" />
-        <img v-else src="/placeholder.webp" class="border mr-5" />
+        <BasicImage :src="avatar" :alt="name" class="border image-size pt-0" />
       </div>
       <div class="is-flex is-flex-direction-column">
         {{ name }}
@@ -20,7 +14,8 @@
           timeAgo(new Date(updatedAt).getTime())
         }}</span>
       </div>
-    </div>
+    </nuxt-link>
+    <div ref="target" />
   </div>
 </template>
 
@@ -30,7 +25,9 @@ import { processSingleMetadata } from '@/utils/cachingStrategy'
 import { NFTMetadata } from '@/components/rmrk/service/scheme'
 import { NFTExcludingEvents } from '@/composables/collectionActivity/types'
 import { timeAgo } from '@/components/collection/utils/timeAgo'
+import BasicImage from '@/components/shared/view/BasicImage.vue'
 
+const { placeholder } = useTheme()
 const props = defineProps<{
   nfts: (NFTExcludingEvents & { avatar?: string })[]
 }>()
@@ -38,13 +35,22 @@ const props = defineProps<{
 const nfts = ref(props.nfts)
 const ready = ref(false)
 
-onMounted(() => {
-  processNFTImages()
+const target = ref<HTMLElement | null>(null)
+const offset = ref(4)
+
+useIntersectionObserver(target, ([{ isIntersecting }]) => {
+  if (isIntersecting) {
+    offset.value += 4
+  }
 })
+
+const { urlPrefix } = usePrefix()
+
+const displayedNFTs = computed(() => nfts.value.slice(0, offset.value))
 
 const processNFTImages = async () => {
   if (props.nfts) {
-    const promises = props.nfts.map(async (nft, i) => {
+    const promises = displayedNFTs.value.map(async (nft, i) => {
       let avatar
       if (nft.meta?.image) {
         avatar = sanitizeIpfsUrl(nft.meta.image)
@@ -53,7 +59,7 @@ const processNFTImages = async () => {
         avatar = sanitizeIpfsUrl(meta?.image)
       }
 
-      nfts.value[i].avatar = avatar
+      displayedNFTs.value[i].avatar = avatar || placeholder.value
     })
 
     await Promise.all(promises)
@@ -61,4 +67,23 @@ const processNFTImages = async () => {
     ready.value = true
   }
 }
+
+watch(
+  offset,
+  () => {
+    processNFTImages()
+  },
+  { immediate: true }
+)
 </script>
+
+<style lang="scss" scoped>
+.image-size {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.hoverable-lable-color {
+  color: inherit !important;
+}
+</style>

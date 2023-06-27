@@ -1,10 +1,24 @@
-export type Prefix = 'bsx' | 'glmr' | 'ksm' | 'movr' | 'rmrk2' | 'snek'
-// | 'statemine'
-// | 'westmint'
+export type Prefix =
+  | 'bsx'
+  | 'glmr'
+  | 'rmrk'
+  | 'movr'
+  | 'ksm'
+  | 'snek'
+  | 'stmn'
+  | 'dot'
+  | 'stt'
+// | 'wst'
 
-export type BackwardPrefix = 'rmrk' & Prefix
-
-export type Squid = 'rubick' | 'snekk' | 'click' | 'antick'
+export type Squid =
+  | 'rubick'
+  | 'snekk'
+  | 'click'
+  | 'antick'
+  | 'marck'
+  | 'stick'
+  | 'speck'
+  | 'sneck'
 
 export type Config<T = boolean> = Record<Prefix, T>
 

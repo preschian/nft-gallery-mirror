@@ -7,10 +7,13 @@ type SquidEndpoint =
 export const INDEXERS: Config<SquidEndpoint> = {
   bsx: 'https://squid.subsquid.io/snekk/graphql',
   glmr: 'https://squid.subsquid.io/click/v/002/graphql',
-  ksm: 'https://squid.subsquid.io/rubick/graphql',
+  rmrk: 'https://squid.subsquid.io/rubick/graphql',
   movr: 'https://squid.subsquid.io/antick/v/001-rc0/graphql',
-  rmrk2: 'https://squid.subsquid.io/rubick/v/009-rc0/graphql',
+  ksm: 'https://squid.subsquid.io/marck/v/v2/graphql',
   snek: 'https://squid.subsquid.io/snekk/v/004/graphql',
+  stmn: 'https://squid.subsquid.io/stick/v/v3/graphql',
+  dot: 'https://squid.subsquid.io/rubick/graphql', // TODO: change to dot indexer when available
+  stt: 'https://squid.subsquid.io/speck/v/v1/graphql',
 }
 
 export const toApolloEndpoint = (httpEndpoint: string): ApolloEndpoint => ({

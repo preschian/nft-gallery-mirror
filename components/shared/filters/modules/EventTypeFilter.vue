@@ -1,5 +1,5 @@
 <template>
-  <b-collapse
+  <NeoCollapse
     :open="expanded"
     animation="slide"
     class="border-bottom"
@@ -8,35 +8,35 @@
       <div class="is-flex" role="button" :aria-expanded="open">
         <p class="card-header-title has-text-weight-normal">Event Type</p>
         <a class="card-header-icon">
-          <b-icon :icon="open ? 'minus' : 'plus'" />
+          <NeoIcon :icon="open ? 'minus' : 'plus'" />
         </a>
       </div>
     </template>
     <div class="p-4">
-      <b-field>
+      <NeoField>
         <NeoCheckbox v-model="sale">{{ $t('filters.sale') }}</NeoCheckbox>
-      </b-field>
-      <b-field>
+      </NeoField>
+      <NeoField>
         <NeoCheckbox v-model="offer">{{ $t('filters.offer') }}</NeoCheckbox>
-      </b-field>
-      <b-field>
+      </NeoField>
+      <NeoField>
         <NeoCheckbox v-model="listing">{{ $t('filters.listing') }}</NeoCheckbox>
-      </b-field>
-      <b-field>
+      </NeoField>
+      <NeoField>
         <NeoCheckbox v-model="mint">{{ $t('filters.mint') }}</NeoCheckbox>
-      </b-field>
-      <b-field>
+      </NeoField>
+      <NeoField>
         <NeoCheckbox v-model="transfer">{{
           $t('filters.transfer')
         }}</NeoCheckbox>
-      </b-field>
+      </NeoField>
     </div>
-  </b-collapse>
+  </NeoCollapse>
 </template>
 
 <script lang="ts" setup>
-import { NeoCheckbox } from '@kodadot1/brick'
 import { useAcivityFiltersStore } from '@/stores/activityFilters'
+import { NeoCheckbox, NeoCollapse, NeoField, NeoIcon } from '@kodadot1/brick'
 
 const activityFiltersStore = useAcivityFiltersStore()
 const route = useRoute()

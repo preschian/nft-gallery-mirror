@@ -3,12 +3,7 @@
     <div class="columns is-centered">
       <div class="column is-half has-text-centered">
         <div class="container image is-128x128 mb-2">
-          <b-image
-            v-if="!isLoading"
-            :src="image"
-            :alt="name"
-            ratio="1by1"
-            rounded></b-image>
+          <BasicImage v-if="!isLoading" :src="image" :alt="name" rounded />
         </div>
         <h1 class="title is-2">
           {{ name }}
@@ -54,7 +49,7 @@
     <div class="columns is-centered">
       <div class="column is-8 has-text-centered">
         <p class="content">
-          <VueMarkdown :source="description" />
+          <Markdown :source="description" />
           <CollapseWrapper
             v-if="attributes && attributes.length"
             visible="collapse.collection.attributes.show"
@@ -101,11 +96,12 @@ import UseApiMixin from '@/utils/mixins/useApiMixin'
 import { tokenIdToRoute } from '../../utils'
 
 const components = {
+  BasicImage: () => import('@/components/shared/view/BasicImage.vue'),
   GalleryCardList: () =>
     import('@/components/rmrk/Gallery/GalleryCardList.vue'),
   Sharing: () => import('@/components/shared/Sharing.vue'),
   ProfileLink: () => import('@/components/rmrk/Profile/ProfileLink.vue'),
-  VueMarkdown: () => import('vue-markdown-render'),
+  Markdown: () => import('@/components/shared/Markdown.vue'),
   CollapseWrapper: () =>
     import('@/components/shared/collapse/CollapseWrapper.vue'),
   TransferCollection: () =>

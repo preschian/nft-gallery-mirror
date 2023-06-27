@@ -1,5 +1,5 @@
 <template>
-  <b-collapse
+  <NeoCollapse
     :open="expanded"
     animation="slide"
     class="border-bottom"
@@ -10,7 +10,7 @@
           {{ $t('tabs.tabActivity.price') }}
         </p>
         <a class="card-header-icon">
-          <b-icon :icon="open ? 'minus' : 'plus'" />
+          <NeoIcon :icon="open ? 'minus' : 'plus'" />
         </a>
       </div>
     </template>
@@ -18,9 +18,9 @@
       <div
         class="is-flex input-container mb-4"
         :class="[inputFocused ? 'input-focused' : '']">
-        <b-input
+        <NeoInput
           v-model="range.min"
-          custom-class="input-sidebar"
+          class="input-sidebar"
           type="number"
           min="0"
           step="any"
@@ -40,9 +40,9 @@
               fill="currentColor" />
           </svg>
         </div>
-        <b-input
+        <NeoInput
           v-model="range.max"
-          custom-class="input-sidebar"
+          class="input-sidebar"
           min="0"
           step="any"
           type="number"
@@ -66,11 +66,11 @@
         </NeoButton>
       </div>
     </form>
-  </b-collapse>
+  </NeoCollapse>
 </template>
 
 <script lang="ts" setup>
-import { NeoButton } from '@kodadot1/brick'
+import { NeoButton, NeoCollapse, NeoIcon, NeoInput } from '@kodadot1/brick'
 import { fromDecimals, toDecimals } from '@/utils/math'
 import { useExploreFiltersStore } from '@/stores/exploreFilters'
 
@@ -163,11 +163,15 @@ const toggleInputFocused = (): void => {
   @include ktheme() {
     border: 1px solid theme('text-color');
   }
+
   .input-sidebar {
-    border: none !important;
-    &:focus {
+    input {
       border: none !important;
-      box-shadow: none !important;
+      height: 2.5rem;
+      &:focus {
+        border: none !important;
+        box-shadow: none !important;
+      }
     }
   }
 }

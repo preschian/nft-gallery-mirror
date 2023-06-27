@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { NeoButton, NeoDropdown, NeoDropdownItem } from '@kodadot1/brick'
-import { Interaction } from '@kodadot1/minimark'
+import { Interaction } from '@kodadot1/minimark/v1'
 import { downloadImage } from '@/utils/download'
 import { ipfsToCf } from '@/utils/ipfs'
 
@@ -34,7 +34,7 @@ const { transaction, isLoading, status } = useTransaction()
 const { urlPrefix } = usePrefix()
 
 const props = defineProps<{
-  mimeType: string
+  mimeType?: string
   name?: string
   ipfsImage?: string
   currentOwner?: string

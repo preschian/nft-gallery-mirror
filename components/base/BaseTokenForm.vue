@@ -2,9 +2,9 @@
   <div>
     <slot name="header"></slot>
 
-    <b-field>
+    <NeoField>
       <Auth />
-    </b-field>
+    </NeoField>
 
     <CollectionSelect
       v-model="vSelectedCollection"
@@ -46,9 +46,9 @@
           :placeholder="$t('mint.nft.description.placeholder')" />
 
         <BasicNumberInput
-          v-if="hasEdition"
-          key="edition"
-          v-model="vEdition"
+          v-if="hasCopies"
+          key="copies"
+          v-model="vCopies"
           :label="$t('mint.nft.edition.label')"
           :message="$t('mint.nft.edition.message')"
           :placeholder="$t('mint.nft.edition.placeholder')"
@@ -79,6 +79,7 @@ import { Component, Prop, PropSync, Ref, Vue } from 'nuxt-property-decorator'
 import { MediaType } from '../rmrk/types'
 import { resolveMedia } from '../rmrk/utils'
 import { BaseMintedCollection as MintedCollection } from './types'
+import { NeoField } from '@kodadot1/brick'
 
 const components = {
   Auth: () => import('@/components/shared/Auth.vue'),
@@ -87,20 +88,21 @@ const components = {
   BasicNumberInput: () =>
     import('@/components/shared/form/BasicNumberInput.vue'),
   CollectionSelect: () => import('@/components/base/CollectionSelect.vue'),
+  NeoField,
 }
 
 @Component({ components })
 export default class BaseTokenForm extends Vue {
   @Prop({ type: String, default: 'context' }) label!: string
   @Prop({ type: Array, default: () => [] }) collections!: MintedCollection[]
-  @Prop({ type: Boolean, default: true }) hasEdition!: boolean
+  @Prop({ type: Boolean, default: true }) hasCopies!: boolean
   @Prop({ type: Boolean, default: false }) showExplainerText!: boolean
 
   @PropSync('name', { type: String }) vName!: string
   @PropSync('description', { type: String }) vDescription!: string
   @PropSync('file', { type: Blob }) vFile!: Blob | null
   @PropSync('selectedCollection') vSelectedCollection!: MintedCollection | null
-  @PropSync('edition', { type: Number }) vEdition!: number
+  @PropSync('copies', { type: Number }) vCopies!: number
   @PropSync('secondFile', { type: Blob }) vSecondFile!: Blob | null
   @Ref('nftName') readonly nftName
   @Ref('upload') readonly upload

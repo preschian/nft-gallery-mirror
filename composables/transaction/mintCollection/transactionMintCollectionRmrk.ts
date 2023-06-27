@@ -1,12 +1,19 @@
-import type { ActionMintCollection, CollectionToMintKusama } from '../types'
-import { ExecuteTransactionParams } from '@/composables/useTransaction'
+import type {
+  ActionMintCollection,
+  CollectionToMintKusama,
+  ExecuteTransactionParams,
+} from '../types'
 import { constructMeta } from './constructMeta'
 import {
   Interaction,
-  asSystemRemark,
   createCollection,
-  createMintInteaction,
-} from '@kodadot1/minimark'
+  createMintInteraction,
+} from '@kodadot1/minimark/v1'
+import {
+  Interaction as NewInteraction,
+  createInteraction,
+} from '@kodadot1/minimark/v2'
+import { asSystemRemark } from '@kodadot1/minimark/common'
 import { canSupport } from '@/utils/support'
 
 export async function execMintCollectionRmrk(
@@ -14,7 +21,7 @@ export async function execMintCollectionRmrk(
   api,
   executeTransaction: (p: ExecuteTransactionParams) => void
 ) {
-  const { version } = useRmrkVersion()
+  const { isV2 } = useRmrkVersion()
   const { accountId } = useAuth()
   const { $i18n } = useNuxtApp()
 
@@ -28,7 +35,12 @@ export async function execMintCollectionRmrk(
     metadata,
     nftCount
   )
-  const mintInteraction = createMintInteaction(Interaction.MINT, version, mint)
+  const mintInteraction = isV2.value
+    ? createInteraction({
+        action: NewInteraction.CREATE,
+        payload: { value: mint },
+      })
+    : createMintInteraction(Interaction.MINT, mint)
 
   const cb = api.tx.utility.batchAll
   const hasSupport = true

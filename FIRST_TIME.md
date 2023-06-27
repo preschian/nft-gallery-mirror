@@ -7,7 +7,7 @@ We are using a `pnpm` workspace, as installing things via npm **will result in b
 ### Prerequisites 🎒
 
 ```MD
-node >=16.14.0
+node >=18
 pnpm
 ```
 
@@ -185,8 +185,6 @@ For Basilisk (Rococo):
 You can change the network in the navbar.
 Currently supported networks are `Basilisk`, `Basilisk-Rococo` and `Kusama`.
 EVM chains such as `MoonBeam` and `MoonRiver` are in read-only mode.
-
-Do you want to add more networks? [Open a PR on vuex-options](https://github.com/kodadot/packages)
 
 ## Running local Polkadot and subquery nodes
 

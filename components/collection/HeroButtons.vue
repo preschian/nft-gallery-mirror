@@ -31,10 +31,13 @@
 
       <div class="is-flex">
         <NeoDropdown append-to-body>
-          <NeoButton icon="share-alt" class="square-32 mr-3" />
+          <NeoButton
+            icon="share-alt"
+            class="square-32 mr-3"
+            data-cy="share-button" />
           <template #items>
             <NeoDropdownItem
-              v-clipboard:copy="currentURL"
+              v-clipboard:copy="currentCollectionUrl"
               @click.native="toast(`${$i18n.t('toast.urlCopy')}`)">
               {{ $i18n.t('share.copyLink') }}
             </NeoDropdownItem>
@@ -46,7 +49,7 @@
                 tag="div"
                 network="twitter"
                 :hashtags="hashtags"
-                :url="currentURL"
+                :url="currentCollectionUrl"
                 :title="sharingLabel"
                 twitter-user="KodaDot">
                 {{ $i18n.t('share.twitter') }}
@@ -55,56 +58,67 @@
           </template>
         </NeoDropdown>
 
-        <NeoDropdown append-to-body>
-          <NeoButton icon="ellipsis-vertical" class="square-32" />
+        <NeoDropdown v-if="!isOwner" append-to-body>
+          <NeoButton
+            icon="ellipsis-vertical"
+            class="square-32"
+            data-cy="more-actions-button" />
+
           <template #items>
-            <div v-if="isOwner">
+            <!-- related: https://github.com/kodadot/nft-gallery/issues/5792 -->
+            <!-- <div v-if="isOwner">
               <NeoDropdownItem>
                 {{ $i18n.t('moreActions.delete') }}
               </NeoDropdownItem>
               <NeoDropdownItem>
                 {{ $i18n.t('moreActions.customize') }}
               </NeoDropdownItem>
-            </div>
-            <div v-else>
+            </div> -->
+            <div>
               <NeoDropdownItem disabled>
-                {{ $i18n.t('moreActions.reportNFT') }}
-              </NeoDropdownItem>
-              <NeoDropdownItem disabled>
-                <div class="is-flex">
-                  {{ $i18n.t('moreActions.download') }}
-                  <b-icon icon="download" class="pl-3" />
-                </div>
+                {{ $i18n.t('moreActions.reportCollection') }}
               </NeoDropdownItem>
             </div>
           </template>
         </NeoDropdown>
       </div>
     </div>
-    <b-modal v-model="QRModalActive">
+    <NeoModal v-model="QRModalActive" @close="QRModalActive = false">
       <div class="card">
         <header class="card-header">
           <p class="card-header-title">{{ collection?.name }}</p>
         </header>
         <div class="card-content">
-          <QRCode :text="currentURL" color="#db2980" bg-color="#000" />
+          <QRCode
+            :text="currentCollectionUrl"
+            color="#db2980"
+            bg-color="#000" />
         </div>
       </div>
-    </b-modal>
+    </NeoModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { NeoButton, NeoDropdown, NeoDropdownItem } from '@kodadot1/brick'
+import {
+  NeoButton,
+  NeoDropdown,
+  NeoDropdownItem,
+  NeoModal,
+} from '@kodadot1/brick'
 import { isOwner as checkOwner } from '@/utils/account'
 import { useCollectionMinimal } from '@/components/collection/utils/useCollectionDetails'
 import useIdentity from '@/components/identity/utils/useIdentity'
 
 const route = useRoute()
 const { accountId } = useAuth()
+const { urlPrefix } = usePrefix()
 const { $i18n, $buefy } = useNuxtApp()
 const collectionId = computed(() => route.params.id)
-const currentURL = computed(() => window.location.href)
+const currentCollectionUrl = computed(
+  () =>
+    `${window.location.origin}/${urlPrefix.value}/collection/${collectionId.value}`
+)
 const { collection } = useCollectionMinimal({
   collectionId: collectionId.value,
 })

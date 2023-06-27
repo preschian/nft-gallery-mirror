@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="columns mb-0">
-      <b-field class="column is-8 mb-0 mr-2" :class="searchColumnClass">
+      <NeoField class="column is-8 mb-0 mr-2" :class="searchColumnClass">
         <b-button
           v-if="!hideFilter"
           icon-left="filter"
@@ -29,8 +29,8 @@
             <PriceRange inline />
           </div>
         </div>
-      </b-field>
-      <b-field
+      </NeoField>
+      <NeoField
         v-if="!hideFilter"
         expanded
         position="is-right"
@@ -42,29 +42,8 @@
           class="is-hidden-tablet mr-2"
           @click="isVisible = !isVisible" />
         <slot />
-      </b-field>
+      </NeoField>
     </div>
-    <b-collapse
-      v-model="isVisible"
-      aria-id="sortAndFilter"
-      animation="opacitySlide">
-      <div class="columns mb-0">
-        <BasicSwitch
-          v-if="!isMoonRiver"
-          v-model="vListed"
-          class="is-flex column is-4"
-          :label="!replaceBuyNowWithYolo ? 'sort.listed' : 'YOLO'"
-          size="is-medium"
-          label-color="has-text-success" />
-      </div>
-      <SearchPriceRange
-        v-if="!hideFilter && !isMoonRiver"
-        :range="priceRange"
-        @input="priceRangeChange"></SearchPriceRange>
-      <div v-if="priceRangeDirty" class="is-size-7">
-        <PriceRange inline />
-      </div>
-    </b-collapse>
   </div>
 </template>
 
@@ -78,14 +57,16 @@ import {
   mixins,
 } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
-import { exist, existArray } from './exist'
+import { exist, existArray } from '@/utils/exist'
 import { SearchQuery } from './types'
 import PrefixMixin from '~/utils/mixins/prefixMixin'
 import KeyboardEventsMixin from '~/utils/mixins/keyboardEventsMixin'
 import { NFT_SQUID_SORT_CONDITION_LIST } from '@/utils/constants'
 import ChainMixin from '~/utils/mixins/chainMixin'
 import { usePreferencesStore } from '@/stores/preferences'
+import { NeoField } from '@kodadot1/brick'
 
+import { useCollectionSearch } from '@/components/search/utils/useCollectionSearch'
 const SearchPageRoutePathList = ['collectibles', 'items']
 
 @Component({
@@ -97,6 +78,7 @@ const SearchPageRoutePathList = ['collectibles', 'items']
     BasicImage: () => import('@/components/shared/view/BasicImage.vue'),
     PriceRange: () => import('@/components/shared/format/PriceRange.vue'),
     Money: () => import('@/components/shared/format/Money.vue'),
+    NeoField,
   },
 })
 export default class Search extends mixins(
@@ -310,14 +292,13 @@ export default class Search extends mixins(
     if (pathName && pathName !== this.$route.path) {
       return
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { page, ...restQuery } = this.$route.query
     this.$router
       .replace({
-        path: this.isExplorePage
-          ? String(this.$route.path)
-          : `/${this.urlPrefix}/explore/items`,
+        path: this.$route.path,
         query: {
-          page: '1',
-          ...this.$route.query,
+          ...restQuery,
           search: this.searchQuery || this.$route.query.search || undefined,
           ...queryCondition,
         },
@@ -328,7 +309,8 @@ export default class Search extends mixins(
   }
 
   redirectToGalleryPageIfNeed(params?: Record<string, string>) {
-    if (!this.isExplorePage) {
+    const { isCollectionSearchMode } = useCollectionSearch()
+    if (!this.isExplorePage && !isCollectionSearchMode.value) {
       this.$router.push({
         path: `/${this.urlPrefix}/explore/items`,
         query: {

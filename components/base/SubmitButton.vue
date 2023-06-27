@@ -1,21 +1,25 @@
 <template>
-  <b-field>
-    <b-button
+  <NeoField>
+    <NeoButton
+      :size="size"
       :type="type"
       :icon-left="icon"
       :disabled="disabled"
       :loading="loading"
       :expanded="expanded"
+      icon-pack="far"
       outlined
-      @click="$emit('click')">
+      @click.native="$emit('click')">
       <slot>
         {{ $t(label) }}
       </slot>
-    </b-button>
-  </b-field>
+    </NeoButton>
+  </NeoField>
 </template>
 
 <script setup lang="ts">
+import { NeoButton, NeoField } from '@kodadot1/brick'
+
 export interface Props {
   disabled?: boolean
   expanded?: boolean
@@ -23,12 +27,14 @@ export interface Props {
   label: string
   loading?: boolean
   type?: string
+  size?: 'small' | 'medium' | 'large'
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   loading: false,
   disabled: false,
   type: 'is-primary',
   icon: 'paper-plane',
+  size: 'medium',
 })
 </script>

@@ -8,7 +8,7 @@
         @error="hasError = true" />
     </div>
     <div class="field">
-      <b-field class="file is-primary">
+      <NeoField class="file is-primary">
         <b-upload
           ref="upload"
           v-model="file"
@@ -19,7 +19,7 @@
           @input="createInput">
           <section class="section">
             <div class="content has-text-centered">
-              <b-icon v-if="!file && !url" :icon="icon" size="is-large" />
+              <NeoIcon v-if="!file && !url" :icon="icon" size="large" />
               <div v-if="url && !isModelMedia" @click.prevent>
                 <MediaResolver
                   :src="url"
@@ -27,7 +27,7 @@
                   :preview="false"
                   @error="hasError = true" />
               </div>
-              <b-icon v-if="hasError" icon="eye-slash" size="is-large" />
+              <NeoIcon v-if="hasError" icon="eye-slash" size="large" />
               <p v-if="!file">
                 {{ label }}
               </p>
@@ -38,7 +38,7 @@
             </div>
           </section>
         </b-upload>
-      </b-field>
+      </NeoField>
       <transition v-if="fileSizeFailed" name="fade">
         <div class="help is-danger">
           {{ $t('tooltip.failedMaxSize') }}
@@ -55,14 +55,15 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Ref, Vue } from 'nuxt-property-decorator'
-import Tooltip from '@/components/shared/Tooltip.vue'
 import MediaResolver from '@/components/media/MediaResolver.vue'
 import { MAX_UPLOADED_FILE_SIZE } from '@/utils/constants'
+import { NeoField, NeoIcon } from '@kodadot1/brick'
 
 @Component({
   components: {
-    Tooltip,
     MediaResolver,
+    NeoField,
+    NeoIcon,
   },
 })
 export default class DropUpload extends Vue {

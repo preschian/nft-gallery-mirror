@@ -35,7 +35,7 @@
         <RoyaltyForm v-if="hasRoyalty" key="royalty" v-bind.sync="royalty" />
       </template>
       <template #footer>
-        <b-field key="advanced">
+        <NeoField key="advanced">
           <CollapseWrapper
             v-if="base.edition > 1"
             visible="mint.expert.show"
@@ -46,30 +46,29 @@
               class="mt-3"
               label="mint.expert.postfix" />
           </CollapseWrapper>
-        </b-field>
-        <b-field key="deposit">
+        </NeoField>
+        <NeoField key="deposit">
           <p class="has-text-weight-medium is-size-6 has-text-info">
             {{ $t('mint.deposit') }}:
             <Money :value="deposit" :token-id="tokenId" inline />
           </p>
-        </b-field>
-        <b-field key="balance">
-          <AccountBalance
-            :token-id="feesToken === 'KSM' ? tokenId : undefined" />
-        </b-field>
-        <b-field key="token">
+        </NeoField>
+        <NeoField key="balance">
+          <AccountBalance />
+        </NeoField>
+        <NeoField key="token">
           <MultiPaymentFeeButton :account-id="accountId" :prefix="urlPrefix" />
-        </b-field>
-        <b-field
+        </NeoField>
+        <NeoField
           key="submit"
-          type="is-danger"
+          variant="danger"
           :message="balanceNotEnoughMessage">
           <SubmitButton
             expanded
             label="mint.submit"
             :loading="isLoading"
             @click="submit()" />
-        </b-field>
+        </NeoField>
       </template>
     </BaseTokenForm>
   </div>
@@ -79,7 +78,8 @@
 import ChainMixin from '@/utils/mixins/chainMixin'
 import { notificationTypes, showNotification } from '@/utils/notification'
 import shouldUpdate from '@/utils/shouldUpdate'
-import { Attribute, Interaction } from '@kodadot1/minimark'
+import { Interaction } from '@kodadot1/minimark/v1'
+import { Attribute } from '@kodadot1/minimark/common'
 
 import { onApiConnect } from '@kodadot1/sub-api'
 import { Component, Prop, Ref, Watch, mixins } from 'nuxt-property-decorator'
@@ -99,8 +99,9 @@ import { Royalty } from '@/utils/royalty'
 import { fetchCollectionMetadata } from '@/utils/ipfs'
 import ApiUrlMixin from '@/utils/mixins/apiUrlMixin'
 import { usePreferencesStore } from '@/stores/preferences'
-import { MintedCollectionBasilisk } from '~~/composables/transaction/types'
 import { Token, getBalance, getDeposit, getFeesToken } from './utils'
+import { MintedCollection } from '@/composables/transaction/types'
+import { NeoField } from '@kodadot1/brick'
 
 const components = {
   CustomAttributeInput: () =>
@@ -119,6 +120,7 @@ const components = {
     import('@/components/bsx/specific/MultiPaymentFeeButton.vue'),
   TokenBalanceInput: () =>
     import('@/components/bsx/input/TokenBalanceInput.vue'),
+  NeoField,
 }
 
 @Component({ components })
@@ -132,7 +134,7 @@ export default class CreateToken extends mixins(
   @Prop({ type: Boolean, default: false }) showExplainerText!: boolean
   private preferencesStore = usePreferencesStore()
 
-  public base: BaseTokenType<MintedCollectionBasilisk> = {
+  public base: BaseTokenType = {
     name: '',
     file: null,
     description: '',
@@ -140,7 +142,7 @@ export default class CreateToken extends mixins(
     edition: 1,
     secondFile: null,
   }
-  public collections: MintedCollectionBasilisk[] = []
+  public collections: MintedCollection[] = []
   public postfix = true
   public deposit = '0'
   public attributes: Attribute[] = []
@@ -286,6 +288,8 @@ export default class CreateToken extends mixins(
           price: this.price,
           postfix: this.postfix,
           tags: this.attributes,
+          royalty: this.royalty,
+          hasRoyalty: this.hasRoyalty,
         },
       })
     } catch (e) {

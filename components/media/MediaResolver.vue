@@ -2,6 +2,7 @@
   <component
     :is="resolveComponent"
     v-if="src"
+    style="height: 100%"
     :src="src"
     :poster="poster || placeholder"
     :description="description"
@@ -33,13 +34,9 @@ const components = {
   Media: defineAsyncComponent(() => import('./type/UnknownMedia.vue')),
 }
 
-const { isDarkMode } = useTheme()
+const { placeholder } = useTheme()
 
 const resolveComponent = computed(() => {
   return components[resolveMedia(props.mimeType) + SUFFIX]
-})
-
-const placeholder = computed(() => {
-  return isDarkMode.value ? '/placeholder.webp' : '/placeholder-white.webp'
 })
 </script>

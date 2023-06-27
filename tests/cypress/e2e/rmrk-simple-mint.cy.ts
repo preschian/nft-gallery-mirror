@@ -13,7 +13,12 @@ describe('simple mint in rmrk', () => {
     cy.waitForNetworkIdle('POST', '*', 1000)
 
     // fee should zero at first
-    cy.get('[data-cy="fee"] span').should('have.text', '\n    0\n    KSM\n  ')
+    cy.get('[data-cy="fee"]')
+      .invoke('text')
+      .then((text) => {
+        const cleanedText = text.trim().replace(/\s+/g, ' ')
+        expect(cleanedText).to.equal('0 KSM')
+      })
 
     // upload
     cy.get('[data-cy="input-upload"] [type="file"]').attachFile(
@@ -21,55 +26,45 @@ describe('simple mint in rmrk', () => {
     )
 
     // name
-    cy.get('[data-cy="input-name"]').type('Hello, World!')
+    cy.get('[data-cy="input-name"] input').type('Hello, World!')
 
     // check symbol
-    cy.get('[data-cy="input-symbol"]').clear().type('HELLOWORLDASDF')
+    cy.get('[data-cy="input-symbol"] input').clear().type('HELLOWORLDASDF')
     cy.get('[data-cy="input-symbol"] input').should('have.value', 'HELLOWORLD')
 
     // description
     cy.get('[data-cy="input-description"]').type('this is some description')
 
-    // check edition
-    cy.get('[data-cy="input-edition"] .control.minus button').click({
-      force: true,
-    })
     cy.get('[data-cy="input-edition"] input').should('have.value', 1)
     cy.get('[data-cy="input-advance-settings"]').should('not.exist')
-    cy.get('[data-cy="input-edition"] .control.plus button').click().click()
+    cy.get('[data-cy="input-edition"] input').clear().type('3')
     cy.get('[data-cy="input-edition"] input').should('have.value', 3)
     cy.get('[data-cy="input-advance-settings"]').should('exist')
 
     // check tags
-    cy.get('[data-cy="input-tags"]').type('tag1, tag2, tag3,')
-    cy.get('[data-cy="input-tags"] [title="tag1"]').should('exist')
-    cy.get('[data-cy="input-tags"] [title="tag2"]').should('exist')
-    cy.get('[data-cy="input-tags"] [title="tag3"]').should('exist')
-    cy.get('[data-cy="input-tags"] [title="tag1"] a').click()
-    cy.get('[data-cy="input-tags"] [title="tag2"] a').click()
-    cy.get('[data-cy="input-tags"] [title="tag3"] a').click()
-    cy.get('[data-cy="input-tags"] [title="tag1"]').should('not.exist')
-    cy.get('[data-cy="input-tags"] [title="tag2"]').should('not.exist')
-    cy.get('[data-cy="input-tags"] [title="tag3"]').should('not.exist')
-    cy.get('[data-cy="input-tags"]').type('tag1{enter}tag2{enter}tag3{enter}')
-    cy.get('[data-cy="input-tags"] [title="tag1"]').should('exist')
-    cy.get('[data-cy="input-tags"] [title="tag2"]').should('exist')
-    cy.get('[data-cy="input-tags"] [title="tag3"]').should('exist')
+    cy.getCy('input-tags').type('tag1, tag2, tag3,')
+    cy.getCy('input-tags').should('contain.text', 'tag1')
+    cy.getCy('input-tags').should('contain.text', 'tag2')
+    cy.getCy('input-tags').should('contain.text', 'tag3')
+    cy.getCy('input-tags')
+      .find('.o-inputit__item:eq(0) .o-icon--clickable')
+      .click()
+    cy.getCy('input-tags')
+      .find('.o-inputit__item:eq(0) .o-icon--clickable')
+      .click()
+    cy.getCy('input-tags')
+      .find('.o-inputit__item:eq(0) .o-icon--clickable')
+      .click()
+    cy.getCy('input-tags').should('not.contain.text', 'tag1')
+    cy.getCy('input-tags').should('not.contain.text', 'tag2')
+    cy.getCy('input-tags').should('not.contain.text', 'tag3')
+    cy.getCy('input-tags').type('tag1{enter}tag2{enter}tag3{enter}')
+    cy.getCy('input-tags').should('contain.text', 'tag1')
+    cy.getCy('input-tags').should('contain.text', 'tag2')
+    cy.getCy('input-tags').should('contain.text', 'tag3')
 
     // price
     cy.get('[data-cy="input-price"] input').clear().type('123')
-
-    // password, if exists
-    cy.get('body').then(($body) => {
-      if ($body.find('[data-cy="input-password"]').length) {
-        cy.get('[data-cy="input-password"]').type('1234five')
-        cy.get('[data-cy="input-password"] .is-clickable').click()
-        cy.get('[data-cy="input-password"] input').should(
-          'have.value',
-          '1234five'
-        )
-      }
-    })
 
     // advance settings
     cy.get('[data-cy="input-advance-settings"]').find('a').click()
@@ -104,10 +99,12 @@ describe('simple mint in rmrk', () => {
     cy.get('[data-cy="input-tos"] [type="checkbox"]').check({ force: true })
     cy.get('[data-cy="input-tos"] [type="checkbox"]').should('be.checked')
 
-    // uncomment once this resolved https://github.com/kodadot/nft-gallery/issues/3966
-    // cy.get('[data-cy="fee"] span').should(
-    //   'not.have.text',
-    //   '\n    0\n    KSM\n  '
-    // )
+    // related issue https://github.com/kodadot/nft-gallery/issues/3966
+    cy.get('[data-cy="fee"]')
+      .invoke('text')
+      .then((text) => {
+        const cleanedText = text.trim().replace(/\s+/g, ' ')
+        expect(cleanedText).to.not.equal('0 KSM')
+      })
   })
 })

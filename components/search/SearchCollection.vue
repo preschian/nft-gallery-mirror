@@ -1,6 +1,6 @@
 <template>
   <div class="content field-group-container">
-    <b-field grouped group-multiline>
+    <NeoField grouped group-multiline>
       <Sort
         class="control"
         :value="sortBy"
@@ -12,16 +12,16 @@
         :class="{
           'is-flex-grow-1 ': !hideSearch,
         }">
-        <b-field v-if="!hideSearch" expanded class="control">
-          <b-input
+        <NeoField v-if="!hideSearch" expanded class="control">
+          <NeoInput
             v-model="searchQuery"
             placeholder="Search..."
             type="search"
             icon="search"
             expanded
             class="input-search">
-          </b-input>
-        </b-field>
+          </NeoInput>
+        </NeoField>
         <BasicSwitch
           v-if="!isMoonRiver"
           v-model="vListed"
@@ -41,23 +41,24 @@
           :message="$t('tooltip.own')" />
         <slot />
       </div>
-    </b-field>
+    </NeoField>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Emit, Prop, mixins } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
-import { exist } from './exist'
+import { exist } from '@/utils/exist'
 import KeyboardEventsMixin from '~/utils/mixins/keyboardEventsMixin'
 import { usePreferencesStore } from '@/stores/preferences'
+import { NeoField, NeoInput } from '@kodadot1/brick'
 
 @Component({
   components: {
     Sort: () => import('./SearchSortDropdown.vue'),
-    TypeTagInput: () => import('./TypeTagInput.vue'),
-    Pagination: () => import('@/components/rmrk/Gallery/Pagination.vue'),
     BasicSwitch: () => import('@/components/shared/form/BasicSwitch.vue'),
+    NeoField,
+    NeoInput,
   },
 })
 export default class SearchCollection extends mixins(KeyboardEventsMixin) {

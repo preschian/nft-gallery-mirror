@@ -1,6 +1,6 @@
 <template>
   <div class="block">
-    <b-collapse
+    <NeoCollapse
       class="card bordered"
       animation="slide"
       aria-id="contentIdForHistory"
@@ -14,7 +14,7 @@
             {{ $t(label) }}
           </p>
           <a class="card-header-icon">
-            <b-icon :icon="props.open ? 'chevron-up' : 'chevron-down'" />
+            <NeoIcon :icon="props.open ? 'chevron-up' : 'chevron-down'" />
           </a>
         </div>
       </template>
@@ -23,11 +23,13 @@
           <slot></slot>
         </div>
       </div>
-    </b-collapse>
+    </NeoCollapse>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { NeoCollapse, NeoIcon } from '@kodadot1/brick'
+
 withDefaults(
   defineProps<{
     label: string

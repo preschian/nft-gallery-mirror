@@ -1,14 +1,15 @@
 <template>
   <section>
     <Loader v-model="isLoading" :status="status" />
-    <form>
+    <form @submit.prevent>
       <p class="title is-size-3">
         {{ $i18n.t('identity.set') }}
-        <b-tooltip
+        <NeoTooltip
           :label="$i18n.t('identity.fundsReserve')"
-          position="is-bottom">
-          <b-icon icon="info-circle" />
-        </b-tooltip>
+          position="bottom"
+          multiline>
+          <NeoIcon icon="info-circle" pack="fas" />
+        </NeoTooltip>
       </p>
 
       <p v-if="accountId" class="subtitle is-size-6">
@@ -17,15 +18,14 @@
         <Money :value="balance" inline />
       </p>
 
-      <b-field label="Handle">
-        <b-input
+      <NeoField label="Handle">
+        <NeoInput
           v-model="identity.display"
           :placeholder="$i18n.t('identity.onChainPlaceholder')"
           :maxlength="inputLengthLimit"
           required
-          :validation-message="$i18n.t('identity.handleRequired')">
-        </b-input>
-      </b-field>
+          :validation-message="$i18n.t('identity.handleRequired')" />
+      </NeoField>
 
       <BasicInput
         v-model="identity.legal"
@@ -38,7 +38,7 @@
         v-model="identity.email"
         type="email"
         :maxlength="inputLengthLimit"
-        :label="$i18n.t('email')"
+        :label="$i18n.t('Email')"
         placeholder="somebody@example.com"
         expanded />
 
@@ -71,7 +71,8 @@
         expanded />
 
       <p class="subtitle is-size-6">
-        {{ $i18n.t('identity.deposit') }} <Money :value="deposit" inline />
+        {{ $i18n.t('identity.deposit') }}
+        <Money :value="deposit" inline />
       </p>
 
       <SubmitButton
@@ -89,6 +90,8 @@ import { notificationTypes, showNotification } from '@/utils/notification'
 import { onApiConnect } from '@kodadot1/sub-api'
 import { hexToString, isHex } from '@polkadot/util'
 import { Data } from '@polkadot/types'
+import { NeoField, NeoIcon, NeoInput, NeoTooltip } from '@kodadot1/brick'
+
 const Auth = defineAsyncComponent(() => import('@/components/shared/Auth.vue'))
 const BasicInput = defineAsyncComponent(
   () => import('@/components/shared/form/BasicInput.vue')
@@ -105,10 +108,11 @@ const SubmitButton = defineAsyncComponent(
 
 type IdentityFields = Record<string, string>
 
-const { $store, $i18n } = useNuxtApp()
+const { $i18n } = useNuxtApp()
+import { useIdentityStore } from '@/stores/identity'
+
 const { apiUrl, apiInstance } = useApi()
-const { urlPrefix } = usePrefix()
-const { accountId } = useAuth()
+const { accountId, balance } = useAuth()
 const { howAboutToExecute, isLoading, initTransactionLoader, status } =
   useMetaTransaction()
 const identity = ref<Record<string, string>>({
@@ -121,19 +125,17 @@ const identity = ref<Record<string, string>>({
   legal: '',
 })
 const deposit = ref('0')
-
-const inputLengthLimit = computed(() => {
-  if (urlPrefix.value === 'bsx' || urlPrefix.value === 'snek') {
-    return 32
-  }
-  return undefined
-})
+const inputLengthLimit = ref(32)
 
 onBeforeMount(async () => {
   onApiConnect(apiUrl.value, async (api) => {
     deposit.value = api.consts.identity?.basicDeposit?.toString()
     identity.value = await fetchIdentity(accountId.value)
   })
+  const identityStore = useIdentityStore()
+  if (Number(identityStore.getAuthBalance) === 0) {
+    identityStore.fetchBalance({ address: accountId.value })
+  }
 })
 
 const enhanceIdentityData = (): Record<string, any> => {
@@ -187,8 +189,6 @@ const onSuccess = (block: string) => {
     notificationTypes.success
   )
 }
-
-const balance = computed(() => $store.getters.getAuthBalance)
 
 const disabled = computed(
   () => Object.values(identity.value).filter((val) => val).length === 0

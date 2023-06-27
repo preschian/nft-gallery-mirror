@@ -1,7 +1,7 @@
 <template>
   <div class="spotlight">
     <Loader :value="isLoading" />
-    <b-table
+    <NeoTable
       :data="computedData"
       :current-page="currentPage"
       :default-sort="[sortBy.field, sortBy.value]"
@@ -16,20 +16,13 @@
       @page-change="onPageChange"
       @sort="onSort">
       <template #top-left>
-        <b-field class="mb-0">
+        <NeoField class="mb-0">
           <div class="control is-flex">
-            <b-switch v-model="onlyWithIdentity" :rounded="false">
+            <NeoSwitch v-model="onlyWithIdentity" :rounded="false">
               {{ $t('spotlight.filter_accounts') }}
-            </b-switch>
-            <!-- <b-switch
-              v-if="isLogIn"
-              class="gallery-switch"
-              v-model="hasPassionFeed"
-              :rounded="false">
-              {{ $t('passion') }}
-            </b-switch> -->
+            </NeoSwitch>
           </div>
-        </b-field>
+        </NeoField>
         <b-button
           class="ml-2 magicBtn is-bordered-light"
           :title="$t('tooltip.random')"
@@ -38,7 +31,7 @@
           @click="goToRandomPage">
         </b-button>
       </template>
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="id"
@@ -48,62 +41,62 @@
             <Identity :address="props.row.id" />
           </nuxt-link>
         </template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="sold"
         :label="$t('spotlight.sold')"
         sortable>
         <template v-if="!isLoading">{{ props.row.sold }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         cell-class="is-vcentered"
         field="unique"
         :label="$t('spotlight.unique')"
         sortable>
         <template #header="{ column }">
-          <b-tooltip :label="$t('spotlight.uniqueItemsTooltip')" dashed>
+          <NeoTooltip :label="$t('spotlight.uniqueItemsTooltip')" dashed>
             {{ column.label }}
-          </b-tooltip>
+          </NeoTooltip>
         </template>
         <template v-if="!isLoading" #default="props">{{
           props.row.unique
         }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         cell-class="is-vcentered"
         field="uniqueCollectors"
         :label="$t('spotlight.uniqueCollectors')"
         sortable>
         <template #header="{ column }">
-          <b-tooltip :label="$t('spotlight.uniqueCollectorsTooltip')" dashed>
+          <NeoTooltip :label="$t('spotlight.uniqueCollectorsTooltip')" dashed>
             {{ column.label }}
-          </b-tooltip>
+          </NeoTooltip>
         </template>
         <template v-if="!isLoading" #default="props">{{
           props.row.uniqueCollectors
         }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="total"
         :label="$t('spotlight.total')"
         sortable>
         <template v-if="!isLoading">{{ props.row.total }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="average"
@@ -112,20 +105,20 @@
         <template v-if="!isLoading">
           <Money :value="props.row.averagePrice" inline hide-unit />
         </template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="collections"
         :label="$t('spotlight.count')"
         sortable>
         <template v-if="!isLoading">{{ props.row.count }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered"
         field="volume"
@@ -134,37 +127,37 @@
         <template v-if="!isLoading"
           ><Money :value="props.row.volume" inline hide-unit
         /></template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         cell-class="is-vcentered"
         field="rank"
         :label="$t('spotlight.score')"
         numeric>
         <template #header="{ column }">
-          <b-tooltip :label="$t('spotlight.scoreCalc')" dashed>
+          <NeoTooltip :label="$t('spotlight.scoreCalc')" dashed>
             {{ column.label }}
-          </b-tooltip>
+          </NeoTooltip>
         </template>
         <template v-if="!isLoading" #default="props">{{
           Math.ceil(props.row.rank * 100) / 100
         }}</template>
-        <b-skeleton :active="isLoading"> </b-skeleton>
-      </b-table-column>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
+      </NeoTableColumn>
 
-      <b-table-column
+      <NeoTableColumn
         v-slot="props"
         cell-class="is-vcentered has-text-centered history"
         field="soldHistory"
         :label="$t('spotlight.soldHistory')">
-        <b-skeleton :active="isLoading" />
+        <NeoSkeleton :active="isLoading" />
         <PulseChart
           v-if="!isLoading"
           :id="props.row.id"
           :labels="props.row.soldHistory.xAxisList"
           :values="props.row.soldHistory.yAxisList" />
-      </b-table-column>
+      </NeoTableColumn>
 
       <template #detail="props">
         <SpotlightDetail v-if="props.row.total" :account="props.row.id" />
@@ -172,12 +165,12 @@
       </template>
 
       <template #empty>
-        <div v-if="!isLoading" class="has-text-centered">
+        <div v-if="!isLoading" class="w-100 has-text-centered">
           {{ $t('spotlight.empty') }}
         </div>
-        <b-skeleton :active="isLoading"> </b-skeleton>
+        <NeoSkeleton :active="isLoading"> </NeoSkeleton>
       </template>
-    </b-table>
+    </NeoTable>
   </div>
 </template>
 
@@ -185,6 +178,14 @@
 import { Component, Watch, mixins } from 'nuxt-property-decorator'
 import { Debounce } from 'vue-debounce-decorator'
 import { GenericAccountId } from '@polkadot/types/generic/AccountId'
+import {
+  NeoField,
+  NeoSkeleton,
+  NeoSwitch,
+  NeoTable,
+  NeoTableColumn,
+  NeoTooltip,
+} from '@kodadot1/brick'
 
 import {
   axisLize,
@@ -195,7 +196,7 @@ import {
   today,
 } from '@/components/series/utils'
 import { SortType } from '@/components/series/types'
-import { exist } from '@/components/search/exist'
+import { exist } from '@/utils/exist'
 import { getRandomIntInRange } from '@/components/rmrk/utils'
 
 import KeyboardEventsMixin from '@/utils/mixins/keyboardEventsMixin'
@@ -216,6 +217,12 @@ const components = {
   Money: () => import('@/components/shared/format/Money.vue'),
   SpotlightDetail: () => import('./SpotlightDetail.vue'),
   Loader: () => import('@/components/shared/Loader.vue'),
+  NeoSkeleton,
+  NeoField,
+  NeoSwitch,
+  NeoTable,
+  NeoTableColumn,
+  NeoTooltip,
 }
 
 @Component({ components })

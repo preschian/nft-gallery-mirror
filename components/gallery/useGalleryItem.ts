@@ -1,13 +1,23 @@
 import { sanitizeIpfsUrl } from '@/utils/ipfs'
 import { getMimeType } from '@/utils/gallery/media'
 import { useHistoryStore } from '@/stores/history'
-import { getNftMetadata } from '@/composables/useNft'
+import { NftResources, getNftMetadata } from '@/composables/useNft'
 import useSubscriptionGraphql from '@/composables/useSubscriptionGraphql'
 import type { NFT } from '@/components/rmrk/service/scheme'
 import type { NFTWithMetadata } from '@/composables/useNft'
+import { Ref } from '@nuxt/bridge/dist/runtime/composables'
 
 interface NFTData {
   nftEntity?: NFTWithMetadata
+}
+
+export interface GalleryItem {
+  nft: Ref<NFT | undefined>
+  nftMimeType: Ref<string>
+  nftMetadata: Ref<NFTWithMetadata | undefined>
+  nftAnimation: Ref<string>
+  nftImage: Ref<string>
+  nftResources: Ref<NftResources[] | undefined>
 }
 
 const whichMimeType = async (data) => {
@@ -31,7 +41,7 @@ const whichAsset = (data) => {
   }
 }
 
-export const useGalleryItem = () => {
+export const useGalleryItem = (nftId?: string): GalleryItem => {
   const { $consola } = useNuxtApp()
   const historyStore = useHistoryStore()
   const nft = ref<NFT>()
@@ -39,13 +49,16 @@ export const useGalleryItem = () => {
   const nftAnimation = ref('')
   const nftMimeType = ref('')
   const nftMetadata = ref<NFTWithMetadata>()
+  const nftResources = ref<NftResources[]>()
 
   const { params } = useRoute()
+  const id = nftId || params.id
   // const { id: collectionID, item: id } = tokenIdToRoute(params.id)
 
   const queryPath = {
     rmrk: 'chain-rmrk',
-    rmrk2: 'chain-rmrk2',
+    ksm: 'chain-ksm',
+    stmn: 'chain-stmn',
   }
 
   const { urlPrefix } = usePrefix()
@@ -53,7 +66,7 @@ export const useGalleryItem = () => {
     queryName: 'nftById',
     queryPrefix: queryPath[urlPrefix.value],
     variables: {
-      id: params.id,
+      id,
     },
     options: {
       fetchPolicy: 'network-only',
@@ -61,7 +74,7 @@ export const useGalleryItem = () => {
   })
 
   useSubscriptionGraphql({
-    query: `   nft: nftEntityById(id: "${params.id}") {
+    query: `   nft: nftEntityById(id: "${id}") {
       id
       currentOwner
       price
@@ -76,14 +89,24 @@ export const useGalleryItem = () => {
   watch(data as unknown as NFTData, async (newData) => {
     const nftEntity = newData?.nftEntity
     if (!nftEntity) {
-      $consola.log(`NFT with id ${params.id} not found. Fallback to RPC Node`)
+      $consola.log(`NFT with id ${id} not found. Fallback to RPC Node`)
       return
     }
 
     nft.value = nftEntity
 
+    const resources = nftEntity.resources?.map((resource) => {
+      return {
+        ...resource,
+        src: sanitizeIpfsUrl(resource.meta.animationUrl || resource.src),
+        thumb: sanitizeIpfsUrl(resource.thumb || resource.meta.image),
+        animation: sanitizeIpfsUrl(resource.meta.animationUrl),
+      }
+    })
+
     nftMetadata.value = await getNftMetadata(nftEntity, urlPrefix.value)
     nftMimeType.value = await whichMimeType(nftMetadata.value)
+    nftResources.value = resources
 
     const asset = whichAsset(nftMetadata.value)
     nftImage.value = asset.image
@@ -109,5 +132,6 @@ export const useGalleryItem = () => {
     nftAnimation,
     nftMimeType,
     nftMetadata,
+    nftResources,
   }
 }

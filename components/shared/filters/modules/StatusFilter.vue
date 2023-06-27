@@ -1,5 +1,5 @@
 <template>
-  <b-collapse
+  <NeoCollapse
     :open="expanded"
     animation="slide"
     class="border-bottom"
@@ -10,26 +10,26 @@
           {{ $t('offer.status') }}
         </p>
         <a class="card-header-icon">
-          <b-icon :icon="open ? 'minus' : 'plus'" />
+          <NeoIcon :icon="open ? 'minus' : 'plus'" />
         </a>
       </div>
     </template>
     <div class="p-4">
-      <b-field>
+      <NeoField>
         <NeoCheckbox v-model="listed"> {{ $t('sort.listed') }}</NeoCheckbox>
-      </b-field>
-      <b-field>
+      </NeoField>
+      <NeoField>
         <NeoCheckbox v-model="owned" :disabled="!accountId">
-          {{ $t('sort.own') }}</NeoCheckbox
-        >
-      </b-field>
+          {{ $t('sort.own') }}
+        </NeoCheckbox>
+      </NeoField>
     </div>
-  </b-collapse>
+  </NeoCollapse>
 </template>
 
 <script lang="ts" setup>
-import { NeoCheckbox } from '@kodadot1/brick'
 import { useExploreFiltersStore } from '@/stores/exploreFilters'
+import { NeoCheckbox, NeoCollapse, NeoField, NeoIcon } from '@kodadot1/brick'
 
 const exploreFiltersStore = useExploreFiltersStore()
 const route = useRoute()
