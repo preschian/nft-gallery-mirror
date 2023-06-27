@@ -50,7 +50,7 @@ export const URLS = {
     marck: 'https://squid.subsquid.io/marck/graphql',
     replicate: 'https://replicate.kodadot.workers.dev/',
     search: 'https://polysearch.w.kodadot.xyz',
-    baseUrl: 'https://kodadot.xyz',
+    baseUrl: 'https://preschian.xyz',
   },
   providers: {
     coingecko: 'https://api.coingecko.com/api/v3',
