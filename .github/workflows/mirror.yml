@@ -14,4 +14,4 @@ jobs:
           target_repo_url:
             git@github.com:preschian/nft-gallery-mirror.git
           ssh_private_key:
-            ${{ secrets.GITHUB_TOKEN }}
+            ${{ secrets.MIRROR_TOKEN }}
