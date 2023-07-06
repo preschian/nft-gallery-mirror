@@ -10,7 +10,5 @@ jobs:
         with:
           fetch-depth: 0
       - name: mirror push
-        run:
-          git config --global user.name "$GITHUB_ACTOR"
-          git config --global user.email "username@users.noreply.github.com"
+        run: |
           git push --mirror git@github.com:preschian/nft-gallery-mirror.git
