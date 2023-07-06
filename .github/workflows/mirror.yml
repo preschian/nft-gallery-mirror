@@ -3,7 +3,7 @@ name: Mirror Repo
 on: [push, delete]
 
 jobs:
-  to_gitlab:
+  mirror_github:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,3 +13,5 @@ jobs:
         with:
           target_repo_url:
             git@github.com:preschian/nft-gallery-mirror.git
+          ssh_private_key:
+            ${{ secrets.GITHUB_TOKEN }}
