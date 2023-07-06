@@ -10,7 +10,11 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18",
     "nuxt": "^3.6.2"
+  },
+  "dependencies": {
+    "@kodadot1/uniquery": "^0.3.1-rc.0"
   }
 }
