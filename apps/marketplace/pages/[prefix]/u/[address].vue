@@ -6,7 +6,7 @@
 
     <h1 class="mt-4 font-bold">Collected NFTs from {{ route.params.address }}</h1>
     <div class="grid grid-cols-5 gap-4" >
-      <a v-for="collection in data.data.collections" :href="`/${prefix}/gallery/${collection.id}`" class="hover:p-4" :key="collection.id">
+      <a v-for="collection in data.data.collections" :href="`/${prefix}/gallery/${collection.nfts[0]?.id}`" class="hover:p-4" :key="collection.id">
         <div>{{ collection.name }}</div>
         <img :src="ipfsGateway(collection.meta.image)" :alt="collection.name" class="w-full aspect-square" width="100%" height="100%" />
       </a>
@@ -46,6 +46,9 @@ const {data} = await useFetch(url, {
           id
           image
         }
+        nfts {
+          id
+        }
       }
     }
     `
@@ -53,6 +56,8 @@ const {data} = await useFetch(url, {
 })
 
 const ipfsGateway = (ipfs) => {
+  if (!ipfs) return ipfs
+
   return ipfs.replace('ipfs://ipfs/', 'https://kodadot-ultra.myfilebase.com/ipfs/')
 }
 
