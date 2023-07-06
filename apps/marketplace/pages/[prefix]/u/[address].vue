@@ -60,12 +60,18 @@ const ipfsGateway = (ipfs) => {
   return ipfs.replace('ipfs://ipfs/', 'https://kodadot-ultra.myfilebase.com/ipfs/')
 }
 
+const ogImage = (name, price, image) => {
+  return `https://og-image-green-seven.vercel.app/${name}?price=${price}&image=${image}`
+}
+
 useServerSeoMeta({
   ogType: 'website',
-  ogTitle: `${address} Collections`,
-  ogDescription: 'NFT Artist Profile on KodaDot | KodaDot - NFT Market Explorer',
-  ogImage: ipfsGateway(data.value.data.items[0]?.meta.image),
+  ogDescription: `${address} Collections`,
+  ogTitle: 'NFT Artist Profile on KodaDot | KodaDot - NFT Market Explorer',
+  ogImage: ogImage(address, 'Collected: ' + data.value.data.items.length, ipfsGateway(data.value.data.items[0]?.meta.image)),
   ogUrl: `https://preschian.xyz${route.fullPath}`,
+  twitterCard: 'summary_large_image',
+  twitterSite: '@KodaDot'
 })
 
 onMounted(() => {
