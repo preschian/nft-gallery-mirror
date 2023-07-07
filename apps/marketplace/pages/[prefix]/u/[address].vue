@@ -35,7 +35,7 @@ const {data} = await useFetch(url, {
   body: JSON.stringify({
     query: `
       {
-        items: nftEntities(where: {currentOwner_eq: "DY4SQF2iD456tH89aQtz5wv1EV3BbSW8wKKuMcwbmXaj1pM", burned_eq: false}, limit: 100) {
+        items: nftEntities(where: {currentOwner_eq: "${address}", burned_eq: false}, limit: 100) {
           id
           createdAt
           name
