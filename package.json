@@ -74,6 +74,7 @@
     "@kodadot1/sub-api": "^0.1.2",
     "@kodadot1/vuex-options": "0.1.5",
     "@nuxtjs/apollo": "^4.0.1-rc.5",
+    "@nuxtjs/color-mode": "3.3.0",
     "@nuxtjs/i18n": "^7.3.1",
     "@nuxtjs/sentry": "^7.3.0",
     "@nuxtjs/sitemap": "thisismydesign/sitemap-module#cd4dc22293b9b67e8ebb5b3c49840e67c108e312",
@@ -135,10 +136,9 @@
     "@babel/plugin-transform-runtime": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
     "@kevinmarrec/nuxt-pwa": "0.15.0",
-    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-27982868.cf7ca7b",
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge@3.0.0-28142286.528efb7",
     "@nuxt/test-utils": "^0.2.2",
     "@nuxt/types": "^2.17.0",
-    "@nuxtjs/color-mode": "^3.3.0",
     "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@rollup/plugin-graphql": "^1.1.0",
     "@sentry/webpack-plugin": "^1.20.1",
@@ -182,6 +182,9 @@
   "pnpm": {
     "overrides": {
       "@apollo/federation": "0.38.1"
+    },
+    "patchedDependencies": {
+      "@nuxtjs/color-mode@3.3.0": "patches/@nuxtjs__color-mode@3.3.0.patch"
     }
   }
 }
