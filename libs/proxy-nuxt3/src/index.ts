@@ -14,4 +14,11 @@ app.get('/:prefix/u/:address', (c) => {
   return fetch(`https://nft-gallery-mirror.pages.dev/${prefix}/u/${address}`)
 })
 
+app.get('/blog/*', (c) => {
+  // get url pathname
+  const pathname = new URL(c.req.url).pathname
+
+  return fetch(`https://nft-gallery-mirror.pages.dev${pathname}`)
+})
+
 export default app
