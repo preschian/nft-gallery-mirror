@@ -2,8 +2,8 @@
 module.exports = {
   theme: {
     container: {
-      center: true
-    }
+      center: true,
+    },
   },
   plugins: [],
   content: [
@@ -17,6 +17,6 @@ module.exports = {
     './app.{js,ts,vue}',
     './Error.{js,ts,vue}',
     './error.{js,ts,vue}',
-    './app.config.{js,ts}'
-  ]
+    './app.config.{js,ts}',
+  ],
 }

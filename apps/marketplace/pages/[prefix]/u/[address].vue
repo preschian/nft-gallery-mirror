@@ -10,9 +10,9 @@
     <div class="grid grid-cols-5 gap-4">
       <a
         v-for="item in data.data.items"
-        :href="`/${prefix}/gallery/${item.id}`"
-        class="hover:p-4"
-        :key="item.id">
+        :key="item.id"
+        :href="galleryDetailUrl(item.id)"
+        class="hover:p-4">
         <div class="truncate">{{ item.name }}</div>
         <img
           v-if="item.meta.image"
@@ -28,14 +28,14 @@
 </template>
 
 <script setup>
-import { getUrl, getClient } from '@kodadot1/uniquery'
+import { getUrl } from '@kodadot1/uniquery'
 
 const route = useRoute()
 const address = route.params.address
 const prefix = route.params.prefix
 
 const url = getUrl(prefix)
-const client = getClient(prefix)
+// const client = getClient(prefix)
 
 // const query = client.itemListByOwner(address)
 
@@ -76,6 +76,10 @@ const ogImage = (name, price, image) => {
   return `https://og-image-green-seven.vercel.app/${name}?price=${price}&image=${image}`
 }
 
+const galleryDetailUrl = (id) => {
+  return `/${prefix}/gallery/${id}`
+}
+
 useServerSeoMeta({
   ogType: 'website',
   ogDescription: `${address} Collections`,
@@ -83,7 +87,7 @@ useServerSeoMeta({
   ogImage: ogImage(
     address,
     'Collected: ' + data.value.data.items.length,
-    ipfsGateway(data.value.data.items[0]?.meta.image),
+    ipfsGateway(data.value.data.items[0]?.meta.image)
   ),
   ogUrl: `https://preschian.xyz${route.fullPath}`,
   twitterCard: 'summary_large_image',
