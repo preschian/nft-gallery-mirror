@@ -16,3 +16,9 @@ useHead({
   ],
 })
 </script>
+
+<style>
+* {
+  font-family: 'Work Sans', sans-serif;
+}
+</style>

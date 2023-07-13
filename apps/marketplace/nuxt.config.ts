@@ -17,5 +17,10 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: false },
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/content'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/content', '@nuxtjs/google-fonts'],
+  googleFonts: {
+    families: {
+      'Work+Sans': true,
+    },
+  },
 })
