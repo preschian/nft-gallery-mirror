@@ -14,6 +14,12 @@ export default defineNuxtConfig({
           content: 'Multi-chain NFT marketplace across Polkadot parachains',
         },
       ],
+      script: [
+        {
+          src: 'https://kit.fontawesome.com/54f29b7997.js',
+          crossorigin: 'anonymous',
+        },
+      ],
     },
   },
   devtools: { enabled: false },

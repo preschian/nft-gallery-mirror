@@ -1,44 +1,29 @@
 <template>
   <div class="p-10 border-t border-black bg-white">
-    <div class="flex items-start font-bold">
-      <div class="flex-1">
-        <p class="font-bold text-xl mb-4">Get The Latest KodaDot Updates</p>
-      </div>
-      <div class="flex-1">
-        <p class="font-bold text-xl mb-4">Incentives</p>
+    <div class="flex flex-col gap-8 items-start font-bold">
+      <!-- <div class="flex-1">
+        <p class="font-bold text-xl mb-2">Get The Latest KodaDot Updates</p>
+      </div> -->
+      <div class="flex-1 text-center w-full" v-for="footer in menuExternal">
+        <p class="font-bold text-xl mb-2">{{ footer.name }}</p>
         <div>
           <a
-            v-for="menu in menuIncentives"
+            v-for="menu in footer.menus"
             :href="menu.url"
-            class="flex flex-col capitalize font-normal">
-            {{ menu.name }}
+            class="flex flex-col capitalize font-normal"
+            :key="menu.url">
+            <div>
+              <span>{{ menu.name }}</span
+              >&nbsp;
+              <i
+                class="fas fa-arrow-up-right text-gray-500"
+                aria-hidden="true"></i>
+            </div>
           </a>
         </div>
       </div>
-      <div class="flex-1">
-        <p class="font-bold text-xl mb-4">Marketplace</p>
-        <div>
-          <a
-            v-for="menu in menuMarketplace"
-            :href="menu.url"
-            class="flex flex-col capitalize font-normal">
-            {{ menu.name }}
-          </a>
-        </div>
-      </div>
-      <div class="flex-1">
-        <p class="font-bold text-xl mb-4">KodaDot</p>
-        <div>
-          <a
-            v-for="menu in menuKodadot"
-            :href="menu.url"
-            class="flex flex-col capitalize font-normal">
-            {{ menu.name }}
-          </a>
-        </div>
-      </div>
-      <div class="flex-1">
-        <p class="font-bold text-xl mb-4">Join Our Community</p>
+      <div class="flex-1 text-center w-full">
+        <p class="font-bold text-xl mb-2">Join Our Community</p>
       </div>
     </div>
   </div>
@@ -93,6 +78,21 @@ const menuKodadot = [
   {
     name: 'press kit',
     url: 'https://github.com/kodadot/kodadot-presskit/tree/main/v3',
+  },
+]
+
+const menuExternal = [
+  {
+    name: 'Incentives',
+    menus: menuIncentives,
+  },
+  {
+    name: 'Marketplace',
+    menus: menuMarketplace,
+  },
+  {
+    name: 'KodaDot',
+    menus: menuKodadot,
   },
 ]
 </script>

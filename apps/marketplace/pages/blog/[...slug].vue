@@ -8,7 +8,7 @@ useServerSeoMeta({
 </script>
 
 <template>
-  <main class="article">
+  <main class="article m-8">
     <ContentDoc v-slot="{ doc }">
       <div class="flex justify-between text-gray-500 text-xl">
         <span>{{ doc.category }}</span>
@@ -25,7 +25,6 @@ useServerSeoMeta({
 
 <style>
 .article {
-  margin: 4rem auto;
   max-width: 40rem;
 }
 

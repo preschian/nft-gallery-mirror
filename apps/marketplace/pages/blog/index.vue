@@ -25,9 +25,9 @@ const truncate = (text: string) => {
 </script>
 
 <template>
-  <main class="content">
-    <h1 class="font-bold text-5xl text-center">KodaDot Blog</h1>
-    <p class="font-medium text-2xl text-center mt-4 mb-16">
+  <main class="content m-8">
+    <h1 class="font-bold text-4xl text-center">KodaDot Blog</h1>
+    <p class="font-medium text-xl text-center mt-4 mb-8">
       Let’s explore the NFT universe
     </p>
 
@@ -36,13 +36,13 @@ const truncate = (text: string) => {
         :href="article._path"
         v-for="article in list"
         :key="article._path"
-        class="border flex mb-8">
+        class="border flex flex-col mb-8">
         <div>
           <img class="aspect-video" :src="article.image" :alt="article.title" />
         </div>
-        <div class="p-8 w-full min-w-[20rem] flex flex-col justify-between">
-          <p class="font-bold text-3xl">{{ article.title }}</p>
-          <p>{{ truncate(article.description) }}</p>
+        <div class="p-6 w-full min-w-[20rem] flex flex-col justify-between">
+          <p class="font-bold text-xl">{{ article.title }}</p>
+          <p class="my-4">{{ truncate(article.description) }}</p>
 
           <div>
             <div class="border inline-block px-4 rounded-3xl">View Article</div>
@@ -52,7 +52,7 @@ const truncate = (text: string) => {
     </ContentList>
 
     <h2>Latest Blog</h2>
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 gap-4">
       <ContentList :query="query" v-slot="{ list }">
         <a
           :href="article._path"
@@ -72,7 +72,6 @@ const truncate = (text: string) => {
 
 <style>
 .content {
-  margin: 4rem auto;
   max-width: 60rem;
 }
 

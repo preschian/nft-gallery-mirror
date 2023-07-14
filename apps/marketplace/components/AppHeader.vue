@@ -1,5 +1,5 @@
 <template>
-  <header class="px-10 h-20 border-b border-black bg-white sticky top-0">
+  <header class="px-10 h-20 border-b border-black bg-white sticky top-0 z-10">
     <div class="h-full flex items-center justify-between">
       <a href="/">
         <img
