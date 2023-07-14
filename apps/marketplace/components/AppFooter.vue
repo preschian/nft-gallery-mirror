@@ -1,10 +1,11 @@
 <template>
   <div class="p-10 border-t border-black bg-white">
-    <div class="flex flex-col gap-8 items-start font-bold">
+    <div
+      class="flex flex-col lg:flex-row gap-8 items-start font-bold text-center lg:text-left">
       <!-- <div class="flex-1">
         <p class="font-bold text-xl mb-2">Get The Latest KodaDot Updates</p>
       </div> -->
-      <div class="flex-1 text-center w-full" v-for="footer in menuExternal">
+      <div class="flex-1 w-full" v-for="footer in menuExternal">
         <p class="font-bold text-xl mb-2">{{ footer.name }}</p>
         <div>
           <a
@@ -22,7 +23,7 @@
           </a>
         </div>
       </div>
-      <div class="flex-1 text-center w-full">
+      <div class="flex-1 w-full">
         <p class="font-bold text-xl mb-2">Join Our Community</p>
       </div>
     </div>

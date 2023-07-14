@@ -25,9 +25,9 @@ const truncate = (text: string) => {
 </script>
 
 <template>
-  <main class="content m-8">
-    <h1 class="font-bold text-4xl text-center">KodaDot Blog</h1>
-    <p class="font-medium text-xl text-center mt-4 mb-8">
+  <main class="content m-8 lg:mx-auto lg:my-16">
+    <h1 class="font-bold text-4xl lg:text-5xl text-center">KodaDot Blog</h1>
+    <p class="font-medium text-xl lg:text-2xl text-center mt-4 mb-8 lg:mb-16">
       Let’s explore the NFT universe
     </p>
 
@@ -36,12 +36,13 @@ const truncate = (text: string) => {
         :href="article._path"
         v-for="article in list"
         :key="article._path"
-        class="border flex flex-col mb-8">
+        class="border flex flex-col lg:flex-row mb-8">
         <div>
           <img class="aspect-video" :src="article.image" :alt="article.title" />
         </div>
-        <div class="p-6 w-full min-w-[20rem] flex flex-col justify-between">
-          <p class="font-bold text-xl">{{ article.title }}</p>
+        <div
+          class="p-6 lg:p-8 w-full min-w-[20rem] flex flex-col justify-between">
+          <p class="font-bold text-xl lg:text-3xl">{{ article.title }}</p>
           <p class="my-4">{{ truncate(article.description) }}</p>
 
           <div>
@@ -52,7 +53,7 @@ const truncate = (text: string) => {
     </ContentList>
 
     <h2>Latest Blog</h2>
-    <div class="grid grid-cols-1 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <ContentList :query="query" v-slot="{ list }">
         <a
           :href="article._path"
